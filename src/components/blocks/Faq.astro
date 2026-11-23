@@ -1,0 +1,274 @@
+---
+/**
+ * S15b · Frequently asked questions: heading and a line of text, then
+ * numbered questions in light cards that open one at a time (scripts/faq.ts,
+ * the same easing as the mobile menu). The first one starts open. Also writes
+ * FAQPage structured data, so Google can show the answers.
+ * S16a (Max): with a review or contact lines filled in, the questions sit left
+ * and a narrow column on the right holds the score, the review, contact lines
+ * and a button; it stays in view while the questions scroll by. Without them
+ * everything is centred as before.
+ */
+import { Image, type BlockComponentProps } from "emdash/ui";
+import { sanitizeHref } from "emdash";
+import Button from "../Button.astro";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+import Roll from "../Roll.astro";
+import { toParagraphs } from "../../utils/text";
+import Review from "../Review.astro";
+import { getCompany, mailHref, telHref } from "../../utils/company";
+
+type Block = Extract<PageContentBlock, { _type: "lm_faq" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const items = (value.items ?? []).filter((q) => q.question);
+const pad = (n: number) => String(n).padStart(2, "0");
+const uid = `faq-${value._key ?? "x"}`;
+// contact lines from Bedrijfsgegevens (Max: one place in the CMS), shown when the
+// block has a contact heading: mail, phone (placeholder = text only), the socials
+const company = value.contact_heading ? await getCompany() : undefined;
+if (company && Astro.cache?.enabled && company.cacheHint) Astro.cache.set(company.cacheHint as never);
+const contact: { label: string; url?: string; note?: string }[] = company
+	? [
+			company.email ? { label: company.email, url: mailHref(company.email), note: "Mail" } : null,
+			company.phone ? { label: company.phone, url: telHref(company.phone), note: company.phoneNote } : null,
+			...company.socials.map((x) => ({ label: x.label, url: x.url, note: undefined as string | undefined })),
+		].filter((c): c is { label: string; url: string | undefined; note: string | undefined } => Boolean(c))
+	: [];
+const hasSide = Boolean(value.review_quote || contact.length || value.cta_label);
+const schema = {
+	"@context": "https://schema.org",
+	"@type": "FAQPage",
+	mainEntity: items.map((q) => ({ "@type": "Question", name: q.question, acceptedAnswer: { "@type": "Answer", text: q.answer ?? "" } })),
+};
+---
+
+{
+	items.length > 0 && (
+		<section class:list={["fq", { "fq--side": hasSide }]} id={value.anchor_id || undefined} data-faq>
+			<div class="container fq__grid">
+				<div class="fq__main">
+				<div class="fq__head">
+					<Headline text={value.headline} as="h2" class="h2" />
+					{value.intro && <p class="muted fq__intro" data-reveal>{value.intro}</p>}
+				</div>
+				<ul class="fq__list" data-reveal>
+					{items.map((q, i) => (
+						<li class="fq__item">
+							<button class="fq__q" type="button" id={`${uid}-q${i}`} aria-expanded={String(i === 0)} aria-controls={`${uid}-a${i}`} data-faq-q>
+								<span class="mono fq__no">{pad(i + 1)}</span>
+								<span class="fq__t">{q.question}</span>
+								<span class="fq__pl" aria-hidden="true" />
+							</button>
+							<div class="fq__a" id={`${uid}-a${i}`} role="region" aria-labelledby={`${uid}-q${i}`} hidden={i !== 0}>
+								<div class="fq__a-in">
+									{toParagraphs(q.answer).map((p) => <p>{p}</p>)}
+								</div>
+							</div>
+						</li>
+					))}
+				</ul>
+				</div>
+				{
+					hasSide && (
+						<aside class="fq__side" data-reveal>
+							{value.review_quote && (
+								<Review
+									class="fq__review"
+									quote={value.review_quote}
+									name={value.review_name}
+									role={value.review_role}
+									image={value.review_image}
+									rating={value.rating}
+									ratingSource={value.rating_source}
+								/>
+							)}
+							{(contact.length > 0 || value.cta_label) && (
+								<div class="fq__contact">
+									{value.contact_heading && <Headline text={value.contact_heading} as="p" class="h5 fq__ch" />}
+									{contact.length > 0 && (
+										<ul class="fq__lines">
+											{contact.map((c) => {
+												const href = c.url ? sanitizeHref(c.url) : undefined;
+												const ext = href?.startsWith("http");
+												return (
+													<li>
+														{href ? (
+															<a class="fq__line" href={href} target={ext ? "_blank" : undefined} rel={ext ? "noopener" : undefined}>
+																<Roll text={c.label} />
+																{c.note && <span class="text-s muted">{c.note}</span>}
+															</a>
+														) : (
+															<span class="fq__line">
+																{c.label}
+																{c.note && <span class="text-s muted">{c.note}</span>}
+															</span>
+														)}
+													</li>
+												);
+											})}
+										</ul>
+									)}
+									{value.cta_label && <Button label={value.cta_label} href={value.cta_url} class="fq__btn" />}
+								</div>
+							)}
+						</aside>
+					)
+				}
+			</div>
+			<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+		</section>
+	)
+}
+
+<style>
+	.fq {
+		padding-block: var(--section-space);
+		background: var(--color-white);
+	}
+	.fq__head {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+	.fq__intro {
+		max-width: 420px;
+		margin-top: 20px;
+	}
+	.fq__list {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		max-width: 860px;
+		margin: clamp(40px, 3.9vw, 56px) auto 0;
+	}
+	.fq__item {
+		border-radius: var(--radius-media);
+		background: var(--color-paper);
+	}
+	.fq__q {
+		display: grid;
+		grid-template-columns: 48px 1fr 16px;
+		align-items: center;
+		gap: 16px;
+		width: 100%;
+		padding: 24px 28px;
+		text-align: left;
+	}
+	.fq__no {
+		color: var(--color-mute);
+		transition: color 0.3s;
+	}
+	.fq__q[aria-expanded="true"] .fq__no {
+		color: var(--color-rec);
+	}
+	.fq__t {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h5);
+		letter-spacing: -0.03em;
+		line-height: 1.25;
+	}
+	/* plus that turns into a minus when open */
+	.fq__pl {
+		position: relative;
+		width: 16px;
+		height: 16px;
+	}
+	.fq__pl::before,
+	.fq__pl::after {
+		content: "";
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 7px;
+		height: 2px;
+		background: currentColor;
+		transition: transform 0.45s var(--ease-out);
+	}
+	.fq__pl::after {
+		transform: rotate(90deg);
+	}
+	.fq__q[aria-expanded="true"] .fq__pl::after {
+		transform: rotate(0deg);
+	}
+	.fq__a {
+		overflow: hidden;
+	}
+	.fq__a-in {
+		padding: 0 64px 28px 92px;
+		color: var(--color-mute);
+		line-height: 1.6;
+	}
+	.fq__a-in p + p {
+		margin-top: 12px;
+	}
+	/* S16a: questions left, the narrow review/contact column right */
+	.fq--side .fq__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+		gap: clamp(64px, 8.3vw, 120px);
+		align-items: start;
+	}
+	.fq--side .fq__head {
+		align-items: flex-start;
+		text-align: left;
+	}
+	.fq--side .fq__intro {
+		max-width: 440px;
+	}
+	.fq--side .fq__list {
+		max-width: none;
+		margin-inline: 0;
+	}
+	.fq__side {
+		position: sticky;
+		top: 120px;
+		padding-top: 12px;
+	}
+	:global(.fq__review) + .fq__contact {
+		margin-top: 72px;
+	}
+	.fq__contact :global(.fq__ch) {
+		margin-bottom: 16px;
+	}
+	.fq__lines {
+		border-bottom: 1px solid var(--color-line);
+	}
+	.fq__line {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 16px;
+		padding: 16px 0;
+		border-top: 1px solid var(--color-line);
+	}
+	.fq__contact :global(.fq__btn) {
+		margin-top: 28px;
+	}
+	@media (max-width: 999px) {
+		/* the column moves under the questions */
+		.fq--side .fq__grid {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 72px;
+		}
+		.fq__side {
+			position: static;
+			max-width: 480px;
+			padding-top: 0;
+		}
+	}
+	@media (max-width: 699px) {
+		.fq__q {
+			grid-template-columns: 28px 1fr 16px;
+			gap: 12px;
+			padding: 20px;
+		}
+		.fq__a-in {
+			padding: 0 20px 22px 60px;
+		}
+	}
+</style>

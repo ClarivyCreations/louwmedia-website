@@ -1,0 +1,51 @@
+---
+/**
+ * One choice in a form, as a pill (Doop component "ChoiceChip"): a radio
+ * button (or a checkbox with `multiple`, so more may be picked) behind a thin
+ * outline; checked = black with white text. Put a few side by side in a
+ * <fieldset>, with wrap.
+ */
+interface Props {
+	name: string;
+	value: string;
+	label?: string;
+	checked?: boolean;
+	multiple?: boolean;
+}
+const { name, value, label = value, checked = false, multiple = false } = Astro.props;
+---
+
+<label class="chip">
+	<input class="sr-only" type={multiple ? "checkbox" : "radio"} {name} {value} checked={checked} />
+	<span>{label}</span>
+</label>
+
+<style>
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		padding: 10px 18px;
+		border: 1px solid var(--color-line);
+		border-radius: 999px;
+		font-weight: 600;
+		font-size: var(--text-s);
+		white-space: nowrap;
+		cursor: pointer;
+		transition:
+			border-color 0.3s,
+			background-color 0.3s,
+			color 0.3s;
+	}
+	.chip:hover {
+		border-color: var(--color-ink);
+	}
+	.chip:has(:checked) {
+		border-color: var(--color-ink);
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	.chip:has(:focus-visible) {
+		outline: 2px solid var(--color-rec);
+		outline-offset: 2px;
+	}
+</style>

@@ -1,0 +1,346 @@
+---
+/**
+ * Contact hero, B "shoot day sheet" (Doop "Pagina's", Max 2026-11-21): on grey
+ * the headline, a lead line and the contact rows (mail, phone, area) on the
+ * left (from Bedrijfsgegevens); on the right the form as a white sheet with the torn top edge and mono
+ * row labels of the shoot day sheet (S22c), tilted a little, with a red
+ * handwritten note beside it. "Waar gaat het over?" is a row of ChoiceChips, more than one may be picked (Max).
+ * Sending: scripts/contact.ts posts to /api/contact (see there: delivery is not
+ * set up yet). Hero entrance via motion.ts (data-hero; the sheet drifts in).
+ */
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+import Button from "../Button.astro";
+import ChoiceChip from "../ChoiceChip.astro";
+import { getCompany, mailHref, telHref } from "../../utils/company";
+
+type Block = Extract<PageContentBlock, { _type: "lm_hero_contact" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const topics = (value.topics ?? []).map((t) => t.label?.trim()).filter((t): t is string => Boolean(t));
+// mail, phone and area come from Bedrijfsgegevens (one place in the CMS, Max)
+const company = await getCompany();
+if (Astro.cache?.enabled && company.cacheHint) Astro.cache.set(company.cacheHint as never);
+---
+
+<section class="ch" id={value.anchor_id || undefined} data-hero="contact">
+	<div class="container ch__in">
+		<div class="ch__main">
+			<Headline text={value.headline} as="h1" class="h1 ch__title" reveal={false} />
+			{value.intro && <p class="text-l ch__intro" data-intro="rest">{value.intro}</p>}
+			<dl class="ch__rows" data-intro="rest">
+				{
+					company.email && (
+						<div>
+							<dt class="text-s muted">Mailen</dt>
+							<dd class="h4 ch__big">{mailHref(company.email) ? <a href={mailHref(company.email)}>{company.email}</a> : company.email}</dd>
+						</div>
+					)
+				}
+				{
+					company.phone && (
+						<div>
+							<dt class="text-s muted">Bellen</dt>
+							<dd class="h4 ch__big">{telHref(company.phone) ? <a href={telHref(company.phone)}>{company.phone}</a> : company.phone}</dd>
+						</div>
+					)
+				}
+				{
+					company.area && (
+						<div>
+							<dt class="text-s muted">Werkgebied</dt>
+							<dd class="text-m">{company.area}</dd>
+						</div>
+					)
+				}
+			</dl>
+		</div>
+
+		<div class="ch__wrap" data-intro="photo">
+			{value.note && <p class="ch__note" aria-hidden="true">{value.note}</p>}
+			<div class="ch__tilt">
+				<form class="ch__sheet torn-top" method="post" action="/api/contact" data-contact-form novalidate>
+					<p class="ch__head">
+						<span class="h4 ch__name">{value.sheet_title || "Aanvraag"}</span>
+						{value.sheet_meta && <span class="mono muted">{value.sheet_meta}</span>}
+					</p>
+					<div class="ch__fields" data-form-body>
+						<div class="ch__rowset">
+							<label class="ch__row">
+								<span class="mono muted">Naam</span>
+								<input name="name" type="text" autocomplete="name" placeholder="Je naam" required />
+							</label>
+							<label class="ch__row">
+								<span class="mono muted">Bedrijf</span>
+								<input name="company" type="text" autocomplete="organization" placeholder="Naam van je bedrijf (optioneel)" />
+							</label>
+							<label class="ch__row">
+								<span class="mono muted">E-mail</span>
+								<input name="email" type="email" autocomplete="email" placeholder="naam@bedrijf.nl" required />
+							</label>
+							<label class="ch__row">
+								<span class="mono muted">Telefoon</span>
+								<input name="phone" type="tel" autocomplete="tel" placeholder="06 12 34 56 78 (optioneel)" />
+							</label>
+						</div>
+						{
+							topics.length > 0 && (
+								<fieldset class="ch__topics">
+									<legend class="mono muted">Waar gaat het over?</legend>
+									<div class="ch__chips">
+										{topics.map((t) => (
+											<ChoiceChip name="topic" value={t} multiple />
+										))}
+									</div>
+								</fieldset>
+							)
+						}
+						<label class="ch__msg">
+							<span class="mono muted">{value.message_label || "Het idee"}</span>
+							<textarea name="message" rows="4" placeholder={value.message_placeholder || undefined} required></textarea>
+						</label>
+						<!-- spam trap: people never see or fill this -->
+						<label class="sr-only" aria-hidden="true">
+							Website <input name="website" type="text" tabindex="-1" autocomplete="off" />
+						</label>
+						<p class="text-s ch__error" data-form-error role="alert" hidden></p>
+						<div class="ch__send">
+							<Button label={value.button_label || "Versturen"} type="submit" />
+						</div>
+					</div>
+					<div class="ch__done" data-form-done tabindex="-1" hidden>
+						<p class="h4">{value.success_title || "Dank je!"}</p>
+						{value.success_text && <p class="text-m muted">{value.success_text}</p>}
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	/* the sheet runs on past the bottom of the section and is cut off there,
+	   like the shoot day sheet (Max): its own bottom edge never shows */
+	.ch {
+		--cut: clamp(120px, 11vw, 160px); /* how much of the sheet is cut off */
+		position: relative;
+		overflow: hidden;
+		background: var(--color-paper);
+	}
+	.ch__in {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 600px);
+		gap: clamp(56px, 7vw, 120px);
+		/* more room under the header (Max) */
+		padding-top: clamp(168px, 20vh, 216px);
+	}
+	/* bottom aligned (Max): the last row ends level with the room under the button */
+	.ch__main {
+		align-self: end;
+		padding-bottom: clamp(48px, 4.5vw, 64px);
+	}
+	.ch :global(.ch__title) {
+		max-width: 8em;
+	}
+	.ch__intro {
+		max-width: 460px;
+		margin-top: 32px;
+	}
+	/* compact (Max) */
+	.ch__rows {
+		max-width: 440px;
+		margin-top: 44px;
+		border-bottom: 1px solid var(--color-line);
+	}
+	.ch__rows > div {
+		padding: 14px 0;
+		border-top: 1px solid var(--color-line);
+	}
+	.ch__rows dd {
+		margin-top: 2px;
+	}
+	.ch__big {
+		font-family: var(--font-display);
+		font-weight: 600;
+	}
+	.ch__big a {
+		background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+		transition: background-size 0.4s ease;
+	}
+	.ch__big a:hover,
+	.ch__big a:focus-visible {
+		background-size: 100% 1px;
+	}
+
+	/* the sheet: like the shoot day sheet, tilted a little (Max picked B) */
+	.ch__wrap {
+		position: relative;
+		margin-top: -16px;
+		margin-bottom: calc(var(--cut) * -1);
+	}
+	.ch__tilt {
+		transform: rotate(1.5deg);
+		filter: drop-shadow(0 30px 40px rgba(18, 18, 18, 0.14));
+	}
+	.ch__sheet {
+		/* bottom: the cut-off part plus room under the button */
+		padding: clamp(36px, 4vw, 56px) clamp(28px, 4vw, 56px) calc(var(--cut) + clamp(48px, 4.5vw, 64px));
+		background: var(--color-white);
+	}
+	.ch__head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 16px;
+	}
+	.ch__name {
+		font-family: var(--font-display);
+		font-weight: 600;
+	}
+	.ch__rowset {
+		margin-top: 20px;
+		border-bottom: 1px solid var(--color-line);
+	}
+	.ch__row {
+		display: grid;
+		grid-template-columns: 120px 1fr;
+		align-items: baseline;
+		gap: 12px;
+		padding: 6px 0;
+		border-top: 1px solid var(--color-line);
+		cursor: text;
+	}
+	.ch input,
+	.ch textarea {
+		width: 100%;
+		padding: 10px 0;
+		border: 0;
+		background: none;
+		font: inherit;
+		font-size: var(--text-m);
+		color: var(--color-ink);
+		outline: none;
+	}
+	.ch input::placeholder,
+	.ch textarea::placeholder {
+		color: var(--color-mute);
+	}
+	/* focus and errors: the row's line turns red (like the Field component) */
+	.ch__row:focus-within,
+	.ch__msg:focus-within {
+		border-top-color: var(--color-rec);
+	}
+	.ch__row:has([aria-invalid="true"]),
+	.ch__msg:has([aria-invalid="true"]) {
+		border-top-color: var(--color-rec);
+	}
+	.ch__row:has([aria-invalid="true"]) .mono,
+	.ch__msg:has([aria-invalid="true"]) .mono {
+		color: var(--color-rec);
+	}
+	.ch__topics {
+		margin: 28px 0 0;
+		padding: 0;
+		border: 0;
+	}
+	.ch__topics legend {
+		padding: 0;
+	}
+	.ch__chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 12px;
+	}
+	.ch__msg {
+		display: block;
+		margin-top: 28px;
+		border-top: 1px solid transparent;
+	}
+	.ch__msg textarea {
+		display: block;
+		margin-top: 12px;
+		min-height: 120px;
+		padding: 14px 0;
+		border-top: 1px solid var(--color-line);
+		border-bottom: 1px solid var(--color-line);
+		font-family: var(--font-mono);
+		font-size: var(--text-s);
+		line-height: 1.75;
+		resize: vertical;
+	}
+	.ch__msg:focus-within textarea {
+		border-top-color: var(--color-rec);
+	}
+	.ch__error {
+		margin-top: 20px;
+		color: var(--color-rec);
+		font-weight: 600;
+	}
+	.ch__error a {
+		text-decoration: underline;
+	}
+	.ch__send {
+		margin-top: 36px;
+	}
+	.ch__send :global(.btn[aria-busy="true"]) {
+		opacity: 0.6;
+		pointer-events: none;
+	}
+	.ch__done {
+		margin-top: 28px;
+		padding: 28px 0;
+		border-top: 1px solid var(--color-line);
+		outline: none;
+	}
+	.ch__done p + p {
+		margin-top: 10px;
+	}
+	.ch__note {
+		position: absolute;
+		z-index: 2;
+		left: -100px;
+		top: 14px;
+		font-family: var(--font-scribble);
+		font-size: var(--text-h5);
+		line-height: 1.1;
+		color: var(--color-rec);
+		white-space: nowrap;
+		transform: rotate(-8deg);
+		pointer-events: none;
+	}
+
+	@media (max-width: 999px) {
+		.ch__in {
+			grid-template-columns: 1fr;
+			gap: 0;
+			padding-top: 152px;
+		}
+		.ch__main {
+			padding-bottom: 72px;
+		}
+		.ch__wrap {
+			margin: 0 4px calc(var(--cut) * -1);
+		}
+		.ch__tilt {
+			transform: rotate(1deg);
+		}
+		.ch__note {
+			left: auto;
+			right: 12px;
+			top: -40px;
+		}
+	}
+	@media (max-width: 599px) {
+		.ch__row {
+			grid-template-columns: 1fr;
+			gap: 0;
+			padding-top: 14px;
+		}
+		.ch input {
+			padding-top: 6px;
+		}
+	}
+</style>

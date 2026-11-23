@@ -1,0 +1,137 @@
+---
+/**
+ * Footer: the race edge from the current site on top (a checkered finish line),
+ * logo, the footer menu, the service pages (the services collection plus
+ * /automotive, like the Diensten mega menu; Max 2026-11-22), and socials and contact from Bedrijfsgegevens
+ * (utils/company.ts; a column without anything filled in is left out),
+ * full-width wordmark. "Is het al shoot day?" moved to the closing block above it.
+ */
+import { getEmDashCollection, getMenuWithCacheHint } from "emdash";
+import Roll from "./Roll.astro";
+import { getCompany, isReal, mailHref, telHref } from "../utils/company";
+
+const [footer, company, servicesResult] = await Promise.all([
+	getMenuWithCacheHint("footer"),
+	getCompany(),
+	getEmDashCollection("services", { orderBy: { position: "asc" }, limit: 6 }),
+]);
+if (Astro.cache?.enabled) {
+	Astro.cache.set(footer.cacheHint);
+	Astro.cache.set(servicesResult.cacheHint);
+	if (company.cacheHint) Astro.cache.set(company.cacheHint as never);
+}
+const year = new Date().getFullYear();
+const place = [company.postalCode, company.city].filter(Boolean).join(" ");
+const hasContact = Boolean(company.email || company.phone || company.street || place);
+const services = [
+	...(servicesResult.entries ?? []).map((s) => ({ label: s.data.title as string, url: `/diensten/${s.id}` })),
+	{ label: "Automotive", url: "/automotive" },
+];
+const cols = 2 + (company.socials.length > 0 ? 1 : 0) + (hasContact ? 1 : 0);
+---
+
+<div class="sf__finish" aria-hidden="true"></div>
+<footer class="sf">
+	<div class="container sf__top">
+		<a href="/" class="sf__logo" aria-label="Louwmedia, naar home"><img src="/assets/brand/logo-white.svg" alt="" width="601" height="187" /></a>
+		<div class="sf__cols" style={`--cols: ${cols}`}>
+			<nav aria-labelledby="sf-nav">
+				<p class="mono sf__h" id="sf-nav">Navigatie</p>
+				<ul>{(footer.data?.items ?? []).map((i) => <li><a href={i.url}><Roll text={i.label} /></a></li>)}</ul>
+			</nav>
+			<nav aria-labelledby="sf-diensten">
+				<p class="mono sf__h" id="sf-diensten">Diensten</p>
+				<ul>{services.map((i) => <li><a href={i.url}><Roll text={i.label} /></a></li>)}</ul>
+			</nav>
+			{
+				company.socials.length > 0 && (
+					<div>
+						<p class="mono sf__h">Socials</p>
+						<ul>{company.socials.map((i) => <li><a href={i.url} target="_blank" rel="noopener noreferrer"><Roll text={i.label} /></a></li>)}</ul>
+					</div>
+				)
+			}
+			{
+				hasContact && (
+					<div>
+						<p class="mono sf__h">Contact</p>
+						<address class="sf__address">
+							{company.email && (mailHref(company.email) ? <a href={mailHref(company.email)}><Roll text={company.email} /></a> : <span>{company.email}</span>)}
+							{company.phone && (telHref(company.phone) ? <a href={telHref(company.phone)}><Roll text={company.phone} /></a> : isReal(company.phone) && <span>{company.phone}</span>)}
+							{company.street && <span>{company.street}</span>}
+							{place && <span>{place}</span>}
+						</address>
+					</div>
+				)
+			}
+		</div>
+	</div>
+	<div class="container">
+		<img class="sf__mark" src="/assets/brand/wordmark-white.svg" alt={company.name} />
+		<p class="mono sf__legal"><small>© {year} {company.name}{isReal(company.kvk) && ` · KvK ${company.kvk}`}</small><a href="/algemene-voorwaarden"><Roll text="Algemene voorwaarden" /></a><a href="/privacyverklaring"><Roll text="Privacy" /></a></p>
+	</div>
+</footer>
+
+<style>
+	/* race edge from the current site: a 40px checkerboard of 20px squares, full width */
+	.sf__finish {
+		height: 40px;
+		background-image: repeating-conic-gradient(var(--color-ink) 0% 25%, var(--color-white) 0% 50%);
+		background-size: 40px 40px;
+	}
+	.sf {
+		background: var(--color-ink);
+		color: var(--color-white);
+		padding-block: clamp(56px, 5vw, 72px) 28px;
+	}
+	.sf__top {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 40px;
+	}
+	/* the full logo (Max) */
+	.sf__logo img {
+		display: block;
+		width: clamp(150px, 13vw, 190px);
+		height: auto;
+	}
+	.sf__cols {
+		display: grid;
+		grid-template-columns: repeat(var(--cols, 3), minmax(0, 220px));
+		gap: 40px;
+	}
+	.sf__h {
+		opacity: 0.5;
+		margin-bottom: 14px;
+	}
+	.sf__cols li,
+	.sf__address > * {
+		padding: 3px 0;
+	}
+	.sf__address {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		font-style: normal;
+	}
+	.sf__legal small {
+		font-size: inherit;
+	}
+	.sf__mark {
+		width: 100%;
+		margin-top: 96px;
+	}
+	.sf__legal {
+		display: flex;
+		gap: 28px;
+		margin-top: 28px;
+		opacity: 0.5;
+	}
+	@media (max-width: 699px) {
+		.sf__cols {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+</style>

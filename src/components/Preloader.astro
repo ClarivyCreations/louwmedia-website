@@ -1,0 +1,65 @@
+---
+/**
+ * Preloader: white screen, the Louwmedia logo comes in letter by letter.
+ * motion.ts plays it on the first page of a visit and hands over to the hero
+ * intro. The letters are the paths of brand/logo-ink.svg, split into two rows
+ * (LOUW beside the mark, MEDIA below) so each row can mask its letters.
+ */
+import raw from "../../public/assets/brand/logo-ink.svg?raw";
+
+const paths = [...raw.matchAll(/<path[^>]*\sd="([^"]+)"/g)].map((m) => m[1]);
+const mark = paths[0];
+const letters = paths.slice(1); // L O U W M E D I A
+const row1 = letters.slice(0, 4);
+const row2 = letters.slice(4);
+---
+
+<div class="pl" data-preloader aria-hidden="true">
+	<svg class="pl__logo" viewBox="0 0 601 187" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<defs>
+			<clipPath id="pl-r1"><rect x="110" y="-4" width="500" height="99"></rect></clipPath>
+			<clipPath id="pl-r2"><rect x="0" y="95" width="610" height="96"></rect></clipPath>
+			<clipPath id="pl-mk"><rect x="-4" y="-4" width="116" height="102"></rect></clipPath>
+		</defs>
+		<g clip-path="url(#pl-mk)">
+			<g class="pl__mark">
+				<path d={mark} fill="#121212"></path>
+				<circle class="pl__ring" cx="54.375" cy="46.875" r="27.1875" stroke="#FF2E17" stroke-opacity=".6" stroke-width="1.875"></circle>
+				<circle class="pl__dot" cx="54.375" cy="46.875" r="9.375" fill="#FF2E17"></circle>
+			</g>
+		</g>
+		<g clip-path="url(#pl-r1)">{row1.map((d) => <path class="pl__ch" d={d} fill="#121212"></path>)}</g>
+		<g clip-path="url(#pl-r2)">{row2.map((d) => <path class="pl__ch" d={d} fill="#121212"></path>)}</g>
+	</svg>
+	<p class="mono pl__meta"><span class="rec-dot"></span><span data-preload-count>00</span></p>
+</div>
+
+<style>
+	.pl {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		display: none;
+		place-items: center;
+		background: var(--color-white);
+	}
+	:global(html.is-preload) .pl {
+		display: grid;
+	}
+	.pl__logo {
+		width: clamp(200px, 26vw, 380px);
+		height: auto;
+		overflow: visible;
+	}
+	.pl__meta {
+		position: absolute;
+		left: 50%;
+		bottom: 40px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		transform: translateX(-50%);
+		color: var(--color-mute);
+		font-variant-numeric: tabular-nums;
+	}
+</style>

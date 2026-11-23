@@ -1,0 +1,62 @@
+---
+import { Blocks, defineBlockComponents } from "emdash/ui";
+import type { PageContentBlock } from "../../emdash-env";
+import About from "./blocks/About.astro";
+import Cases from "./blocks/Cases.astro";
+import Cta from "./blocks/Cta.astro";
+import Deliverables from "./blocks/Deliverables.astro";
+import EditClose from "./blocks/EditClose.astro";
+import Statement from "./blocks/Statement.astro";
+import Faq from "./blocks/Faq.astro";
+import Choice from "./blocks/Choice.astro";
+import HeroCompact from "./blocks/HeroCompact.astro";
+import HeroContact from "./blocks/HeroContact.astro";
+import ShowreelHero from "./blocks/ShowreelHero.astro";
+import MediaRow from "./blocks/MediaRow.astro";
+import ShootdayHero from "./blocks/ShootdayHero.astro";
+import ShootdayClips from "./blocks/ShootdayClips.astro";
+import HeroSplit from "./blocks/HeroSplit.astro";
+import HeroVideo from "./blocks/HeroVideo.astro";
+import Logos from "./blocks/Logos.astro";
+import Process from "./blocks/Process.astro";
+import PhotoArc from "./blocks/PhotoArc.astro";
+import Quote from "./blocks/Quote.astro";
+import Reels from "./blocks/Reels.astro";
+import Services from "./blocks/Services.astro";
+import TextPage from "./blocks/TextPage.astro";
+
+interface Props {
+	value?: PageContentBlock[] | null;
+}
+
+const { value } = Astro.props;
+
+// One Astro component per block type in seed/seed.json.
+const components = defineBlockComponents<PageContentBlock>({
+	lm_hero_split: HeroSplit,
+	lm_hero_video: HeroVideo,
+	lm_about: About,
+	lm_cta: Cta,
+	lm_logos: Logos,
+	lm_services: Services,
+	lm_quote: Quote,
+	lm_process: Process,
+	lm_reels: Reels,
+	lm_cases: Cases,
+	lm_faq: Faq,
+	lm_statement: Statement,
+	lm_deliverables: Deliverables,
+	lm_edit: EditClose,
+	lm_hero_compact: HeroCompact,
+	lm_hero_contact: HeroContact,
+	lm_choice: Choice,
+	lm_showreel: ShowreelHero,
+	lm_media: MediaRow,
+	lm_shootday_hero: ShootdayHero,
+	lm_shootday_clips: ShootdayClips,
+	lm_photo_arc: PhotoArc,
+	lm_text: TextPage,
+});
+---
+
+<Blocks {value} components={components} />

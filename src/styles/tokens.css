@@ -1,0 +1,70 @@
+/*
+ * Louwmedia design tokens. Names match the Doop canvas "Louwmedia" (v4rbrJ43XY),
+ * so a value changed there can be copied here one to one.
+ * Type sizes are fluid: the Doop value is the desktop (1440) size.
+ */
+:root {
+	/* Colour */
+	--color-paper: #f3f3f3;
+	--color-paper-shade: #e4e4e4;
+	--color-white: #ffffff;
+	--color-ink: #121212;
+	--color-ink-shade: #222222;
+	--color-graphite: #1e1e1e;
+	--color-mute: #707070;
+	--color-line: #dadada;
+	--color-rec: #ff2e17;
+	--color-rec-deep: #a01108;
+
+	/* Type scale: mobile (390) to desktop (1440), fluid in between.
+	   Same names as the Doop tokens; the Doop "mobile" theme holds the 390 values. */
+	--text-label: clamp(11px, 10.63px + 0.095vw, 12px); /* 11 / 12 */
+	--text-s: clamp(13px, 12.63px + 0.095vw, 14px); /* 13 / 14 · S: short supporting lines and meta */
+	--text-m: clamp(16px, 15.63px + 0.095vw, 17px); /* 16 / 17 · M: reading text (default) */
+	--text-l: clamp(18px, 16.51px + 0.381vw, 22px); /* 18 / 22 · L: the one lead line beside a big heading */
+	--text-h5: clamp(17px, 15.89px + 0.286vw, 20px); /* 17 / 20 */
+	--text-h4: clamp(20px, 17.77px + 0.571vw, 26px); /* 20 / 26 */
+	--text-h3: clamp(24px, 18.06px + 1.524vw, 40px); /* 24 / 40 */
+	--text-h2: clamp(30px, 17.37px + 3.238vw, 64px); /* 30 / 64 */
+	--text-h1: clamp(40px, 19.20px + 5.333vw, 96px); /* 40 / 96 */
+	--text-display: clamp(48px, 15.31px + 8.381vw, 136px); /* 48 / 136 */
+
+	/* Space and shape */
+	--spacing-rec: 6px;
+	--radius-xs: 2px;
+	--radius-sm: 4px;
+	--radius-media: 10px;
+	--slant: 12.7deg;
+	/* 1360 up to a 1440 screen, then grows with it to 1440 at a 1680 screen and stays there (Max) */
+	--container: clamp(1360px, calc(1360px + (100vw - 1440px) / 3), 1440px);
+	--gutter: clamp(20px, 2.8vw, 40px);
+	/* the left/right edge of the boxed content (.container), for things that are not in a
+	   container (header, hero): grows with the screen past 1440, like the boxed sections (Max).
+	   A percentage of the containing block, so use it in padding/margin only. */
+	--edge: max(var(--gutter), calc((100% - var(--container)) / 2));
+	--section-space: clamp(96px, 11vw, 176px); /* roomy, so the page breathes (Max) */
+
+	/* Red gradient from the current site: arrow square on buttons, menu button */
+	--gradient-rec: linear-gradient(180deg, var(--color-rec) 0%, var(--color-rec-deep) 100%);
+
+	/* Glass from the current site: glass button and the header bar */
+	--glass-bg:
+		radial-gradient(120% 140% at 28% -30%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 55%),
+		linear-gradient(155deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 45%),
+		rgba(0, 0, 0, 0.35);
+	--glass-filter: blur(10px) saturate(180%) contrast(1.05);
+	--glass-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.4),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+		inset 0 -6px 10px -8px rgba(0, 0, 0, 0.35),
+		0 10px 30px rgba(0, 0, 0, 0.22);
+
+	/* Motion */
+	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+	/* letter roll on hover (buttons and plain text links) */
+	--roll-duration: 0.6s;
+	--roll-stagger: 18ms;
+
+	color-scheme: light;
+}

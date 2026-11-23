@@ -1,0 +1,21 @@
+---
+/**
+ * Letter roll, taken over from the current site ([data-char-swap]): on hover of
+ * the nearest link or button the letters roll up one by one and the same word
+ * comes back from below. One of the three hover types (see CLAUDE.md):
+ * button (Button.astro, uses this), text with a line (.text-link), and this.
+ * Words stay whole so long titles still wrap; screen readers get the plain text.
+ * The visible letters come from CSS (data-c), so the page text holds each
+ * label once (search engines read "Werk", not "WerkWerk").
+ */
+interface Props {
+	text: string;
+	class?: string;
+}
+
+const { text, class: className } = Astro.props;
+let i = 0;
+const words = text.split(/\s+/).filter(Boolean).map((w) => [...w].map((c) => ({ c, i: i++ })));
+---
+
+<span class:list={["roll", className]}><span class="roll__sr">{text}</span><span class="roll__vis" aria-hidden="true">{words.map((chars, w) => (<>{w > 0 && " "}<span class="roll__w">{chars.map(({ c, i }) => <span class="roll__c" style={`--i:${i}`} data-c={c} />)}</span></>))}</span></span>

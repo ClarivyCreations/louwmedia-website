@@ -1,0 +1,16 @@
+---
+/**
+ * Round play button on glass (Max), shared by the showreel hero and the case
+ * video. Shows a pause icon while the closest .is-playing ancestor (or the
+ * button itself) is playing. Size via --play (default 56px). Styles in global.css (.pbtn).
+ */
+interface Props {
+	class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<span class:list={["pbtn", className]} aria-hidden="true">
+	<svg class="pbtn__play" viewBox="0 0 16 16"><path d="M3 1.5v13l11-6.5z"></path></svg>
+	<svg class="pbtn__pause" viewBox="0 0 14 14"><rect x="2" y="1.5" width="3.5" height="11"></rect><rect x="8.5" y="1.5" width="3.5" height="11"></rect></svg>
+</span>

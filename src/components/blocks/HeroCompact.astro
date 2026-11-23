@@ -1,0 +1,117 @@
+---
+/**
+ * S17 · Compact hero (Doop "Secties"), for overview pages like /diensten: a
+ * half-height grey block, a big headline left, a lead line and a short index of
+ * the services right (each to its own page), and a large round tone-on-tone
+ * scribble bottom left in the grey (Max). The page after it is white (global.css: html:has(.hc)).
+ * Gets the short hero entrance from motion.ts (data-hero, data-intro).
+ */
+import { getEmDashCollection } from "emdash";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+import Roll from "../Roll.astro";
+import Arrow from "../Arrow.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_hero_compact" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const result = value.show_services === false ? null : await getEmDashCollection("services", { orderBy: { position: "asc" }, limit: 6 });
+if (result && Astro.cache?.enabled) Astro.cache.set(result.cacheHint);
+const services = result?.entries ?? [];
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<section class="hc" id={value.anchor_id || undefined} data-hero="compact">
+	<img class="hc__tone" src="/assets/scribbles/rings-paper-tone.png" alt="" aria-hidden="true" width="852" height="592" />
+	<div class="container hc__in">
+		<Headline text={value.headline} as="h1" class="h1 hc__title" reveal={false} />
+		<div class="hc__side">
+			{value.intro && <p class="text-l hc__intro" data-intro="rest">{value.intro}</p>}
+			{
+				services.length > 0 && (
+					<ul class="hc__ix" data-intro="rest">
+						{services.map((s, i) => (
+							<li>
+								<a href={`/diensten/${s.id}`}>
+									<span class="mono hc__no">{pad(i + 1)}</span>
+									<Roll text={s.data.title} />
+									<Arrow />
+								</a>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.hc {
+		position: relative;
+		overflow: hidden;
+		display: flex;
+		align-items: flex-end;
+		min-height: clamp(440px, 58svh, 620px);
+		padding: 140px 0 clamp(48px, 5vw, 72px);
+		background: var(--color-paper);
+	}
+	/* a big, quiet round scribble running off the bottom left (Max) */
+	.hc__tone {
+		position: absolute;
+		left: -140px;
+		bottom: -230px;
+		width: min(640px, 48vw);
+		transform: rotate(-10deg);
+		height: auto;
+		max-width: none;
+		pointer-events: none;
+	}
+	.hc__in {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+		gap: 48px 80px;
+		align-items: end;
+	}
+	.hc__intro {
+		max-width: 420px;
+	}
+	.hc__ix {
+		margin-top: 32px;
+		border-bottom: 1px solid var(--color-line);
+	}
+	.hc__ix a {
+		display: grid;
+		grid-template-columns: 40px 1fr auto;
+		align-items: baseline;
+		gap: 12px;
+		padding: 14px 0;
+		border-top: 1px solid var(--color-line);
+		font-weight: 600;
+	}
+	.hc__no {
+		color: var(--color-mute);
+	}
+	.hc__ix svg {
+		width: 11px;
+		height: 11px;
+		fill: var(--color-rec);
+	}
+	@media (max-width: 899px) {
+		.hc {
+			min-height: 0;
+			padding-top: 132px;
+		}
+		.hc__in {
+			grid-template-columns: 1fr;
+		}
+		.hc__tone {
+			left: -30%;
+			bottom: -12%;
+			width: 100vw;
+		}
+	}
+</style>

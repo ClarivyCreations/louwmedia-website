@@ -1,0 +1,373 @@
+---
+/**
+ * A client case (/werk/{slug}), S20a in Doop (Max, 2026-11-20).
+ * - Top: the main photo full-bleed with the header over it; a video on the
+ *   case replaces the photo (muted loop; a click plays it with sound in place).
+ * - Head: the creative headline (or the client name), the facts list (Klant =
+ *   the entry's title, Soort, Gemaakt, Jaar), the short intro and an optional
+ *   review in the style of the FAQ column.
+ * - The case's own media rows (lm_media in "content"): photos, reels, or both.
+ * - Next case: one big row; its photo only shows on hover, at the pointer (like S14b).
+ * Anything left empty on a case is simply left out.
+ */
+import { decodeSlug, getEmDashCollection, getEmDashEntry, getSeoMeta } from "emdash";
+import { Image } from "emdash/ui";
+import Base from "../../layouts/Base.astro";
+import Blocks from "../../components/Blocks.astro";
+import Headline from "../../components/Headline.astro";
+import Roll from "../../components/Roll.astro";
+import { plainHeadline } from "../../utils/text";
+import { absoluteImageUrl } from "../../utils/page";
+import ArrowSquare from "../../components/ArrowSquare.astro";
+import PlayButton from "../../components/PlayButton.astro";
+import Review from "../../components/Review.astro";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.rewrite("/404");
+
+const { entry: item, cacheHint } = await getEmDashEntry("cases", slug);
+if (!item) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const all = (await getEmDashCollection("cases", { orderBy: { position: "asc" }, limit: 100 })).entries ?? [];
+const at = all.findIndex((c) => c.id === item.id);
+const next = all.length > 1 ? all[(at + 1) % all.length] : undefined;
+
+const d = item.data;
+const file = d.video as { provider?: string; src?: string; url?: string; meta?: Record<string, unknown> } | undefined;
+const key = typeof file?.meta?.storageKey === "string" ? file.meta.storageKey : undefined;
+const videoUrl = key ? Astro.locals.emdash?.getPublicMediaUrl?.(key) : file?.provider === "external" ? file.src : file?.url;
+const blocks = d.content ?? [];
+const headline = d.headline?.trim() || d.title;
+const facts = [
+	["Klant", d.title],
+	["Soort", d.kind],
+	["Gemaakt", d.deliverables],
+	["Jaar", d.year ? String(d.year) : ""],
+].filter(([, v]) => v);
+// fallbacks when the case's SEO panel is empty: its intro (else its headline,
+// else "client · kind") and its cover photo
+const seo = getSeoMeta(item, {
+	siteUrl: Astro.url.origin,
+	path: `/werk/${item.id}`,
+	defaultDescription: d.intro?.trim() || (d.headline ? plainHeadline(d.headline) : undefined) || [d.client, d.kind].filter(Boolean).join(" · ") || undefined,
+	defaultOgImage: d.cover ? absoluteImageUrl(d.cover as Parameters<typeof absoluteImageUrl>[0], Astro.url.origin) : undefined,
+});
+---
+
+<Base
+	title={seo.title}
+	pageTitle={d.title}
+	description={seo.description}
+	image={seo.ogImage}
+	canonical={seo.canonical}
+	robots={seo.robots}
+	content={{ collection: "cases", id: d.id, slug: item.id }}
+	headerTone="media"
+>
+	<section class="cs__hero" data-hero="case">
+		<div class="cs__media" data-intro="media">
+			{d.cover && <Image image={d.cover} class="cs__photo" sizes="100vw" loading="eager" fetchpriority="high" />}
+			{videoUrl && <video class="cs__video" src={videoUrl} muted autoplay loop playsinline preload="auto" aria-hidden="true" data-case-video />}
+		</div>
+		<div class="cs__shade" data-intro="shade"></div>
+		{
+			videoUrl && (
+				<button class="cs__play" type="button" aria-label="Video afspelen met geluid" aria-pressed="false" data-case-play>
+					<PlayButton />
+				</button>
+			)
+		}
+		<p class="mono cs__rec" data-intro="ui">
+			<span class="rec-dot" /> {videoUrl ? "REC · film" : "Foto"}
+		</p>
+	</section>
+
+	<section class="container cs__head">
+		<div class="cs__main">
+			<p class="text-s cs__crumb"><a href="/werk" class="muted">Werk</a> / {d.title}</p>
+			<Headline text={headline} as="h1" class="h1 cs__title" />
+			{
+				facts.length > 0 && (
+					<dl class="cs__facts" data-reveal>
+						{facts.map(([k, v]) => (
+							<div>
+								<dt class="text-s muted">{k}</dt>
+								<dd>{v}</dd>
+							</div>
+						))}
+					</dl>
+				)
+			}
+		</div>
+		{
+			(d.intro || d.review_quote) && (
+				<aside class="cs__side" data-reveal>
+					{d.intro && <p class="text-l">{d.intro}</p>}
+					{d.review_quote && (
+						<Review class="cs__review" quote={d.review_quote} name={d.review_name} role={d.review_role} image={d.review_image} />
+					)}
+				</aside>
+			)
+		}
+	</section>
+
+	{
+		blocks.length > 0 && (
+			<div class="cs__blocks" {...item.edit.content}>
+				<Blocks value={blocks} />
+			</div>
+		)
+	}
+
+	{
+		next && (
+			<section class="cs__next">
+				<a class="container cs__next-in" href={`/werk/${next.id}`}>
+					<span class="cs__next-txt">
+						<span class="text-s muted">Volgende case</span>
+						<span class="h2 cs__next-t">
+							<Roll text={next.data.title} />
+						</span>
+						<span class="text-s muted">{[plainHeadline(next.data.headline), next.data.kind, next.data.year].filter(Boolean).join(" · ")}</span>
+					</span>
+					{next.data.cover && (
+						<span class="cs__next-ph" aria-hidden="true">
+							<Image image={next.data.cover} sizes="320px" />
+						</span>
+					)}
+					<ArrowSquare tone="outline" size="l" />
+				</a>
+			</section>
+		)
+	}
+</Base>
+
+<script>
+	// A video at the top: a click plays it with sound in place, again pauses;
+	// at the end, or scrolled away, it goes back to the muted loop (as on /werk).
+	const btn = document.querySelector<HTMLButtonElement>("[data-case-play]");
+	const video = document.querySelector<HTMLVideoElement>("[data-case-video]");
+	if (btn && video) {
+		let full = false;
+		const mark = () => {
+			const on = full && !video.paused;
+			btn.classList.toggle("is-playing", on);
+			btn.setAttribute("aria-pressed", String(on));
+		};
+		const back = () => {
+			full = false;
+			video.muted = true;
+			video.loop = true;
+			video.play().catch(() => {});
+			mark();
+		};
+		btn.addEventListener("click", () => {
+			if (!full) {
+				full = true;
+				video.loop = false;
+				video.muted = false;
+				video.currentTime = 0;
+				video.play().catch(() => {});
+			} else if (video.paused) video.play().catch(() => {});
+			else video.pause();
+			mark();
+		});
+		video.addEventListener("pause", mark);
+		video.addEventListener("play", mark);
+		video.addEventListener("ended", () => full && back());
+		new IntersectionObserver(([e]) => {
+			if (!e.isIntersecting && full) back();
+		}).observe(btn);
+	}
+
+	// Next case: its photo appears where the pointer is and trails it a little (Max).
+	const row = document.querySelector<HTMLElement>(".cs__next-in");
+	const ph = row?.querySelector<HTMLElement>(".cs__next-ph");
+	if (row && ph && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+		let x = 0;
+		let y = 0;
+		let tx = 0;
+		let ty = 0;
+		let raf = 0;
+		const tick = () => {
+			x += (tx - x) * 0.16;
+			y += (ty - y) * 0.16;
+			ph.style.setProperty("--x", `${x}px`);
+			ph.style.setProperty("--y", `${y}px`);
+			raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.3 ? requestAnimationFrame(tick) : 0;
+		};
+		const aim = (e: PointerEvent, jump = false) => {
+			const r = row.getBoundingClientRect();
+			tx = e.clientX - r.left;
+			ty = e.clientY - r.top;
+			if (jump) {
+				x = tx;
+				y = ty;
+			}
+			if (!raf) raf = requestAnimationFrame(tick);
+		};
+		row.addEventListener("pointerenter", (e) => aim(e, true));
+		row.addEventListener("pointermove", (e) => aim(e));
+	}
+</script>
+
+<style>
+	.cs__hero {
+		position: relative;
+		height: min(96svh, 960px);
+		min-height: 520px;
+		overflow: hidden;
+		background: var(--color-graphite);
+		color: var(--color-white);
+	}
+	.cs__media,
+	.cs__shade {
+		position: absolute;
+		inset: 0;
+	}
+	.cs__media :global(img),
+	.cs__video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+	}
+	.cs__shade {
+		background:
+			linear-gradient(to bottom, rgba(18, 18, 18, 0.45), rgba(18, 18, 18, 0) 24%),
+			linear-gradient(to top, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 0) 30%);
+		pointer-events: none;
+	}
+	.cs__rec {
+		position: absolute;
+		left: var(--edge);
+		bottom: 40px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	/* the shared round glass play button (PlayButton.astro), centred and a little bigger */
+	.cs__play {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin: -40px 0 0 -40px;
+		transition: opacity 0.4s;
+	}
+	.cs__play :global(.pbtn) {
+		--play: 80px;
+	}
+	.cs__play.is-playing {
+		opacity: 0;
+	}
+	.cs__hero:hover .cs__play.is-playing,
+	.cs__play.is-playing:focus-visible {
+		opacity: 1;
+	}
+
+	.cs__head {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(300px, 440px);
+		gap: 56px clamp(64px, 8.3vw, 120px);
+		align-items: end;
+		padding-top: clamp(64px, 6.6vw, 96px);
+	}
+	.cs__crumb a:hover {
+		text-decoration: underline;
+	}
+	.cs__crumb + :global(.cs__title) {
+		margin-top: 28px;
+	}
+	.cs__facts {
+		max-width: 560px;
+		margin-top: 48px;
+		border-bottom: 1px solid var(--color-line);
+	}
+	.cs__facts > div {
+		display: grid;
+		grid-template-columns: 120px 1fr;
+		align-items: baseline;
+		padding: 12px 0;
+		border-top: 1px solid var(--color-line);
+	}
+	/* the shared review (Review.astro), under the intro with a line above */
+	.cs__side :global(.cs__review) {
+		margin-top: 44px;
+		padding-top: 28px;
+		border-top: 1px solid var(--color-line);
+	}
+
+	/* next case: one big row, its photo only appears on hover (as in S14b) */
+	.cs__next {
+		margin-top: var(--section-space);
+		border-top: 1px solid var(--color-line);
+	}
+	.cs__next-in {
+		position: relative;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 32px;
+		padding-block: clamp(48px, 5vw, 72px);
+	}
+	.cs__next-txt {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.cs__next-t {
+		display: block;
+		position: relative;
+		z-index: 1;
+		font-family: var(--font-display);
+		font-weight: 600;
+		line-height: 1;
+		letter-spacing: -0.045em;
+	}
+	.cs__next-ph {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 2;
+		width: clamp(200px, 20vw, 300px);
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		box-shadow: 0 30px 60px rgba(18, 18, 18, 0.22);
+		opacity: 0;
+		translate: calc(var(--x, 70vw) - 50%) calc(var(--y, 0px) - 50%);
+		rotate: 4deg;
+		scale: 0.9;
+		/* only opacity, rotation and scale ease in CSS; the position follows the pointer (script) */
+		transition: opacity 0.4s var(--ease-out), rotate 0.7s var(--ease-out), scale 0.7s var(--ease-out);
+		pointer-events: none;
+	}
+	.cs__next-ph :global(img) {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.cs__next-in:is(:hover, :focus-visible) .cs__next-ph {
+		opacity: 1;
+		rotate: -3deg;
+		scale: 1;
+	}
+	@media (max-width: 899px) {
+		.cs__hero {
+			height: 72svh;
+		}
+		.cs__head {
+			grid-template-columns: 1fr;
+		}
+		.cs__rec {
+			left: var(--gutter);
+			bottom: 24px;
+		}
+		.cs__next-ph {
+			display: none;
+		}
+	}
+</style>

@@ -1,0 +1,69 @@
+---
+/**
+ * Louwmedia button, taken over from the current site: italic Hanken label and
+ * the red arrow square (ArrowSquare.astro, shared). On hover the letters roll up
+ * one by one and the arrow is replaced by the next one.
+ */
+import { sanitizeHref } from "emdash";
+import Roll from "./Roll.astro";
+import ArrowSquare from "./ArrowSquare.astro";
+
+interface Props {
+	label: string;
+	href?: string | null;
+	tone?: "solid" | "white" | "glass";
+	/** without href: "submit" for the button that sends a form */
+	type?: "button" | "submit";
+	class?: string;
+}
+
+const { label, href, tone = "solid", type = "button", class: className } = Astro.props;
+const safeHref = href ? sanitizeHref(href) : undefined;
+const Tag = safeHref ? "a" : "button";
+---
+
+<Tag
+	class:list={["btn", `btn--${tone}`, className]}
+	href={safeHref}
+	type={safeHref ? undefined : type}
+>
+	<Roll text={label} class="btn__label" />
+	<ArrowSquare />
+</Tag>
+
+<style>
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 12px;
+		padding: 4px 4px 4px 12px;
+		border-radius: var(--radius-sm);
+		white-space: nowrap;
+		cursor: pointer;
+	}
+	.btn--solid {
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	.btn--white {
+		background: var(--color-white);
+		color: var(--color-ink);
+	}
+	.btn--glass {
+		/* glass from the current site (tokens.css) */
+		background: var(--glass-bg);
+		color: var(--color-white);
+		backdrop-filter: var(--glass-filter);
+		-webkit-backdrop-filter: var(--glass-filter);
+		box-shadow: var(--glass-shadow);
+	}
+	/* the label rolls with the shared letter roll (global.css, Roll.astro) */
+	.btn :global(.btn__label) {
+		font-family: var(--font-body);
+		font-weight: 800;
+		font-style: italic;
+		font-size: 18px;
+		letter-spacing: -0.03em;
+		line-height: 1.2;
+	}
+</style>

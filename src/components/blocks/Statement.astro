@@ -1,0 +1,168 @@
+---
+/**
+ * S04 · Statement: one large sentence on the right with a short text and an
+ * optional button; bottom left a photo in a camera viewfinder (corners, REC,
+ * format and timecode) with a handwritten note above it. No label on top
+ * (Max: fewer eyebrows).
+ */
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Button from "../Button.astro";
+import Headline from "../Headline.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_statement" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+---
+
+<section class="st" id={value.anchor_id || undefined}>
+	<div class="container st__grid">
+		<div class="st__text">
+			<Headline text={value.headline} as="h2" class="h2 st__title" />
+			{value.body && <p class="text-l st__body" data-reveal>{value.body}</p>}
+			{value.cta_label && <div class="st__cta" data-reveal><Button label={value.cta_label} href={value.cta_url} /></div>}
+		</div>
+		{
+			value.image && (
+				<figure class="st__side" data-reveal>
+					{value.note && <figcaption class="st__note">{value.note}</figcaption>}
+					<div class="st__vf">
+						<Image image={value.image} sizes="(min-width: 900px) 30vw, 100vw" />
+						<span class="c tl" />
+						<span class="c tr" />
+						<span class="c bl" />
+						<span class="c br" />
+						<span class="mono st__rec">
+							<span class="rec-dot" />
+							Rec
+						</span>
+						<span class="mono st__fmt">16:9</span>
+						<span class="mono st__tc">00:00:42:10</span>
+					</div>
+					<img class="st__doodle" src="/assets/scribbles/loops-red.png" alt="" aria-hidden="true" width="360" height="248" />
+				</figure>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.st {
+		padding-block: var(--section-space);
+	}
+	.st__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 400px) minmax(0, 760px);
+		justify-content: space-between;
+		align-items: end;
+		gap: 56px 64px;
+	}
+	.st__text {
+		grid-column: 2;
+		grid-row: 1;
+		align-self: start;
+	}
+	.st__body {
+		max-width: 560px;
+		margin-top: clamp(28px, 2.8vw, 40px);
+	}
+	.st__cta {
+		margin-top: 40px;
+	}
+	/* below the text, bottom left, with the note above it (as in S04) */
+	.st__side {
+		grid-column: 1;
+		grid-row: 2;
+		position: relative;
+		margin-top: clamp(24px, 3vw, 48px);
+	}
+	.st__note {
+		position: absolute;
+		right: 6%;
+		bottom: calc(100% + 18px);
+		font-family: var(--font-scribble);
+		font-size: var(--text-h4);
+		color: var(--color-rec);
+		transform: rotate(-5deg);
+		white-space: nowrap;
+	}
+	/* small red marker loops diagonally under the bottom-right corner of the frame (Max) */
+	.st__doodle {
+		position: absolute;
+		right: -58px;
+		bottom: -62px;
+		width: 84px;
+		height: auto;
+		transform: rotate(-24deg);
+		pointer-events: none;
+	}
+	/* photo in a camera viewfinder, like the video hero */
+	.st__vf {
+		position: relative;
+		aspect-ratio: 16 / 9;
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	.st__vf :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+		filter: brightness(0.82);
+	}
+	.st__vf .c {
+		position: absolute;
+		width: 22px;
+		height: 22px;
+		border: 0 solid var(--color-white);
+	}
+	.st__vf .tl { left: 14px; top: 14px; border-left-width: 2px; border-top-width: 2px; }
+	.st__vf .tr { right: 14px; top: 14px; border-right-width: 2px; border-top-width: 2px; }
+	.st__vf .bl { left: 14px; bottom: 14px; border-left-width: 2px; border-bottom-width: 2px; }
+	.st__vf .br { right: 14px; bottom: 14px; border-right-width: 2px; border-bottom-width: 2px; }
+	.st__rec,
+	.st__fmt,
+	.st__tc {
+		position: absolute;
+	}
+	.st__rec {
+		left: 26px;
+		top: 26px;
+		display: flex;
+		align-items: center;
+		gap: 7px;
+	}
+	.st__fmt {
+		right: 26px;
+		top: 26px;
+	}
+	.st__tc {
+		left: 26px;
+		bottom: 26px;
+		font-variant-numeric: tabular-nums;
+	}
+	@media (max-width: 899px) {
+		.st__grid {
+			grid-template-columns: 1fr;
+		}
+		.st__text,
+		.st__side {
+			grid-column: 1;
+			grid-row: auto;
+		}
+		.st__side {
+			margin-top: 56px;
+			max-width: 480px;
+		}
+		.st__doodle {
+			right: -14px;
+			bottom: -50px;
+			width: 64px;
+		}
+	}
+</style>

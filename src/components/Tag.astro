@@ -1,0 +1,12 @@
+---
+/** Small label with the red REC dot (`.tag` in global.css). Doop component "Tag" (rec on). */
+interface Props {
+	text: string;
+	rec?: boolean;
+	class?: string;
+	[attr: string]: unknown;
+}
+const { text, rec = true, class: className, ...rest } = Astro.props;
+---
+
+<p class:list={["tag", className]} {...rest}>{rec && <span class="rec-dot" />}{text}</p>

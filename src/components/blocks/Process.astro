@@ -1,0 +1,208 @@
+---
+/**
+ * S11b · How it works as an edit timeline: a ruler with timecodes, one clip per
+ * step and a red playhead that travels along while you scroll; the clip under
+ * it turns black (motion.ts, data-process). On desktop the clips sit side by
+ * side with the steps under them; on mobile the timeline stands upright and
+ * the playhead moves down. White background: the page fades from paper to
+ * white while the services above scroll by (data-page-bg).
+ */
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_process" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const steps = (value.steps ?? []).filter((s) => s.title);
+const pad = (n: number) => String(n).padStart(2, "0");
+const tc = (i: number) => `${pad(Math.floor((i * 15) / 60))}:${pad((i * 15) % 60)}`;
+---
+
+<section class="pr" id={value.anchor_id || undefined} data-page-bg="white">
+	<div class="container">
+		<div class="pr__head">
+			<Headline text={value.headline} as="h2" class="h2 pr__title" />
+			{value.intro && <p class="muted pr__intro" data-reveal>{value.intro}</p>}
+		</div>
+		<div class="pr__tl" data-process style={`--n:${steps.length}`}>
+			<p class="mono pr__ruler" aria-hidden="true">
+				{Array.from({ length: steps.length + 1 }, (_, i) => <span>{tc(i)}</span>)}
+			</p>
+			<ol class="pr__steps">
+				{
+					steps.map((s, i) => (
+						<li class="pr__step" data-step data-on={i === 0 ? "" : undefined}>
+							<span class="mono pr__tc" aria-hidden="true">{tc(i)}</span>
+							<span class="mono pr__clip" aria-hidden="true">
+								<span>V1 · {s.title}</span>
+							</span>
+							<div class="pr__txt">
+								<span class="mono pr__no">{pad(i + 1)}</span>
+								<h3 class="pr__t">{s.title}</h3>
+								{s.body && <p class="muted pr__b">{s.body}</p>}
+							</div>
+						</li>
+					))
+				}
+			</ol>
+			<span class="pr__play" aria-hidden="true" data-playhead></span>
+		</div>
+	</div>
+</section>
+
+<style>
+	.pr {
+		position: relative;
+		padding-block: var(--section-space);
+		background: var(--color-white);
+	}
+	.pr__head {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: end;
+		gap: 32px 120px;
+	}
+	.pr :global(.pr__title) {
+		max-width: 10em; /* two lines on desktop */
+	}
+	.pr__intro {
+		max-width: 440px;
+	}
+	.pr__tl {
+		position: relative;
+		/* one and a half section steps between the heading and the timeline (Max) */
+		margin-top: calc(var(--section-space) * 1.5);
+	}
+	.pr__ruler {
+		display: flex;
+		justify-content: space-between;
+		padding-bottom: 14px;
+		border-bottom: 1px solid var(--color-line);
+		color: var(--color-mute);
+		font-variant-numeric: tabular-nums;
+	}
+	.pr__steps {
+		display: grid;
+		grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+		gap: 20px;
+		margin-top: 18px;
+	}
+	.pr__tc {
+		display: none;
+	}
+	.pr__clip {
+		display: flex;
+		align-items: center;
+		height: 56px;
+		padding: 0 16px;
+		overflow: hidden;
+		white-space: nowrap;
+		border-radius: var(--radius-sm);
+		background: var(--color-paper);
+		color: var(--color-mute);
+		transition: background-color 0.35s var(--ease-out), color 0.35s var(--ease-out);
+	}
+	.pr__step[data-on] .pr__clip {
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	.pr__txt {
+		margin-top: 40px;
+	}
+	.pr__no {
+		color: var(--color-rec);
+	}
+	.pr__t {
+		margin-top: 12px;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h5); /* one size down (Max) */
+		letter-spacing: -0.03em;
+		line-height: 1.15;
+	}
+	.pr__b {
+		max-width: 290px;
+		margin-top: 10px;
+		font-size: var(--text-s);
+		line-height: 1.55;
+	}
+	/* playhead: placed and moved by motion.ts; a line with a small square on top */
+	.pr__play {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 2px;
+		height: 0;
+		background: var(--color-rec);
+		pointer-events: none;
+		will-change: transform;
+	}
+	.pr__play::before {
+		content: "";
+		position: absolute;
+		left: -5px;
+		top: -8px;
+		width: 12px;
+		height: 12px;
+		border-radius: var(--radius-xs);
+		background: var(--color-rec);
+	}
+
+	@media (max-width: 699px) {
+		.pr__head {
+			grid-template-columns: 1fr;
+		}
+		/* on a phone the usual gap between heading and content, not the extra-large one (Max) */
+		.pr__tl {
+			margin-top: 48px;
+		}
+		/* the timeline stands upright: timecode, a thin clip bar, the step */
+		.pr__ruler {
+			display: none;
+		}
+		.pr__steps {
+			grid-template-columns: 1fr;
+			gap: 36px;
+			margin-top: 0;
+		}
+		.pr__step {
+			display: grid;
+			grid-template-columns: 44px 10px 1fr;
+			gap: 0 16px;
+		}
+		.pr__tc {
+			display: block;
+			padding-top: 3px;
+			color: var(--color-mute);
+		}
+		.pr__clip {
+			height: auto;
+			padding: 0;
+			border-radius: var(--radius-xs);
+		}
+		.pr__clip span {
+			display: none;
+		}
+		.pr__txt {
+			margin-top: 0;
+		}
+		.pr__t {
+			margin-top: 6px;
+		}
+		.pr__b {
+			max-width: none;
+			margin-top: 8px;
+		}
+		.pr__play {
+			width: 0;
+			height: 2px;
+		}
+		.pr__play::before {
+			left: auto;
+			right: -6px;
+			top: -5px;
+		}
+	}
+</style>

@@ -1,0 +1,157 @@
+---
+/**
+ * S01 · Hero with text left and two slanted photos right (from the current site).
+ * Intro (motion.ts, data-hero="split"): logo on white, the photos slide in from
+ * the left to their place, then the headline lines and the rest come in.
+ */
+import { type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Button from "../Button.astro";
+import Headline from "../Headline.astro";
+import { sanitizeHref } from "emdash";
+import TextLink from "../TextLink.astro";
+import Tag from "../Tag.astro";
+import SlantPhoto from "../SlantPhoto.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_hero_split" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const secondaryUrl = value.secondary_cta_url ? sanitizeHref(value.secondary_cta_url) : undefined;
+---
+
+<section class="hs" id={value.anchor_id || undefined} data-hero="split">
+	<div class="hs__text">
+		{
+			value.tag && (
+				<Tag text={value.tag} class="hs__tag" data-intro="rest" />
+			)
+		}
+		<Headline text={value.headline} as="h1" class="h2 hs__title" reveal={false} />
+		{value.intro && <p class="text-l hs__intro" data-intro="rest">{value.intro}</p>}
+		{
+			(value.primary_cta_label || value.secondary_cta_label) && (
+				<div class="hs__actions" data-intro="rest">
+					{value.primary_cta_label && <Button label={value.primary_cta_label} href={value.primary_cta_url} />}
+					{value.secondary_cta_label && secondaryUrl && (
+						<TextLink label={value.secondary_cta_label} href={secondaryUrl} />
+					)}
+				</div>
+			)
+		}
+	</div>
+
+	<div class="hs__media" aria-hidden={!value.image_1 ? "true" : undefined}>
+		{
+			value.image_1 && (
+				<SlantPhoto image={value.image_1} class="hs__photo hs__photo--1" data-intro="photo" loading="eager" fetchpriority="high" sizes="(min-width: 900px) 34vw, 60vw" />
+			)
+		}
+		{
+			value.image_2 && (
+				<SlantPhoto image={value.image_2} class="hs__photo hs__photo--2" data-intro="photo" loading="eager" sizes="(min-width: 900px) 34vw, 60vw" />
+			)
+		}
+		{
+			value.scribble && value.image_2 && (
+				<p class="hs__note" data-intro="note">
+					<span>{value.scribble}</span>
+					<img src="/assets/scribbles/arrow-ink.png" alt="" />
+				</p>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.hs {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
+		align-items: center;
+		min-height: min(100svh, 1000px);
+		/* text starts on the content edge of the boxed sections below; the photos still run off the right */
+		padding: 110px 0 80px var(--edge);
+		overflow: hidden;
+	}
+	.hs__text {
+		position: relative;
+		z-index: 2;
+		max-width: 640px;
+	}
+	:global(.hs__tag) + :global(.hs__title) {
+		margin-top: 28px;
+	}
+	.hs__intro {
+		max-width: 520px;
+		margin-top: 32px;
+	}
+	.hs__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 28px;
+		margin-top: 40px;
+	}
+	.hs__media {
+		position: relative;
+		align-self: stretch;
+		min-height: 560px;
+	}
+	/* .hs__media in front: .slant (global.css) sets position: relative, and in the
+	   production build its CSS can load after this file's */
+	.hs__media :global(.hs__photo) {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 44%;
+	}
+	.hs__media :global(.hs__photo--1) {
+		left: 14%;
+	}
+	.hs__media :global(.hs__photo--2) {
+		left: 62%;
+		width: 46%;
+	}
+	.hs__note {
+		position: absolute;
+		left: 48%;
+		bottom: -54px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-family: var(--font-scribble);
+		font-size: var(--text-h4);
+		color: var(--color-rec);
+		transform: rotate(-4deg);
+	}
+	.hs__note img {
+		width: 60px;
+		transform: rotate(-60deg);
+	}
+
+	@media (max-width: 899px) {
+		.hs {
+			grid-template-columns: 1fr;
+			gap: 48px;
+			padding: 120px var(--gutter) 72px;
+			min-height: auto;
+		}
+		.hs__media {
+			min-height: 420px;
+			margin-right: calc(var(--gutter) * -1);
+		}
+		.hs__media :global(.hs__photo--1) {
+			left: 10%;
+			width: 48%;
+		}
+		.hs__media :global(.hs__photo--2) {
+			left: 64%;
+			width: 50%;
+		}
+		.hs__note {
+			left: 34%;
+			bottom: -46px;
+		}
+	}
+</style>

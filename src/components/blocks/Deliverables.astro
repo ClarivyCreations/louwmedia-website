@@ -1,0 +1,239 @@
+---
+/**
+ * S03 · What you get: heading left, a line of text right, then a row of tilted
+ * cards that overlap a little. A card is either a figure (big number, title,
+ * line under it; black, white or grey) or a photo with a reel-style caption
+ * (*word* in red) and a small label; a photo card can play a reel from the
+ * Reels collection instead (muted, only while in view). On hover a card stands
+ * up straight and grows a little, with a small bounce (after an example Max liked).
+ */
+import { getEmDashCollection } from "emdash";
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+import { headlineParts } from "../../utils/text";
+
+type Block = Extract<PageContentBlock, { _type: "lm_deliverables" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const cards = (value.cards ?? []).slice(0, 4);
+const TILT = [-5, 3, -3, 5];
+const DROP = [24, 8, 32, 12];
+const toneOf = (t?: string | null) => (t === "Wit" ? "white" : t === "Grijs" ? "shade" : "ink");
+
+// Photo cards that name a reel play its video (with its poster until it runs).
+const reelSlugs = cards.map((c) => c.reel?.trim()).filter(Boolean);
+const reels = reelSlugs.length ? ((await getEmDashCollection("reels", { limit: 24 })).entries ?? []) : [];
+const reelOf = (slug?: string | null) => (slug ? reels.find((r) => r.id === slug.trim() || r.slug === slug.trim()) : undefined);
+const urlOf = (file: { provider?: string; src?: string; url?: string; meta?: Record<string, unknown> } | undefined) => {
+	const key = typeof file?.meta?.storageKey === "string" ? file.meta.storageKey : undefined;
+	return key ? Astro.locals.emdash?.getPublicMediaUrl?.(key) : file?.provider === "external" ? file.src : file?.url;
+};
+---
+
+<section class="dl" id={value.anchor_id || undefined}>
+	<div class="container">
+		<div class="dl__head">
+			<Headline text={value.headline} as="h2" class="h2" />
+			{value.intro && <p class="muted dl__intro" data-reveal>{value.intro}</p>}
+		</div>
+		<ul class="dl__cards" data-reveal>
+			{
+				cards.map((c, i) => (
+					<li class="dl__card" style={`--r:${TILT[i]}deg;--y:${DROP[i]}px;z-index:${i % 2 ? 2 : 1}`}>
+						{c.kind === "Foto" && (c.image || reelOf(c.reel)) ? (
+							<div class="dl__photo">
+								{(c.image ?? reelOf(c.reel)?.data.poster) && <Image image={(c.image ?? reelOf(c.reel)?.data.poster)!} sizes="(min-width: 900px) 24vw, 50vw" />}
+								{urlOf(reelOf(c.reel)?.data.video) && (
+									<video class="dl__video" data-src={urlOf(reelOf(c.reel)?.data.video)} muted loop playsinline preload="none" aria-hidden="true" data-card-video />
+								)}
+								{c.label && (
+									<span class="mono dl__label">
+										<span class="rec-dot" />
+										{c.label}
+									</span>
+								)}
+								{c.caption && (
+									<p class="dl__cap">
+										{headlineParts(c.caption).map((p) => (p.kind === "plain" ? p.text : <span class="dl__hi">{p.text}</span>))}
+									</p>
+								)}
+							</div>
+						) : (
+							<div class="dl__stat" data-tone={toneOf(c.tone)}>
+								<p class="dl__num">{c.number}</p>
+								<div>
+									<p class="dl__t">{c.title}</p>
+									{c.sub && <p class="dl__sub">{c.sub}</p>}
+								</div>
+							</div>
+						)}
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.dl {
+		padding-block: var(--section-space);
+		overflow: hidden;
+	}
+	.dl__head {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: 24px 64px;
+	}
+	.dl__intro {
+		max-width: 380px;
+	}
+	.dl__cards {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		margin-top: clamp(64px, 7vw, 104px);
+		padding: 0 clamp(0px, 2vw, 30px);
+	}
+	.dl__card {
+		position: relative;
+		aspect-ratio: 3 / 4;
+		margin-inline: -6px;
+		--x: 0px;
+		transform: translateX(var(--x)) translateY(var(--y)) rotate(var(--r));
+		/* a small overshoot, so a card lands with a bounce */
+		transition: transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+	@media (hover: hover) {
+		/* the hovered card stands up straight; its neighbours move aside so it is
+		   free to see, and the stacking order stays as it is (Max) */
+		.dl__card:hover {
+			transform: translateY(calc(var(--y) - 10px)) rotate(0deg) scale(1.05);
+		}
+		.dl__card:has(~ .dl__card:hover) {
+			--x: -32px;
+		}
+		.dl__card:hover ~ .dl__card {
+			--x: 32px;
+		}
+	}
+	.dl__photo,
+	.dl__stat {
+		position: relative;
+		height: 100%;
+		overflow: hidden;
+		border-radius: var(--radius-media);
+	}
+	/* photo card with a reel-style caption */
+	.dl__photo {
+		background: var(--color-graphite);
+		color: var(--color-white);
+	}
+	.dl__video,
+	.dl__photo :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+	}
+	.dl__photo::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.35));
+	}
+	.dl__label {
+		position: absolute;
+		z-index: 1;
+		left: 18px;
+		top: 16px;
+		display: flex;
+		align-items: center;
+		gap: 7px;
+	}
+	.dl__cap {
+		position: absolute;
+		z-index: 1;
+		left: 20px;
+		right: 20px;
+		top: 64%;
+		text-align: center;
+		font-family: var(--font-display);
+		font-style: italic;
+		font-weight: 900;
+		font-size: var(--text-h4);
+		line-height: 1.05;
+		letter-spacing: -0.02em;
+		text-transform: uppercase;
+		text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55), 0 0 18px rgba(0, 0, 0, 0.35);
+	}
+	.dl__hi {
+		color: var(--color-rec);
+	}
+	/* figure card */
+	.dl__stat {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: clamp(20px, 2vw, 28px) clamp(22px, 2.2vw, 32px) clamp(22px, 2.1vw, 30px);
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	.dl__stat[data-tone="white"] {
+		background: var(--color-white);
+		color: var(--color-ink);
+	}
+	.dl__stat[data-tone="shade"] {
+		background: var(--color-paper-shade);
+		color: var(--color-ink);
+	}
+	.dl__num {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-display);
+		line-height: 0.85;
+		letter-spacing: -0.06em;
+	}
+	.dl__t {
+		padding-bottom: 14px;
+		border-bottom: 1px solid currentColor;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h4);
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+	}
+	.dl__sub {
+		margin-top: 12px;
+		font-size: var(--text-s);
+		opacity: 0.72;
+	}
+	@media (max-width: 899px) {
+		/* tablet: two by two, tilted a little less */
+		.dl__cards {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 28px 0;
+			padding: 0;
+		}
+		.dl__card {
+			--y: 0px !important;
+			transform: rotate(calc(var(--r) * 0.6));
+		}
+	}
+	@media (max-width: 599px) {
+		/* phone: one under the other (Max), narrower so they stay cards */
+		.dl__cards {
+			grid-template-columns: minmax(0, 300px);
+			justify-content: center;
+			gap: 32px;
+		}
+		.dl__card {
+			margin-inline: 0;
+			transform: rotate(calc(var(--r) * 0.5));
+		}
+	}
+</style>

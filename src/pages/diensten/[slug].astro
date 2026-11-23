@@ -1,0 +1,50 @@
+---
+/**
+ * A service page (/diensten/{slug}): the service's own sections (the "content"
+ * blocks on the service in the admin), built from the same blocks as pages.
+ * Without sections it falls back to a plain heading with the summary.
+ */
+import { decodeSlug, getEmDashEntry, getSeoMeta } from "emdash";
+import Base from "../../layouts/Base.astro";
+import Blocks from "../../components/Blocks.astro";
+import { heroSeoDefaults } from "../../utils/page";
+
+const slug = decodeSlug(Astro.params.slug);
+if (!slug) return Astro.rewrite("/404");
+
+const { entry: service, cacheHint } = await getEmDashEntry("services", slug);
+if (!service) return Astro.rewrite("/404");
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const blocks = service.data.content ?? [];
+const headerTone = blocks[0]?._type === "lm_hero_video" ? "media" : "paper";
+const seo = getSeoMeta(service, {
+	siteUrl: Astro.url.origin,
+	path: `/diensten/${service.id}`,
+	...heroSeoDefaults(blocks, Astro.url.origin),
+});
+---
+
+<Base
+	title={seo.title}
+	pageTitle={service.data.title}
+	description={seo.description ?? service.data.summary}
+	image={seo.ogImage}
+	canonical={seo.canonical}
+	robots={seo.robots}
+	content={{ collection: "services", id: service.data.id, slug: service.id }}
+	headerTone={headerTone}
+>
+	{
+		blocks.length > 0 ? (
+			<div class="page-blocks" {...service.edit.content}>
+				<Blocks value={blocks} />
+			</div>
+		) : (
+			<section class="container page-header">
+				<h1 class="h1">{service.data.title}</h1>
+				<p class="text-l muted" style="margin-top:24px">{service.data.summary}</p>
+			</section>
+		)
+	}
+</Base>

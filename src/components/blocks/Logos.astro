@@ -1,0 +1,97 @@
+---
+/** S05 · Client logos: heading left, label right, a row of logos between thin lines. */
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_logos" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const logos = (value.logos ?? []).filter((l) => l.image);
+---
+
+<section class="lg" id={value.anchor_id || undefined}>
+	<div class="container">
+		<div class="lg__head">
+			{value.headline && <Headline text={value.headline} as="h2" class="h4 lg__title" />}
+			{value.tag && <p class="muted lg__tag" data-reveal>{value.tag}</p>}
+		</div>
+		<ul class="lg__row" data-reveal style={`--n:${Math.max(logos.length, 1)}`}>
+			{
+				logos.map((l) => (
+					<li>
+						<Image image={l.image} alt={l.name || l.image.alt || ""} sizes="180px" class="lg__logo" />
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	.lg {
+		/* the about section below brings its own space */
+		padding-top: var(--section-space);
+	}
+	/* before a black section (the closer on /diensten) it needs its own room underneath (Max) */
+	.lg:has(+ :global(.ed)) {
+		padding-bottom: var(--section-space);
+	}
+	/* under the slanted-photo hero (service pages) a bit less, that hero has room of its own (Max) */
+	:global(.hs) + .lg,
+	:global(.ch) + .lg {
+		/* the keuzehulp above (/diensten) already ends with a full section space */
+		padding-top: calc(var(--section-space) * 0.5);
+	}
+	.lg__head {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 12px 32px;
+		margin-bottom: 28px;
+	}
+	.lg__tag {
+		font-size: var(--text-s);
+	}
+	.lg__row {
+		display: grid;
+		grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+		border-block: 1px solid var(--color-line);
+	}
+	.lg__row li {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: clamp(104px, 10.4vw, 150px);
+		padding: 0 clamp(16px, 2vw, 32px);
+		border-left: 1px solid var(--color-line);
+		/* the reveal makes the row its own layer: the white of a logo needs this to multiply away */
+		background: var(--page-bg, var(--color-paper));
+	}
+	.lg__row li:first-child {
+		border-left: 0;
+	}
+	.lg__row :global(.lg__logo) {
+		width: 100%;
+		max-width: 170px;
+		height: 60%;
+		object-fit: contain;
+		mix-blend-mode: multiply;
+		filter: grayscale(1) contrast(1.1);
+		opacity: 0.85;
+	}
+	@media (max-width: 699px) {
+		/* two rows of three; the grid lines stay */
+		.lg__row {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+		.lg__row li:nth-child(3n + 1) {
+			border-left: 0;
+		}
+		.lg__row li:nth-child(n + 4) {
+			border-top: 1px solid var(--color-line);
+		}
+	}
+</style>

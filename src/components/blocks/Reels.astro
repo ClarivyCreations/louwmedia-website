@@ -1,0 +1,199 @@
+---
+/**
+ * S12b · Reels, centred: heading and text, then the reels in a row. The middle
+ * one is large and plays (muted, looping); the ones beside it are smaller and
+ * dimmed, smaller still further out. Arrows, a swipe or a click on a side reel
+ * brings it to the middle (scripts/reels.ts). Reels come from the "reels"
+ * collection, so /werk can use them too.
+ */
+import { getEmDashCollection } from "emdash";
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+import Arrow from "../Arrow.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_reels" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const result = await getEmDashCollection("reels", { orderBy: { position: "asc" }, limit: 9 });
+if (Astro.cache?.enabled) Astro.cache.set(result.cacheHint);
+const reels = result.entries ?? [];
+const pad = (n: number) => String(n).padStart(2, "0");
+const urlOf = (file: { provider?: string; src?: string; url?: string; meta?: Record<string, unknown> } | undefined) => {
+	const key = typeof file?.meta?.storageKey === "string" ? file.meta.storageKey : undefined;
+	return key ? Astro.locals.emdash?.getPublicMediaUrl?.(key) : file?.provider === "external" ? file.src : file?.url;
+};
+---
+
+{
+	reels.length > 0 && (
+		<section class="re" id={value.anchor_id || undefined} data-reels aria-roledescription="carrousel" aria-label="Reels">
+			<div class="container re__head">
+				<Headline text={value.headline} as="h2" class="h2" />
+				{value.intro && <p class="re__intro" data-reveal>{value.intro}</p>}
+			</div>
+			<div class="re__stage" data-stage>
+				{reels.map((r, i) => (
+					<div
+						class="re__card"
+						data-card
+						data-title={r.data.title}
+						data-meta={r.data.meta ?? ""}
+						role="group"
+						aria-roledescription="reel"
+						aria-label={`${i + 1} van ${reels.length}: ${r.data.title}`}
+					>
+						{r.data.poster && <Image image={r.data.poster} class="re__poster" sizes="300px" />}
+						{urlOf(r.data.video) && (
+							<video class="re__video" data-src={urlOf(r.data.video)} muted loop playsinline preload="none" aria-hidden="true" />
+						)}
+						<span class="mono re__rec" aria-hidden="true">
+							<span class="rec-dot" />
+							Rec · <span data-time>00:00</span>
+						</span>
+					</div>
+				))}
+			</div>
+			<div class="re__nav">
+				<button class="re__btn" type="button" aria-label="Vorige reel" data-prev><Arrow /></button>
+				<p class="re__cap" aria-live="polite">
+					<span class="re__title" data-cap-title />
+					<span class="re__meta" data-cap-meta />
+				</p>
+				<button class="re__btn" type="button" aria-label="Volgende reel" data-next><Arrow /></button>
+			</div>
+			<script type="application/json" data-count set:html={JSON.stringify(pad(reels.length))} />
+		</section>
+	)
+}
+
+<style>
+	/* right after the black cases (automotive) both sections are black: no double gap */
+	:global(.ca--dark) + .re {
+		padding-top: calc(var(--section-space) * 0.4);
+	}
+	.re {
+		position: relative;
+		overflow: hidden;
+		padding-block: var(--section-space);
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	.re__head {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+	.re__intro {
+		max-width: 480px;
+		margin-top: 24px;
+		color: rgba(255, 255, 255, 0.7);
+	}
+	.re__stage {
+		--w: clamp(230px, 21vw, 300px);
+		position: relative;
+		height: calc(var(--w) * 16 / 9);
+		margin-top: clamp(48px, 5vw, 72px);
+		touch-action: pan-y;
+	}
+	/* placed by reels.ts: the middle one full size, the others scaled down beside it */
+	.re__card {
+		position: absolute;
+		left: 50%;
+		top: 0;
+		width: var(--w);
+		aspect-ratio: 9 / 16;
+		margin-left: calc(var(--w) / -2);
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		background: var(--color-graphite);
+		cursor: pointer;
+		will-change: transform;
+	}
+	.re__card[data-on] {
+		cursor: default;
+	}
+	.re__card :global(.re__poster),
+	.re__video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+	}
+	.re__card::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0) 22%);
+		opacity: 0;
+		transition: opacity 0.4s;
+	}
+	.re__rec {
+		position: absolute;
+		z-index: 1;
+		left: 16px;
+		top: 14px;
+		display: flex;
+		align-items: center;
+		gap: 7px;
+		opacity: 0;
+		font-variant-numeric: tabular-nums;
+		transition: opacity 0.4s;
+	}
+	.re__card[data-on]::after,
+	.re__card[data-on] .re__rec {
+		opacity: 1;
+	}
+	.re__nav {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 28px;
+		margin-top: 32px;
+	}
+	.re__btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 44px;
+		height: 44px;
+		flex: none;
+		border: 1px solid rgba(255, 255, 255, 0.25);
+		border-radius: var(--radius-sm);
+		transition: border-color 0.3s, opacity 0.3s;
+	}
+	.re__btn :global(svg) {
+		width: 12px;
+		height: 12px;
+		fill: var(--color-white);
+	}
+	.re__btn[data-prev] :global(svg) {
+		transform: rotate(180deg);
+	}
+	.re__btn:hover {
+		border-color: var(--color-white);
+	}
+	.re__btn:disabled {
+		opacity: 0.3;
+		cursor: default;
+	}
+	.re__cap {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-width: 200px;
+		text-align: center;
+	}
+	.re__title {
+		font-weight: 600;
+	}
+	.re__meta {
+		margin-top: 2px;
+		font-size: var(--text-s);
+		color: rgba(255, 255, 255, 0.6);
+	}
+</style>

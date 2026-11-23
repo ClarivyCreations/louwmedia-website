@@ -1,0 +1,173 @@
+---
+/** S02 · Photo left, intro, body, link and short facts right. */
+import { Image, type BlockComponentProps } from "emdash/ui";
+import { sanitizeHref } from "emdash";
+import type { PageContentBlock } from "../../../emdash-env";
+import { headlineParts, toParagraphs } from "../../utils/text";
+import TextLink from "../TextLink.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_about" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const linkUrl = value.link_url ? sanitizeHref(value.link_url) : undefined;
+const facts = value.facts ?? [];
+---
+
+<section class="ab section" id={value.anchor_id || undefined}>
+	<img class="ab__tone" src="/assets/scribbles/circle-paper-tone.png" alt="" aria-hidden="true" />
+	<div class="container ab__grid">
+		<div class="ab__photo" data-reveal="photo">
+			{value.image && <Image image={value.image} sizes="(min-width: 900px) 42vw, 100vw" />}
+			{
+				(value.image_caption_left || value.image_caption_right) && (
+					<p class="mono ab__cap"><span>{value.image_caption_left}</span><span>{value.image_caption_right}</span></p>
+				)
+			}
+		</div>
+		<div class="ab__text">
+			{value.headline && <p class="tag" data-reveal>{value.headline}</p>}
+			<p class="text-l ab__intro" data-reveal="lines">{value.intro}</p>
+			{toParagraphs(value.body).map((p) => <p class="muted ab__body" data-reveal>{p}</p>)}
+			{
+				value.link_label && linkUrl && (
+					<p data-reveal class="ab__link">
+						<TextLink label={value.link_label} href={linkUrl} />
+					</p>
+				)
+			}
+			{
+				facts.length > 0 && (
+					<ul class="ab__facts" data-reveal>
+						{facts.map((f) => (
+							<li>
+								<p class="h4">{headlineParts(f.value).map((p) => (p.kind === "plain" ? p.text : <em>{p.text}</em>))}</p>
+								<p class="ab__fact-label muted">{f.label}</p>
+							</li>
+						))}
+					</ul>
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.ab {
+		position: relative;
+		/* clip sideways only: the background scribble may run on into the next section */
+		overflow-x: clip;
+		/* more air around this section than the default half step (Max) */
+		padding-block: var(--section-space);
+	}
+	.ab__tone {
+		position: absolute;
+		right: -300px;
+		bottom: -330px;
+		width: 760px;
+		pointer-events: none;
+	}
+	.ab__grid {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 600px) minmax(0, 1fr);
+		align-items: center;
+		gap: 64px;
+	}
+	/* the text keeps its max width and sits in the middle of the right column (Max) */
+	.ab__text {
+		justify-self: center;
+		width: 100%;
+		max-width: 560px;
+	}
+	.ab__photo {
+		position: relative;
+		aspect-ratio: 20 / 21; /* a little lower than the old 5:6 (Max) */
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		background: var(--color-graphite);
+	}
+	.ab__photo :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	/* The caption only shows on hover, on a soft shade so it stays readable (Max) */
+	.ab__photo::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to top, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 0) 30%);
+		opacity: 0;
+		transition: opacity 0.6s var(--ease-out);
+		pointer-events: none;
+	}
+	.ab__cap {
+		position: absolute;
+		z-index: 1;
+		left: 20px;
+		right: 20px;
+		bottom: 18px;
+		display: flex;
+		justify-content: space-between;
+		color: var(--color-white);
+		opacity: 0;
+		transform: translateY(8px);
+		transition: opacity 0.5s var(--ease-out), transform 0.6s var(--ease-out);
+	}
+	.ab__photo:hover::after,
+	.ab__photo:hover .ab__cap {
+		opacity: 1;
+		transform: none;
+	}
+	.ab__intro {
+		margin-top: 28px;
+	}
+	.ab__text > :first-child {
+		margin-top: 0;
+	}
+	.ab__body {
+		max-width: 500px;
+		margin-top: 24px;
+	}
+	.ab__link {
+		margin-top: 32px;
+	}
+	.ab__facts {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 24px 40px;
+		margin-top: 56px;
+		padding-top: 28px;
+		border-top: 1px solid var(--color-line);
+	}
+	.ab__facts li + li {
+		padding-left: 40px;
+		border-left: 1px solid var(--color-line);
+	}
+	.ab__fact-label {
+		font-size: var(--text-s);
+		margin-top: 6px;
+	}
+	/* phones: the two facts stack, with a horizontal divider between them (Max) */
+	@media (max-width: 699px) {
+		.ab__facts {
+			flex-direction: column;
+			gap: 0;
+		}
+		.ab__facts li + li {
+			margin-top: 24px;
+			padding: 24px 0 0;
+			border-left: 0;
+			border-top: 1px solid var(--color-line);
+		}
+	}
+	@media (max-width: 899px) {
+		.ab__grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+</style>

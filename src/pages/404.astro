@@ -1,0 +1,19 @@
+---
+import Base from "../layouts/Base.astro";
+import TextLink from "../components/TextLink.astro";
+---
+
+<Base title="Pagina niet gevonden" robots="noindex, follow">
+	<section class="container nf">
+		<p class="mono nf__tc"><span class="rec-dot"></span>00:00:04:04</p>
+		<h1 class="display">Deze shot is <em>mislukt</em>.</h1>
+		<p class="text-l muted nf__p">De pagina die je zoekt bestaat niet of is verplaatst.</p>
+		<p class="nf__p"><TextLink href="/" label="Terug naar home" /></p>
+	</section>
+</Base>
+
+<style>
+	.nf { padding-block: 200px 140px; }
+	.nf__tc { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; color: var(--color-mute); }
+	.nf__p { margin-top: 28px; }
+</style>

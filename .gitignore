@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Astro
+.astro/
+.emdash/migrations.json
+
+# Data
+data.db
+data.db-*
+uploads/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/*
+!.vscode/mcp.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Licensed graphic packs (Studio 2am), too large for git
+_brand-assets/
+
+# Vercel CLI link
+.vercel/
+
+# EmDash site packages (exports: content + media, like a database backup)
+*.emdash
+
+# Database backups
+*.sql

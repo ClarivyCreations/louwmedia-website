@@ -1,0 +1,264 @@
+---
+/**
+ * S14c · Client cases, clean: heading, a Lijst | Grid switch and the cases from
+ * the "cases" collection. List: a row per case with a small photo, the
+ * client name (the title), the case headline, kind and year. Grid: three columns of large photos. Switching moves
+ * every photo to its new place (GSAP Flip, scripts/cases.ts), after the OSMO
+ * list/grid toggle Max liked. Each case links to its own page.
+ */
+import { getEmDashCollection } from "emdash";
+import { sanitizeHref } from "emdash";
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+import Roll from "../Roll.astro";
+import { plainHeadline } from "../../utils/text";
+import TextLink from "../TextLink.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_cases" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const result = await getEmDashCollection("cases", { orderBy: { position: "asc" }, limit: 24 });
+if (Astro.cache?.enabled) Astro.cache.set(result.cacheHint);
+const cases = (result.entries ?? []).filter((c) => !value.kind || c.data.kind === value.kind);
+const view = value.view === "Grid" ? "grid" : "list";
+const dark = value.tone === "Zwart";
+const linkUrl = value.link_url ? sanitizeHref(value.link_url) : undefined;
+---
+
+{
+	cases.length > 0 && (
+		<section class:list={["ca", { "ca--dark": dark }]} id={value.anchor_id || undefined} data-cases data-view={view}>
+			<div class="container">
+				<div class="ca__head">
+					<Headline text={value.headline} as="h2" class="h2" />
+					<div class="ca__tools">
+						<div class="ca__switch" role="group" aria-label="Weergave">
+							<button type="button" data-set-view="list" aria-pressed={String(view === "list")}>Lijst</button>
+							<button type="button" data-set-view="grid" aria-pressed={String(view === "grid")}>Grid</button>
+						</div>
+						{value.link_label && linkUrl && (
+							<TextLink label={value.link_label} href={linkUrl} />
+						)}
+					</div>
+				</div>
+				<ul class="ca__items">
+					{cases.map((c) => (
+						<li class="ca__item">
+							<a class="ca__link" href={`/werk/${c.id}`}>
+								<span class="ca__media" data-flip-id={`case-${c.id}`}>
+									{c.data.cover && <Image image={c.data.cover} sizes="(min-width: 900px) 32vw, 100vw" />}
+								</span>
+								<span class="ca__t">
+									<Roll text={c.data.title} />
+								</span>
+								{/* the title is the client name; the case's own headline goes in the second column */}
+								<span class="ca__c">{[plainHeadline(c.data.headline), c.data.kind].filter(Boolean).join(" · ")}</span>
+								{c.data.headline && <span class="ca__client">{plainHeadline(c.data.headline)}</span>}
+								<span class="ca__k">{c.data.kind}</span>
+								{c.data.year && <span class="ca__y">{c.data.year}</span>}
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.ca {
+		padding-block: var(--section-space);
+	}
+	.ca__head {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: 24px 40px;
+		margin-bottom: clamp(32px, 3.4vw, 48px);
+	}
+	.ca__tools {
+		display: flex;
+		align-items: center;
+		gap: 32px;
+	}
+	.ca__switch {
+		display: inline-flex;
+		padding: 4px;
+		border-radius: 999px;
+		background: var(--color-paper-shade);
+	}
+	.ca__switch button {
+		padding: 8px 18px;
+		border-radius: 999px;
+		font-weight: 600;
+		font-size: var(--text-s);
+		color: var(--color-mute);
+		transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+	}
+	.ca__switch button[aria-pressed="true"] {
+		background: var(--color-white);
+		color: var(--color-ink);
+		box-shadow: 0 1px 2px rgba(18, 18, 18, 0.08);
+	}
+	.ca__media {
+		position: relative;
+		display: block;
+		overflow: hidden;
+		aspect-ratio: 16 / 10;
+		background: var(--color-graphite);
+	}
+	.ca__media :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+		transition: transform 0.9s var(--ease-out);
+	}
+	.ca__link:hover .ca__media :global(img) {
+		transform: scale(1.04);
+	}
+	.ca__t {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h5);
+		letter-spacing: -0.03em;
+		line-height: 1.2;
+	}
+	.ca__c,
+	.ca__client,
+	.ca__y {
+		font-size: var(--text-s);
+		color: var(--color-mute);
+	}
+	.ca__y {
+		font-variant-numeric: tabular-nums;
+	}
+	.ca__k {
+		justify-self: start;
+		padding: 4px 10px;
+		border: 1px solid var(--color-line);
+		border-radius: var(--radius-xs);
+		font-size: var(--text-s);
+		white-space: nowrap;
+	}
+
+	/* ---------- List ---------- */
+	[data-view="list"] .ca__item {
+		border-top: 1px solid var(--color-line);
+	}
+	[data-view="list"] .ca__item:last-child {
+		border-bottom: 1px solid var(--color-line);
+	}
+	[data-view="list"] .ca__link {
+		display: grid;
+		grid-template-columns: 96px 1.4fr 1fr 1fr 80px;
+		align-items: center;
+		gap: 24px;
+		padding: 14px 0;
+	}
+	[data-view="list"] .ca__media {
+		border-radius: var(--radius-sm);
+	}
+	[data-view="list"] .ca__c {
+		display: none;
+	}
+	[data-view="list"] .ca__y {
+		justify-self: end;
+	}
+
+	/* ---------- Grid ---------- */
+	[data-view="grid"] .ca__items {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 40px 24px;
+	}
+	[data-view="grid"] .ca__link {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		grid-template-areas: "media media" "t y" "c c";
+		column-gap: 16px;
+	}
+	[data-view="grid"] .ca__media {
+		grid-area: media;
+		margin-bottom: 14px;
+		border-radius: var(--radius-media);
+	}
+	[data-view="grid"] .ca__t {
+		grid-area: t;
+	}
+	[data-view="grid"] .ca__y {
+		grid-area: y;
+		align-self: baseline;
+	}
+	[data-view="grid"] .ca__c {
+		grid-area: c;
+		margin-top: 2px;
+	}
+	[data-view="grid"] .ca__client,
+	[data-view="grid"] .ca__k {
+		display: none;
+	}
+
+	/* ---------- Black (Max: the cases on a service page) ---------- */
+	.ca--dark {
+		background: var(--color-ink);
+		color: var(--color-white);
+		--color-line: rgba(255, 255, 255, 0.14);
+	}
+	.ca--dark .ca__c,
+	.ca--dark .ca__client,
+	.ca--dark .ca__y {
+		color: rgba(255, 255, 255, 0.6);
+	}
+	.ca--dark .ca__switch {
+		background: rgba(255, 255, 255, 0.1);
+	}
+	.ca--dark .ca__switch button {
+		color: rgba(255, 255, 255, 0.6);
+	}
+	.ca--dark .ca__switch button[aria-pressed="true"] {
+		background: var(--color-white);
+		color: var(--color-ink);
+	}
+
+	@media (max-width: 899px) {
+		[data-view="grid"] .ca__items {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+		[data-view="list"] .ca__link {
+			grid-template-columns: 88px 1fr auto;
+			gap: 4px 16px;
+		}
+		/* list on a phone: photo, title with client · kind under it, year */
+		[data-view="list"] .ca__media {
+			grid-row: span 2;
+		}
+		[data-view="list"] .ca__t {
+			align-self: end;
+		}
+		[data-view="list"] .ca__c {
+			display: block;
+			grid-column: 2;
+			align-self: start;
+		}
+		[data-view="list"] .ca__client,
+		[data-view="list"] .ca__k {
+			display: none;
+		}
+		[data-view="list"] .ca__y {
+			grid-column: 3;
+			grid-row: 1 / span 2;
+			align-self: center;
+		}
+	}
+	@media (max-width: 599px) {
+		[data-view="grid"] .ca__items {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

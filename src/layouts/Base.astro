@@ -1,0 +1,149 @@
+---
+import { getSiteSettingsWithCacheHint } from "emdash";
+import { EmDashBodyEnd, EmDashBodyStart, EmDashHead } from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import { Font } from "astro:assets";
+import { resolveSiteIdentity } from "../utils/site";
+import { absoluteImageUrl } from "../utils/page";
+import { getCompany, isReal, telHref } from "../utils/company";
+import Preloader from "../components/Preloader.astro";
+import SiteHeader from "../components/header/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import "../styles/global.css";
+
+interface Props {
+	title?: string;
+	pageTitle?: string | null;
+	description?: string | null;
+	image?: string | null;
+	canonical?: string | null;
+	robots?: string | null;
+	content?: { collection: string; id: string; slug?: string | null };
+	/** "media" when the page opens with a full-bleed video or photo. */
+	headerTone?: "paper" | "media";
+}
+
+const { title, pageTitle, description, image, canonical, robots, content, headerTone = "paper" } = Astro.props;
+const settingsResult = await getSiteSettingsWithCacheHint();
+if (Astro.cache?.enabled) Astro.cache.set(settingsResult.cacheHint);
+
+const { siteTitle, siteTagline, titleSeparator } = resolveSiteIdentity(settingsResult.data);
+const isHome = Astro.url.pathname === "/";
+// the home page says what Louwmedia does too: "Louwmedia · <tagline from the settings>"
+const fullTitle =
+	title && title !== siteTitle
+		? title.includes(siteTitle)
+			? title
+			: `${title} ${titleSeparator} ${siteTitle}`
+		: isHome && siteTagline
+			? `${siteTitle} ${titleSeparator} ${siteTagline}`
+			: siteTitle;
+
+// Bedrijfsgegevens: the sharing image for pages without one of their own, and
+// the business as structured data on the home page (only real values, no [placeholders])
+const company = await getCompany();
+if (Astro.cache?.enabled && company.cacheHint) Astro.cache.set(company.cacheHint as never);
+const shareImage =
+	image ?? (company.shareImage ? absoluteImageUrl(company.shareImage as Parameters<typeof absoluteImageUrl>[0], Astro.url.origin) : undefined);
+const business = isHome
+	? Object.fromEntries(
+			Object.entries({
+				"@context": "https://schema.org",
+				"@type": "ProfessionalService",
+				"@id": `${Astro.url.origin}/#business`,
+				name: company.name,
+				url: `${Astro.url.origin}/`,
+				logo: `${Astro.url.origin}/icon-512.png`,
+				image: shareImage,
+				description: siteTagline || undefined,
+				email: isReal(company.email) ? company.email : undefined,
+				telephone: telHref(company.phone)?.slice(4),
+				address:
+					isReal(company.street) || isReal(company.city)
+						? Object.fromEntries(
+								Object.entries({
+									"@type": "PostalAddress",
+									streetAddress: isReal(company.street) ? company.street : undefined,
+									postalCode: isReal(company.postalCode) ? company.postalCode : undefined,
+									addressLocality: isReal(company.city) ? company.city : undefined,
+									addressCountry: "NL",
+								}).filter(([, v]) => v),
+							)
+						: undefined,
+				areaServed: { "@type": "Country", name: "Nederland" },
+				sameAs: company.socials.length ? company.socials.map((x) => x.url) : undefined,
+			}).filter(([, v]) => v !== undefined),
+		)
+	: null;
+
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType: "website",
+	title: fullTitle,
+	pageTitle: pageTitle ?? title ?? siteTitle,
+	description: description || siteTagline || undefined,
+	// a page that is not indexed (404) gets no canonical
+	canonical: robots?.includes("noindex") ? undefined : (canonical ?? `${Astro.url.origin}${Astro.url.pathname}`),
+	image: shareImage,
+	content,
+	seo: { ogImage: shareImage, robots },
+	siteName: siteTitle,
+});
+---
+
+<!doctype html>
+<html lang="nl">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{fullTitle}</title>
+		<EmDashHead page={pageCtx} />
+		<Font cssVariable="--font-display" preload />
+		<Font cssVariable="--font-body" preload />
+		<Font cssVariable="--font-mono" />
+		<Font cssVariable="--font-scribble" />
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<meta name="theme-color" content="#121212" />
+		{business && <script type="application/ld+json" set:html={JSON.stringify(business)} />}
+		<style is:inline>
+			html.is-intro [data-intro], html.is-intro [data-hero] h1 { visibility: hidden; }
+		</style>
+		<script is:inline>
+			// Hide the hero until motion.ts has set its start state. The preloader only
+			// shows on the first page of a visit. Safety net: show everything after 6 s.
+			(function () {
+				var root = document.documentElement;
+				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+				var seen = false;
+				try { seen = sessionStorage.getItem("lm-seen") === "1"; } catch (e) {}
+				root.classList.add("is-intro");
+				if (!seen) root.classList.add("is-preload");
+				setTimeout(function () { root.classList.remove("is-intro", "is-preload"); }, 6000);
+				// Arrived through the diagonal page transition (global.css): motion.ts
+				// starts the hero entrance while the wipe passes, not before.
+				window.addEventListener("pagereveal", function (e) {
+					if (e.viewTransition) window.__lmTransition = e.viewTransition;
+				});
+			})();
+		</script>
+	</head>
+	<body>
+		<EmDashBodyStart page={pageCtx} />
+		<Preloader />
+		<a href="#main" class="skip-link">Naar de inhoud</a>
+		<SiteHeader tone={headerTone} />
+		<main id="main" tabindex="-1">
+			<slot />
+		</main>
+		<SiteFooter />
+		<EmDashBodyEnd page={pageCtx} />
+		<script>
+			import "../scripts/motion";
+			import "../scripts/header";
+		</script>
+	</body>
+</html>

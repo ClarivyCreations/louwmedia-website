@@ -1,0 +1,22 @@
+---
+/**
+ * Text link with the brand arrow; the line under it grows on hover (`.text-link`
+ * in global.css, also when a parent link is hovered). Doop component "TextLink".
+ * Without href it renders a span, for use inside a larger link.
+ */
+import { sanitizeHref } from "emdash";
+import Arrow from "./Arrow.astro";
+
+interface Props {
+	label: string;
+	href?: string | null;
+	class?: string;
+	[attr: string]: unknown;
+}
+const { label, href, class: className, ...rest } = Astro.props;
+const safe = href ? sanitizeHref(href) : undefined;
+const external = safe?.startsWith("http");
+const Tag = safe ? "a" : "span";
+---
+
+<Tag class:list={["text-link", className]} href={safe} target={external ? "_blank" : undefined} rel={external ? "noopener" : undefined} {...rest}>{label}<Arrow /></Tag>

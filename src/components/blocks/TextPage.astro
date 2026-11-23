@@ -1,0 +1,86 @@
+---
+/**
+ * Plain text, for the privacy statement and the terms (Max 2026-11-21: very
+ * simple). One reading column on white with headings, paragraphs and lists
+ * from Portable Text, and a "last updated" line at the top. Opens after a
+ * compact hero (S17) that carries the page title.
+ */
+import { PortableText, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+
+type Block = Extract<PageContentBlock, { _type: "lm_text" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+---
+
+<section class="tx" id={value.anchor_id || undefined}>
+	<div class="container">
+		<div class="tx__col">
+			{value.updated && <p class="text-s muted tx__updated">{value.updated}</p>}
+			<div class="tx__body">
+				<PortableText value={value.body} />
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.tx {
+		padding-block: clamp(64px, 7vw, 112px) var(--section-space);
+		background: var(--color-white);
+	}
+	.tx__col {
+		max-width: 68ch;
+	}
+	.tx__updated {
+		margin-bottom: 40px;
+	}
+	.tx__body {
+		font-size: var(--text-m);
+		line-height: 1.65;
+	}
+	.tx__body :global(h2) {
+		margin-top: 56px;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h4);
+		line-height: 1.15;
+		letter-spacing: -0.03em;
+	}
+	.tx__body :global(h3) {
+		margin-top: 32px;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h5);
+		letter-spacing: -0.02em;
+	}
+	.tx__body :global(h2:first-child) {
+		margin-top: 0;
+	}
+	.tx__body :global(p),
+	.tx__body :global(ul),
+	.tx__body :global(ol) {
+		margin-top: 16px;
+	}
+	.tx__body :global(ul),
+	.tx__body :global(ol) {
+		padding-left: 1.2em;
+	}
+	.tx__body :global(ul) {
+		list-style: disc;
+	}
+	.tx__body :global(ol) {
+		list-style: decimal;
+	}
+	.tx__body :global(li + li) {
+		margin-top: 6px;
+	}
+	.tx__body :global(a) {
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+	}
+	.tx__body :global(a:hover) {
+		color: var(--color-rec);
+	}
+</style>

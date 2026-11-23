@@ -1,0 +1,811 @@
+---
+/**
+ * Header with two mega menus (H01 Diensten, light; H02 Werk, black with an
+ * editor timeline) and the mobile menu (H03). Everything comes from EmDash:
+ * the "primary" menu, the services collection and the latest cases.
+ * A menu item with CSS class "mega-diensten" or "mega-werk" opens that panel,
+ * an item with class "button" renders as the Contact button.
+ */
+import { getEmDashCollection, getMenuWithCacheHint } from "emdash";
+import { Image } from "emdash/ui";
+import Button from "../Button.astro";
+import Roll from "../Roll.astro";
+import Arrow from "../Arrow.astro";
+import ArrowSquare from "../ArrowSquare.astro";
+import TextLink from "../TextLink.astro";
+
+interface Props {
+	/** "media": the page opens with a full-bleed photo or video, so the bar starts white on dark. */
+	tone?: "paper" | "media";
+}
+
+const { tone = "paper" } = Astro.props;
+
+const [menuResult, servicesResult, casesResult] = await Promise.all([
+	getMenuWithCacheHint("primary"),
+	getEmDashCollection("services", { orderBy: { position: "asc" }, limit: 6 }),
+	getEmDashCollection("cases", { orderBy: { position: "asc" }, limit: 4 }),
+]);
+if (Astro.cache?.enabled) {
+	Astro.cache.set(menuResult.cacheHint);
+	Astro.cache.set(servicesResult.cacheHint);
+	Astro.cache.set(casesResult.cacheHint);
+}
+
+const items = menuResult.data?.items ?? [];
+const classesOf = (item: (typeof items)[number]) => item.cssClasses?.split(/\s+/) ?? [];
+const links = items.filter((i) => !classesOf(i).includes("button"));
+const cta = items.find((i) => classesOf(i).includes("button"));
+const megaOf = (item: (typeof items)[number]) =>
+	classesOf(item).includes("mega-werk") ? "werk" : classesOf(item).includes("mega-diensten") ? "diensten" : null;
+
+const services = servicesResult.entries ?? [];
+const cases = casesResult.entries ?? [];
+const kinds = ["Maandelijkse content", "Bedrijfsvideo", "Fotografie", "Automotive"];
+const pad = (n: number) => String(n).padStart(2, "0");
+// timeline clips show only the client (Max 2026-11-22): a case title is the client
+// name, or "Klant – onderwerp" / "Klant · onderwerp" for a second case of one client
+const clientName = (title: string) => title.split(/\s[–·]\s/)[0];
+---
+
+<header class="sh" data-header data-tone={tone} data-open="none">
+	<div class="sh__shell" data-intro="header">
+		<div class="sh__bar">
+			<a href="/" class="sh__logo" aria-label="Louwmedia, naar home">
+				<img class="sh__logo-ink" src="/assets/brand/lm-ink.svg" alt="" width="72" height="22" />
+				<img class="sh__logo-white" src="/assets/brand/lm-white.svg" alt="" width="72" height="22" />
+			</a>
+			<nav class="sh__nav" aria-label="Hoofdmenu">
+				<ul>
+					{
+						links.map((item) => {
+							const mega = megaOf(item);
+							return (
+								<li>
+									{mega ? (
+										<a
+											href={item.url}
+											class="sh__link sh__link--mega"
+											data-mega-trigger={mega}
+											aria-expanded="false"
+											aria-controls={`mega-${mega}`}
+										>
+											<Roll text={item.label} />
+											<span class="sh__chev" aria-hidden="true" />
+										</a>
+									) : (
+										<a href={item.url} class="sh__link" target={item.target}>
+											<Roll text={item.label} />
+										</a>
+									)}
+								</li>
+							);
+						})
+					}
+				</ul>
+			</nav>
+			<div class="sh__end">
+				<a href="/werk" class="mono sh__reel"><span class="rec-dot" /><Roll text="Showreel 2026" /></a>
+				{cta && <Button label={cta.label} href={cta.url} class="sh__cta" />}
+				<button class="sh__burger" type="button" aria-label="Menu openen" aria-expanded="false" aria-controls="mobile-menu" data-mobile-open>
+					<span></span><span></span>
+				</button>
+			</div>
+		</div>
+
+		<!-- H01 · Diensten -->
+		<div class="mega mega--light" id="mega-diensten" data-mega="diensten" hidden>
+			<div class="mega__grid mega__grid--diensten">
+				<div>
+					<p class="mono mega__label">Wat ik maak</p>
+					<ul class="mrows">
+						{
+							services.map((s, i) => (
+								<li>
+									<a href={`/diensten/${s.id}`} class="mrow" data-index={i} data-active={i === 0 ? "" : undefined}>
+										<span class="mrow__no mono">{pad(i + 1)}</span>
+										<span class="mrow__txt">
+											<span class="mrow__t"><Roll text={s.data.title} /></span>
+											<span class="mrow__d">{s.data.summary}</span>
+										</span>
+										<ArrowSquare tone="outline" class="mrow__go" />
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+				<!-- one fixed photo with "Hoe werkt het?" on it, bottom aligned (Max: a photo that changes per row was too busy) -->
+				<a class="mega__side mega__how" href="/shoot-day">
+					{services[0]?.data.image && <Image image={services[0].data.image} class="mega__how-img" sizes="40vw" />}
+					<span class="mega__note">
+						<span>
+							<span class="mega__note-t">Hoe werkt het?</span>
+							<span class="mega__note-d">Kennismaken, plan, opnames, montage.</span>
+						</span>
+						<TextLink label="Zo werkt het" />
+					</span>
+				</a>
+			</div>
+			<div class="mega__foot">
+				<TextLink href="/automotive" label="Content voor automotive" class="mega__auto" />
+				<div class="mega__ask"><span class="muted">Twijfel je wat past?</span><Button label="Plan een kennismaking" href="/contact" /></div>
+			</div>
+		</div>
+
+		<!-- H02 · Werk -->
+		<div class="mega mega--dark" id="mega-werk" data-mega="werk" hidden>
+			<div class="mega__grid mega__grid--werk">
+				<div class="mega__filters">
+					<p class="mono mega__label">Filter op soort</p>
+					<ul class="mfil">
+						<li><a href="/werk" data-on><Roll text="Alles" /></a></li>
+						{kinds.map((k) => <li><a href={`/werk?soort=${encodeURIComponent(k.toLowerCase())}`}><Roll text={k} /></a></li>)}
+					</ul>
+					<TextLink href="/werk" label="Alle cases" class="mega__all" />
+				</div>
+				<div>
+					<p class="mono mega__label mega__label--row">Laatste cases</p>
+					<ul class="cthumbs">
+						{
+							cases.map((c, i) => (
+								<li>
+									<a href={`/werk/${c.id}`} class="cthumb" data-index={i}>
+										<span class="cthumb__im">
+											{c.data.cover && <Image image={c.data.cover} sizes="16vw" />}
+											{c.data.duration && <span class="cthumb__chip"><span class="rec-dot" />{c.data.duration}</span>}
+										</span>
+										<span class="cthumb__t"><Roll text={c.data.title} /></span>
+										<span class="mono cthumb__m">{c.data.meta}</span>
+									</a>
+								</li>
+							))
+						}
+					</ul>
+					<div class="tline" aria-hidden="true">
+						<div class="tline__ruler"><span>00:00:00</span><span>00:00:30</span><span>00:01:00</span><span>00:01:30</span><span>00:02:00</span></div>
+						<div class="tline__track">
+							{cases.map((c, i) => <span class="tline__clip" data-index={i} data-active={i === 0 ? "" : undefined}>V1 · {clientName(c.data.title)}</span>)}
+						</div>
+						<span class="tline__head" data-playhead></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<div class="sh__scrim" data-scrim></div>
+
+<!-- H03 · Mobile -->
+<div class="mm" id="mobile-menu" data-mobile hidden>
+	<img class="mm__tone" src="/assets/scribbles/swirl-ink-tone.png" alt="" aria-hidden="true" />
+	<div class="mm__inner">
+		<div class="mm__top">
+			<img src="/assets/brand/lm-white.svg" alt="Louwmedia" width="64" height="20" />
+			<button class="mm__close" type="button" aria-label="Menu sluiten" data-mobile-close><span></span><span></span></button>
+		</div>
+		<p class="mono mm__label"><span class="rec-dot" />Menu</p>
+		<ul class="mm__list">
+			{
+				links.map((item) => {
+					const mega = megaOf(item);
+					if (!mega) return <li><a class="mm__it" href={item.url}>{item.label}</a></li>;
+					const subs =
+						mega === "diensten"
+							? services.map((s) => ({ label: s.data.title, url: `/diensten/${s.id}` }))
+							: [{ label: "Alle cases", url: "/werk" }, ...kinds.map((k) => ({ label: k, url: `/werk?soort=${encodeURIComponent(k.toLowerCase())}` }))];
+					return (
+						<li>
+							<button class="mm__it" type="button" aria-expanded="false" data-acc>
+								{item.label}
+								<span class="mm__plus" aria-hidden="true" />
+							</button>
+							<ul class="mm__subs" hidden>
+								{subs.map((s, i) => (
+									<li><a href={s.url}><span class="mono">{pad(i + 1)}</span>{s.label}</a></li>
+								))}
+							</ul>
+						</li>
+					);
+				})
+			}
+		</ul>
+		<div class="mm__foot">
+			{cta && <Button label="Plan een kennismaking" href={cta.url} tone="white" />}
+			<p class="mm__mail">info@louwmedia.nl</p>
+		</div>
+	</div>
+</div>
+
+<style is:global>
+	/* ---------- Bar ---------- */
+	/*
+	 * The bar always floats inside the page (12px inset, rounded), like the mega menus.
+	 * Once scrolled it gets a see-through, blurred paper ground; it slides away
+	 * while scrolling down and comes back on the way up.
+	 */
+	.sh {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 50;
+		/* full width at every screen size (Max 2026-11-22), 12px from the edges,
+		   like the viewfinder corners of the video hero */
+		padding: 12px;
+		pointer-events: none;
+		transition: transform 0.6s var(--ease-out);
+	}
+	.sh.is-hidden {
+		transform: translateY(-110%);
+	}
+	.sh__shell {
+		pointer-events: auto;
+		position: relative;
+		border-radius: var(--radius-media);
+		transition:
+			background-color 0.35s var(--ease-out),
+			color 0.35s var(--ease-out);
+		color: var(--color-ink);
+	}
+	.sh[data-tone="media"]:not(.is-scrolled):not([data-open="diensten"]) .sh__shell {
+		color: var(--color-white);
+	}
+	/* Normal state after scrolling: the glass from the current site (same as the glass button) */
+	.sh.is-scrolled .sh__shell {
+		background: var(--glass-bg);
+		backdrop-filter: var(--glass-filter);
+		-webkit-backdrop-filter: var(--glass-filter);
+		box-shadow: var(--glass-shadow);
+		color: var(--color-white);
+	}
+	/* A mega menu open: solid, no glass */
+	.sh[data-open="diensten"] .sh__shell,
+	.sh.is-scrolled[data-open="diensten"] .sh__shell {
+		background: var(--color-white);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+		box-shadow: none;
+		color: var(--color-ink);
+	}
+	.sh[data-open="werk"] .sh__shell,
+	.sh.is-scrolled[data-open="werk"] .sh__shell {
+		background: var(--color-ink);
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+		box-shadow: none;
+		color: var(--color-white);
+	}
+	.sh.is-scrolled[data-open="none"] .sh__cta {
+		background: var(--color-white);
+		color: var(--color-ink);
+	}
+	.sh__bar {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		padding: 12px 16px;
+	}
+	.sh__logo img {
+		width: 72px;
+		height: auto;
+	}
+	.sh__logo-white {
+		display: none;
+	}
+	.sh[data-tone="media"]:not(.is-scrolled):not([data-open="diensten"]) .sh__logo-ink,
+	.sh.is-scrolled:not([data-open="diensten"]) .sh__logo-ink,
+	.sh[data-open="werk"] .sh__logo-ink {
+		display: none;
+	}
+	.sh[data-tone="media"]:not(.is-scrolled):not([data-open="diensten"]) .sh__logo-white,
+	.sh.is-scrolled:not([data-open="diensten"]) .sh__logo-white,
+	.sh[data-open="werk"] .sh__logo-white {
+		display: block;
+	}
+	.sh__nav ul {
+		display: flex;
+		gap: 32px;
+	}
+	.sh__link {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 6px 0;
+		font-weight: 600;
+		font-size: var(--text-m);
+	}
+	.sh__chev {
+		width: 6px;
+		height: 6px;
+		border-right: 1.5px solid currentColor;
+		border-bottom: 1.5px solid currentColor;
+		transform: translateY(-2px) rotate(45deg);
+		transition: transform 0.4s var(--ease-out);
+	}
+	.sh__link[aria-expanded="true"] .sh__chev {
+		transform: translateY(2px) rotate(-135deg);
+	}
+	.sh__end {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 24px;
+	}
+	.sh[data-open="werk"] .sh__cta {
+		background: var(--color-white);
+		color: var(--color-ink);
+	}
+	.sh__reel {
+		display: flex;
+		align-items: center;
+		gap: 7px;
+		font-size: var(--text-label);
+		letter-spacing: 0.06em;
+	}
+	.sh__burger {
+		display: none;
+		width: 44px;
+		height: 44px;
+		position: relative;
+		border-radius: var(--radius-sm);
+		background: var(--gradient-rec);
+	}
+	.sh__burger span {
+		position: absolute;
+		left: 13px;
+		right: 13px;
+		height: 2px;
+		background: var(--color-white);
+	}
+	.sh__burger span:first-child { top: 18px; }
+	.sh__burger span:last-child { top: 25px; }
+	.sh__scrim {
+		position: fixed;
+		inset: 0;
+		z-index: 40;
+		background: var(--color-ink);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.4s var(--ease-out);
+	}
+	.sh:not([data-open="none"]) + .sh__scrim {
+		opacity: 0.55;
+		pointer-events: auto;
+	}
+
+	/* ---------- Mega panels ---------- */
+	.mega {
+		border-top: 1px solid var(--color-line);
+		overflow: hidden;
+	}
+	.mega--dark {
+		border-top-color: rgba(255, 255, 255, 0.12);
+	}
+	.mega__grid {
+		display: grid;
+		gap: 56px;
+		padding: 28px 28px 32px;
+	}
+	.mega__grid--diensten {
+		grid-template-columns: 1.3fr 1fr;
+	}
+	.mega__grid--werk {
+		grid-template-columns: 300px 1fr;
+		padding-bottom: 28px;
+	}
+	.mega__label {
+		padding: 0 20px 12px;
+		color: var(--color-mute);
+	}
+	.mega--dark .mega__label {
+		padding-inline: 0;
+		color: rgba(255, 255, 255, 0.5);
+	}
+	.mega__label--row {
+		padding-bottom: 16px;
+	}
+	.mrow {
+		display: grid;
+		grid-template-columns: 48px 1fr 44px;
+		align-items: center;
+		gap: 20px;
+		padding: 22px 20px;
+		border-radius: var(--radius-sm);
+		transition: background-color 0.4s var(--ease-out);
+	}
+	.mrow__no {
+		align-self: start;
+		padding-top: 12px;
+		color: var(--color-mute);
+	}
+	.mrow__t {
+		display: block;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h3);
+		letter-spacing: -0.04em;
+		line-height: 1.05;
+	}
+	.mrow__d {
+		display: block;
+		font-size: var(--text-s);
+		color: var(--color-mute);
+		margin-top: 8px;
+	}
+	.mrow[data-active] {
+		background: var(--color-paper);
+	}
+	.mrow[data-active] .mrow__no {
+		color: var(--color-rec);
+	}
+	.mega__how {
+		position: relative;
+		display: flex;
+		align-items: flex-end;
+		min-height: 380px;
+		padding: 12px;
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		background: var(--color-graphite);
+	}
+	.mega__how .mega__how-img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+		transition: transform 1.2s var(--ease-out);
+	}
+	.mega__how:hover .mega__how-img {
+		transform: scale(1.03);
+	}
+	.mega__note {
+		position: relative;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 20px;
+		width: 100%;
+		padding: 20px 22px;
+		border-radius: var(--radius-sm);
+		background: var(--color-white);
+	}
+	.mega__note-t {
+		display: block;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h5);
+		letter-spacing: -0.03em;
+	}
+	.mega__note-d {
+		display: block;
+		font-size: var(--text-s);
+		color: var(--color-mute);
+		margin-top: 4px;
+	}
+	.mega__foot {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 16px 28px;
+		border-top: 1px solid var(--color-line);
+	}
+	.mega__auto {
+		font-size: var(--text-s);
+	}
+	.mega__ask {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		font-size: var(--text-s);
+	}
+
+	/* Werk */
+	.mega__filters {
+		display: flex;
+		flex-direction: column;
+	}
+	.mfil {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-top: 18px;
+	}
+	.mfil a {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h4);
+		letter-spacing: -0.03em;
+		line-height: 1.25;
+	}
+	.mfil a[data-on]::before {
+		content: "";
+		width: calc(var(--spacing-rec) * 1.15);
+		height: calc(var(--spacing-rec) * 1.15);
+		border-radius: 50%;
+		background: var(--color-rec);
+	}
+	.mega__all {
+		margin-top: auto;
+		align-self: flex-start;
+	}
+	.cthumbs,
+	.tline__track {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 20px;
+	}
+	.cthumb {
+		display: block;
+	}
+	.cthumb__im {
+		position: relative;
+		display: block;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		background: var(--color-graphite);
+	}
+	.cthumb__im img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.9s var(--ease-out);
+	}
+	.cthumb:hover .cthumb__im img {
+		transform: scale(1.05);
+	}
+	.cthumb__chip {
+		position: absolute;
+		left: 12px;
+		top: 12px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 4px 8px;
+		border-radius: var(--radius-xs);
+		background: rgba(18, 18, 18, 0.6);
+		font-family: var(--font-mono);
+		font-size: var(--text-label);
+	}
+	.cthumb__chip .rec-dot {
+		width: calc(var(--spacing-rec) * 0.75);
+		height: calc(var(--spacing-rec) * 0.75);
+	}
+	.cthumb__t {
+		display: block;
+		margin-top: 14px;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h5);
+		letter-spacing: -0.03em;
+	}
+	.cthumb__m {
+		display: block;
+		margin-top: 6px;
+		font-size: var(--text-label);
+		opacity: 0.55;
+	}
+	.tline {
+		position: relative;
+		margin-top: 26px;
+		padding-top: 14px;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+	}
+	.tline__ruler {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 10px;
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.04em;
+		opacity: 0.4;
+	}
+	.tline__clip {
+		height: 38px;
+		display: flex;
+		align-items: center;
+		padding: 0 12px;
+		border-radius: 3px;
+		background: var(--color-ink-shade);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		font-family: var(--font-mono);
+		font-size: 10px;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.6);
+		white-space: nowrap;
+		overflow: hidden;
+		transition: border-color 0.3s, color 0.3s;
+	}
+	.tline__clip[data-active] {
+		border-color: var(--color-rec);
+		color: var(--color-white);
+	}
+	.tline__head {
+		position: absolute;
+		left: 0;
+		top: 6px;
+		bottom: -6px;
+		width: 2px;
+		background: var(--color-rec);
+		transition: transform 0.7s var(--ease-out);
+	}
+	.tline__head::before {
+		content: "";
+		position: absolute;
+		left: -5px;
+		top: 0;
+		width: 12px;
+		height: 10px;
+		border-radius: 2px;
+		background: var(--color-rec);
+	}
+
+	/* ---------- Mobile menu ---------- */
+	.mm {
+		position: fixed;
+		inset: 0;
+		z-index: 80;
+		overflow-y: auto;
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	.mm__tone {
+		position: absolute;
+		right: -260px;
+		bottom: -120px;
+		width: 620px;
+		pointer-events: none;
+	}
+	.mm__inner {
+		position: relative;
+		min-height: 100%;
+		display: flex;
+		flex-direction: column;
+		/* same spot as the header bar, so the close button sits where the menu button was */
+		padding: 24px 28px 28px;
+	}
+	.mm__top {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		height: 48px;
+	}
+	.mm__close {
+		position: relative;
+		width: 44px;
+		height: 44px;
+		border-radius: var(--radius-sm);
+		background: var(--gradient-rec);
+	}
+	.mm__close span {
+		position: absolute;
+		left: 12px;
+		right: 12px;
+		top: 21px;
+		height: 2px;
+		background: var(--color-white);
+		transform: rotate(45deg);
+	}
+	.mm__close span + span {
+		transform: rotate(-45deg);
+	}
+	.mm__label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 36px;
+		opacity: 0.5;
+	}
+	.mm__list {
+		margin-top: 10px;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+	}
+	.mm__list > li {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+	}
+	.mm__it {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		align-items: center;
+		padding: 14px 0;
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h1);
+		letter-spacing: -0.04em;
+		line-height: 1;
+		text-align: left;
+	}
+	.mm__it[aria-expanded="true"] {
+		font-style: italic;
+		font-weight: 900;
+	}
+	.mm__plus {
+		position: relative;
+		width: 28px;
+		height: 28px;
+		flex: none;
+	}
+	.mm__plus::before,
+	.mm__plus::after {
+		content: "";
+		position: absolute;
+		left: 7px;
+		right: 7px;
+		top: 13px;
+		height: 2px;
+		background: currentColor;
+		transition: transform 0.4s var(--ease-out);
+	}
+	.mm__plus::after {
+		transform: rotate(90deg);
+		transition: transform 0.6s var(--ease-out);
+	}
+	.mm__it[aria-expanded="true"] .mm__plus::after {
+		transform: rotate(0);
+	}
+	.mm__subs {
+		overflow: hidden;
+	}
+	.mm__subs li:first-child {
+		padding-top: 4px;
+	}
+	.mm__subs li:last-child {
+		padding-bottom: 14px;
+	}
+	.mm__subs a {
+		display: flex;
+		align-items: baseline;
+		gap: 14px;
+		padding: 9px 0;
+		font-size: var(--text-l);
+		font-weight: 500;
+	}
+	.mm__subs .mono {
+		font-size: var(--text-label);
+		color: var(--color-rec);
+	}
+	.mm__foot {
+		margin-top: auto;
+		padding-top: 40px;
+	}
+	.mm__mail {
+		margin-top: 22px;
+	}
+
+	@media (max-width: 1023px) {
+		.sh__nav,
+		.sh__reel,
+		.sh__cta {
+			display: none !important;
+		}
+		.sh__bar {
+			grid-template-columns: 1fr auto;
+		}
+		.sh__burger {
+			display: block;
+		}
+		/* Phone and tablet: the bar is glass from the start, also at the top */
+		.sh .sh__shell {
+			background: var(--glass-bg);
+			backdrop-filter: var(--glass-filter);
+			-webkit-backdrop-filter: var(--glass-filter);
+			box-shadow: var(--glass-shadow);
+			color: var(--color-white);
+		}
+		.sh .sh__logo-ink {
+			display: none;
+		}
+		.sh .sh__logo-white {
+			display: block;
+		}
+	}
+</style>

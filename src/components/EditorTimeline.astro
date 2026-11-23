@@ -1,0 +1,251 @@
+---
+/**
+ * EditorTimeline (Doop design system, DS 03 Patronen): the timeline of a video
+ * editor as a brand element. Tracks V2 (title), V1 (clips with thumbnails),
+ * A1/A2 (audio with waveforms) and a red playhead with timecode. With
+ * data-edit-timeline the playhead runs along on scroll (motion.ts).
+ */
+const clips = [
+	{ left: 0, width: 22, img: "/assets/images/timeline/maker.jpg", name: "A001_maker.mov" },
+	{ left: 22.3, width: 30, img: "/assets/images/timeline/pitlane.jpg", name: "A014_pitlane.mov" },
+	{ left: 52.6, width: 18, img: "/assets/images/timeline/zandvoort.jpg", name: "B003_zandvoort.mov" },
+	{ left: 70.9, width: 29.1, img: "/assets/images/timeline/drone.jpg", name: "C021_drone.mov" },
+];
+const wave =
+	"M0 20L0 16L8 14L16 15L24 12L32 8L40 5L48 12L56 13L64 12L72 8L80 4L88 11L96 12L104 16L112 13L120 14L128 17L136 16L144 16L152 12L160 9L168 10L176 6L184 14L192 14L200 12L208 11L216 5L224 13L232 16L240 12L248 12L256 16L264 13L272 15L280 14L288 12L296 5L304 7L312 9L320 14L328 11L336 8L344 10L352 13L360 16L368 15L376 13L384 17L392 14L400 15L408 15L416 10L424 8L432 9L440 11L448 15L456 13L464 4L472 11L480 9L488 13L496 16L504 13L512 15L520 15L528 16L536 16L544 13L552 5L560 10L568 9L576 14L584 9L592 9L600 8L608 10L616 13L624 16L632 13L640 14L648 14L656 16L664 14L672 14L680 10L688 7L696 7L704 15L712 10L720 8L728 9L736 11L744 15L752 16L760 15L768 14L776 14L784 15L792 17L800 11L808 9L816 8L824 11L832 13L840 11L848 9L856 8L864 12L872 11L880 17L888 14L896 13L904 16L912 13L920 14L928 13L936 8L944 10L952 9L960 14L968 12L976 10L984 7L992 5L1000 11L1000 29L992 35L984 33L976 30L968 28L960 26L952 31L944 30L936 32L928 27L920 26L912 27L904 24L896 27L888 26L880 23L872 29L864 28L856 32L848 31L840 29L832 27L824 29L816 32L808 31L800 29L792 23L784 25L776 26L768 26L760 25L752 24L744 25L736 29L728 31L720 32L712 30L704 25L696 33L688 33L680 30L672 26L664 26L656 24L648 26L640 26L632 27L624 24L616 27L608 30L600 32L592 31L584 31L576 26L568 31L560 30L552 35L544 27L536 24L528 24L520 25L512 25L504 27L496 24L488 27L480 31L472 29L464 36L456 27L448 25L440 29L432 31L424 32L416 30L408 25L400 25L392 26L384 23L376 27L368 25L360 24L352 27L344 30L336 32L328 29L320 26L312 31L304 33L296 35L288 28L280 26L272 25L264 27L256 24L248 28L240 28L232 24L224 27L216 35L208 29L200 28L192 26L184 26L176 34L168 30L160 31L152 28L144 24L136 24L128 23L120 26L112 27L104 24L96 28L88 29L80 36L72 32L64 28L56 27L48 28L40 35L32 32L24 28L16 25L8 26L0 24Z";
+---
+
+<div class="etl" data-edit-timeline aria-hidden="true">
+	<div class="etl__bar">
+		<span class="etl__tc"><i></i><span data-edit-tc>00:00:14:08</span></span>
+		<span class="etl__proj">LOUWMEDIA_SHOOTDAY_V3</span>
+		<span class="etl__fmt">25 FPS · 4K · 16:9</span>
+	</div>
+	<div class="etl__ruler">
+		{["00:00", "00:05", "00:10", "00:15", "00:20"].map((t, i) => <span style={`left:${i * 20}%`}>{t}</span>)}
+	</div>
+	<div class="etl__tracks" data-edit-tracks>
+		<div class="etl__tr">
+			<b>V2</b>
+			<div class="etl__lane"><div class="etl__clip etl__title" style="left:30%;width:26%">TITEL · Shoot day.</div></div>
+		</div>
+		<div class="etl__tr etl__tr--v1">
+			<b>V1</b>
+			<div class="etl__lane" data-edit-lane>
+				{
+					clips.map((c, i) => (
+						<div class:list={["etl__clip etl__vid", { "is-sel": i === 1 }]} style={`left:${c.left}%;width:${c.width}%;background-image:url(${c.img})`} data-edit-clip>
+							<span>{c.name}</span>
+						</div>
+					))
+				}
+			</div>
+		</div>
+		<div class="etl__tr">
+			<b>A1</b>
+			<div class="etl__lane">
+				<div class="etl__clip etl__aud" style="left:0%;width:52.3%"><span>VO_interview.wav</span><svg viewBox="0 0 1000 40" preserveAspectRatio="none"><path d={wave} /></svg></div>
+				<div class="etl__clip etl__aud" style="left:52.6%;width:47.4%"><span>VO_interview_02.wav</span><svg viewBox="0 0 1000 40" preserveAspectRatio="none"><path d={wave} /></svg></div>
+			</div>
+		</div>
+		<div class="etl__tr">
+			<b>A2</b>
+			<div class="etl__lane">
+				<div class="etl__clip etl__aud etl__music" style="left:0%;width:100%"><span>MUSIC_bed_120bpm.wav</span><svg viewBox="0 0 1000 40" preserveAspectRatio="none"><path d={wave} /></svg></div>
+			</div>
+		</div>
+		<div class="etl__head" data-edit-head style="--p:0.57"><span></span></div>
+	</div>
+</div>
+
+<style>
+	.etl {
+		position: relative;
+		width: 100%;
+		overflow: hidden;
+		border-radius: 8px;
+		background: #161616;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+		font-family: var(--font-mono);
+		color: var(--color-white);
+	}
+	.etl__bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 16px;
+		padding: 11px 14px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+		font-size: 11px;
+		letter-spacing: 0.04em;
+		color: rgba(255, 255, 255, 0.5);
+	}
+	.etl__tc {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: var(--color-white);
+		font-size: 13px;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		font-variant-numeric: tabular-nums;
+	}
+	.etl__tc i {
+		width: var(--spacing-rec);
+		height: var(--spacing-rec);
+		border-radius: 50%;
+		background: var(--color-rec);
+	}
+	.etl__ruler {
+		position: relative;
+		height: 24px;
+		margin-left: 48px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+		background:
+			repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.2) 0 1px, transparent 1px 4%) 0 100% / 100% 6px no-repeat,
+			repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.45) 0 1px, transparent 1px 20%) 0 100% / 100% 12px no-repeat;
+	}
+	.etl__ruler span {
+		position: absolute;
+		top: 5px;
+		padding-left: 4px;
+		font-size: 10px;
+		color: rgba(255, 255, 255, 0.5);
+	}
+	.etl__tracks {
+		position: relative;
+		padding: 6px 0 8px;
+	}
+	.etl__tr {
+		display: grid;
+		grid-template-columns: 48px 1fr;
+		height: 44px;
+		margin-bottom: 4px;
+	}
+	.etl__tr--v1 {
+		height: 64px;
+	}
+	.etl__tr b {
+		display: flex;
+		align-items: center;
+		padding-left: 14px;
+		font-weight: 500;
+		font-size: 11px;
+		color: rgba(255, 255, 255, 0.45);
+	}
+	.etl__lane {
+		position: relative;
+		margin-right: 8px;
+		border-radius: 3px;
+		background: rgba(255, 255, 255, 0.025);
+	}
+	.etl__clip {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		overflow: hidden;
+		border-radius: 4px;
+		font-size: 10px;
+		letter-spacing: 0.02em;
+	}
+	.etl__clip > span {
+		position: absolute;
+		z-index: 2;
+		left: 7px;
+		top: 6px;
+		white-space: nowrap;
+		color: var(--color-white);
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+	}
+	.etl__vid {
+		background-size: auto 100%;
+		background-repeat: repeat-x;
+		background-position: 0 50%;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+		transition: box-shadow 0.25s;
+	}
+	.etl__vid::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 50%);
+	}
+	.etl__vid.is-sel {
+		box-shadow: inset 0 0 0 2px var(--color-rec);
+	}
+	.etl__title {
+		display: flex;
+		align-items: center;
+		padding-left: 8px;
+		background: rgba(255, 255, 255, 0.12);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+		font-size: 11px;
+		white-space: nowrap;
+		color: var(--color-white);
+	}
+	.etl__aud {
+		background: #262628;
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+	}
+	.etl__aud svg {
+		position: absolute;
+		left: 0;
+		bottom: 3px;
+		width: 100%;
+		height: 26px;
+	}
+	.etl__aud path {
+		fill: rgba(255, 255, 255, 0.4);
+	}
+	.etl__music path {
+		fill: rgba(255, 255, 255, 0.26);
+	}
+	/* playhead: --p is its position over the lanes (0–1), set by motion.ts */
+	.etl__head {
+		position: absolute;
+		z-index: 4;
+		top: -30px;
+		bottom: 0;
+		left: calc(48px + (100% - 56px) * var(--p));
+		width: 2px;
+		background: var(--color-rec);
+	}
+	.etl__head span {
+		position: absolute;
+		top: 0;
+		left: -6px;
+		width: 14px;
+		height: 12px;
+		background: var(--color-rec);
+		clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
+	}
+	@media (max-width: 699px) {
+		.etl__proj,
+		.etl__fmt {
+			display: none;
+		}
+		.etl__clip > span {
+			display: none;
+		}
+		.etl__title {
+			padding-left: 6px;
+			font-size: 9px;
+		}
+		.etl__tr {
+			grid-template-columns: 34px 1fr;
+			height: 32px;
+		}
+		.etl__tr--v1 {
+			height: 48px;
+		}
+		.etl__tr b {
+			padding-left: 10px;
+		}
+		.etl__ruler {
+			margin-left: 34px;
+		}
+		.etl__head {
+			left: calc(34px + (100% - 42px) * var(--p));
+		}
+	}
+</style>

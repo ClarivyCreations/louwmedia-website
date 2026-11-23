@@ -1,0 +1,124 @@
+---
+/**
+ * Diensten, taken over from the current site: one full-screen photo per
+ * service in a rounded frame. The section pins while scrolling and each photo
+ * peels up and away to show the next one (motion.ts, data-services).
+ * The services come from the "services" collection, in their set order.
+ * Layout "Stapelkaarten" renders the stacking service cards instead
+ * (ServicesStack.astro, Max 2026-11-20 for the home page).
+ */
+import { getEmDashCollection } from "emdash";
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Button from "../Button.astro";
+import ServicesStack from "../ServicesStack.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_services" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const result = await getEmDashCollection("services", { orderBy: { position: "asc" }, limit: 6 });
+if (Astro.cache?.enabled) Astro.cache.set(result.cacheHint);
+const services = result.entries ?? [];
+const pad = (n: number) => String(n).padStart(2, "0");
+const stack = value.layout === "Stapelkaarten";
+---
+
+{stack && <ServicesStack services={services} anchor={value.anchor_id} buttonLabel={value.button_label} />}
+{!stack && <section class="sv" id={value.anchor_id || undefined} data-services>
+	<div class="sv__frame">
+		{
+			services.map((s, i) => (
+				<article class="sv__slide" style={`z-index:${services.length - i}`} data-services-slide>
+					<div class="sv__media">
+						{s.data.image && <Image image={s.data.image} sizes="100vw" />}
+						<div class="sv__shade" />
+					</div>
+					<p class="mono sv__count">
+						{pad(i + 1)} / {pad(services.length)}
+					</p>
+					<div class="sv__text">
+						<h2 class="sv__title">{s.data.title}</h2>
+						{s.data.summary && <p class="sv__summary">{s.data.summary}</p>}
+						<Button label={value.button_label || s.data.title} href={`/diensten/${s.id}`} tone="glass" class="sv__cta" />
+					</div>
+				</article>
+			))
+		}
+	</div>
+</section>}
+
+<style>
+	.sv {
+		position: relative;
+		height: 100svh;
+		min-height: 560px;
+		padding: 12px;
+		/* opaque, so nothing shows through the gap while the section is pinned */
+		background: var(--page-bg, var(--color-paper));
+	}
+	.sv__frame {
+		position: relative;
+		height: 100%;
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		background: var(--color-ink);
+	}
+	.sv__slide {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: flex-end;
+		padding: clamp(28px, 5.5vw, 80px);
+		color: var(--color-white);
+		will-change: transform;
+	}
+	.sv__media {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		overflow: hidden;
+	}
+	.sv__media :global(img) {
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+	}
+	.sv__shade {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(to top, rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 0) 60%),
+			rgba(18, 18, 18, 0.2);
+	}
+	.sv__count {
+		position: absolute;
+		top: clamp(24px, 3vw, 40px);
+		right: clamp(24px, 3vw, 40px);
+		font-variant-numeric: tabular-nums;
+	}
+	.sv__text {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		max-width: 520px;
+	}
+	.sv__title {
+		font-family: var(--font-display);
+		font-weight: 900;
+		font-style: italic;
+		font-size: var(--text-h2);
+		letter-spacing: -0.04em;
+		line-height: 1;
+	}
+	.sv__summary {
+		margin-top: 18px;
+		font-size: var(--text-l);
+		line-height: 1.4;
+		color: rgba(255, 255, 255, 0.88);
+	}
+	.sv :global(.sv__cta) {
+		margin-top: 28px;
+	}
+</style>

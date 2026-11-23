@@ -1,0 +1,225 @@
+---
+/**
+ * S10 · Client reviews, centred: a small slanted photo, the quote large (a
+ * _marker_ word gets the drawn red scribble), name and role below. Same paper
+ * as lm_about; placed right under it, that section's background scribble runs
+ * on behind this one.
+ *
+ * The reviews come from the "reviews" collection (Max 2026-11-21: one list in
+ * the CMS, the same reviews wherever this section is used). Two or more make it
+ * a carousel (S10c): two outline arrow squares centred below; the next photo
+ * wipes in on the brand slant and the text fades over (scripts/quotes.ts).
+ * One review: exactly the S10a section. None: nothing renders.
+ */
+import { getEmDashCollection } from "emdash";
+import { type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+import SlantPhoto from "../SlantPhoto.astro";
+import ArrowSquare from "../ArrowSquare.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_quote" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const result = await getEmDashCollection("reviews", { orderBy: { position: "asc" }, limit: 12 });
+if (Astro.cache?.enabled) Astro.cache.set(result.cacheHint);
+const reviews = (result.entries ?? []).map((e) => e.data).filter((r) => r.quote);
+const multi = reviews.length > 1;
+---
+
+{
+	reviews.length > 0 && (
+		<section
+			class:list={["qt", multi && "qt--multi"]}
+			id={value.anchor_id || undefined}
+			data-quotes={multi ? "" : undefined}
+			aria-roledescription={multi ? "carousel" : undefined}
+			aria-label={multi ? "Reviews van klanten" : undefined}
+		>
+			<div class="container qt__in">
+				{
+					reviews.some((r) => r.image) && (
+						<div class="qt__media" data-reveal>
+							<div class="qt__photos">
+								{reviews.map((r, i) => (
+									<SlantPhoto
+										image={r.image || reviews[0].image}
+										class:list={["qt__photo", i === 0 && "is-current"]}
+										data-quote-photo={i}
+										sizes="260px"
+										loading={i === 0 ? undefined : "lazy"}
+									/>
+								))}
+							</div>
+						</div>
+					)
+				}
+				<div class="qt__slides" aria-live={multi ? "polite" : undefined}>
+					{
+						reviews.map((r, i) => (
+							<figure
+								class:list={["qt__slide", i === 0 && "is-current"]}
+								data-quote-slide={i}
+								aria-roledescription={multi ? "review" : undefined}
+								aria-label={multi ? `${i + 1} van ${reviews.length}` : undefined}
+								aria-hidden={i === 0 ? undefined : "true"}
+								inert={i === 0 ? undefined : true}
+							>
+								<Headline text={r.quote} as="blockquote" class="qt__quote" reveal={i === 0} />
+								{(r.title || r.role) && (
+									<figcaption class="qt__who" data-reveal={i === 0 ? "" : undefined}>
+										{r.title && <span class="qt__name">{r.title}</span>}
+										{r.role && <span class="muted qt__role">{r.role}</span>}
+									</figcaption>
+								)}
+							</figure>
+						))
+					}
+				</div>
+				{
+					multi && (
+						<div class="qt__nav" data-reveal>
+							<button class="qt__btn qt__btn--prev" type="button" aria-label="Vorige review" data-prev>
+								<ArrowSquare tone="outline" />
+							</button>
+							<button class="qt__btn" type="button" aria-label="Volgende review" data-next>
+								<ArrowSquare tone="outline" />
+							</button>
+						</div>
+					)
+				}
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.qt {
+		/* same paper as lm_about above (Max); one layer up, so that section's
+		   background scribble runs on behind this one instead of being cut off */
+		position: relative;
+		z-index: 1;
+		padding-block: var(--section-space);
+	}
+	.qt__in {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+	.qt__media {
+		--ph: clamp(140px, 13.9vw, 200px);
+	}
+	/* the photos stack; the current one shows, the incoming one wipes in over it */
+	.qt__photos {
+		display: grid;
+	}
+	.qt__photos > :global(.qt__photo) {
+		grid-area: 1 / 1;
+		width: var(--ph);
+		aspect-ratio: 5 / 6;
+		visibility: hidden;
+	}
+	.qt__photos > :global(.qt__photo.is-current),
+	.qt__photos > :global(.qt__photo.is-in) {
+		visibility: visible;
+	}
+	/* inside the skewed photo an inset edge runs on the brand slant */
+	.qt__photos > :global(.qt__photo.is-in) {
+		z-index: 1;
+		animation: qt-wipe-l 0.9s cubic-bezier(0.65, 0, 0.2, 1) both;
+	}
+	.qt__photos > :global(.qt__photo.is-in.from-left) {
+		animation-name: qt-wipe-r;
+	}
+	@keyframes qt-wipe-l {
+		from {
+			clip-path: inset(0 0 0 100%);
+		}
+		to {
+			clip-path: inset(0 0 0 0);
+		}
+	}
+	@keyframes qt-wipe-r {
+		from {
+			clip-path: inset(0 100% 0 0);
+		}
+		to {
+			clip-path: inset(0 0 0 0);
+		}
+	}
+	.qt__slides {
+		display: grid;
+		width: 100%;
+		justify-items: center;
+	}
+	.qt__slide {
+		grid-area: 1 / 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	.qt--multi .qt__slide {
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(12px);
+		transition:
+			opacity 0.45s ease,
+			transform 0.45s ease,
+			visibility 0s 0.45s;
+	}
+	.qt--multi .qt__slide.is-current {
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		transition:
+			opacity 0.5s ease 0.25s,
+			transform 0.5s ease 0.25s,
+			visibility 0s;
+	}
+	.qt :global(.qt__quote) {
+		max-width: 23em; /* two lines on desktop, like S10a */
+		margin-top: clamp(40px, 4.4vw, 64px);
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h3);
+		line-height: 1.15;
+		letter-spacing: -0.035em;
+		text-wrap: balance;
+	}
+	.qt__who {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		margin-top: clamp(28px, 2.8vw, 40px);
+	}
+	.qt__name {
+		font-weight: 600;
+	}
+	.qt__role {
+		font-size: var(--text-s);
+	}
+	/* two subtle arrows, centred under the name (Max) */
+	.qt__nav {
+		display: flex;
+		gap: 12px;
+		margin-top: clamp(36px, 3.4vw, 48px);
+	}
+	.qt__btn {
+		display: flex;
+	}
+	.qt__btn--prev :global(.asq) {
+		transform: rotate(180deg);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.qt__photos > :global(.qt__photo.is-in) {
+			animation: none;
+		}
+		.qt--multi .qt__slide,
+		.qt--multi .qt__slide.is-current {
+			transform: none;
+			transition: none;
+		}
+	}
+</style>

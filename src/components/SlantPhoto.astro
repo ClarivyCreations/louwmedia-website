@@ -1,0 +1,23 @@
+---
+/**
+ * Slanted photo from the current site: skewX(--slant), 10px radius, the image
+ * counter-skewed inside (`.slant` in global.css). Doop component "SlantPhoto".
+ * Size it through the class you pass. `as="span"` for use inside text.
+ */
+import { Image } from "emdash/ui";
+
+interface Props {
+	image: unknown;
+	sizes?: string;
+	class?: string;
+	as?: "div" | "span";
+	loading?: "eager" | "lazy";
+	fetchpriority?: "high" | "auto";
+	[attr: string]: unknown;
+}
+const { image, sizes = "50vw", class: className, as: Tag = "div", loading, fetchpriority, ...rest } = Astro.props;
+---
+
+<Tag class:list={["slant", className]} {...rest}>
+	{image && <Image image={image as never} class="slant__img" sizes={sizes} loading={loading} fetchpriority={fetchpriority} />}
+</Tag>

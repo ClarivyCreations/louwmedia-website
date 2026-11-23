@@ -1,0 +1,67 @@
+---
+/**
+ * A headline whose *accent* word gets the red marker circle drawn around it
+ * (data-scribble="circle", drawn by scripts/scribbles.ts once the lines are up).
+ * Used by the closers lm_cta and lm_edit ("Is het al *shoot day*?").
+ * Punctuation right after the circled word stays glued to it ("shoot day?"), so the
+ * "?" can never wrap onto a line of its own and jump back after the line reveal.
+ */
+import { headlineParts } from "../utils/text";
+import { scribbleSvg, scribblesOf } from "../utils/scribbles";
+
+interface Props {
+	text: string;
+	as?: "h1" | "h2";
+	class?: string;
+}
+
+const { text, as: Tag = "h2", class: className } = Astro.props;
+const circle = scribblesOf("circle")[0];
+const parts = headlineParts(text).map((p) => ({ ...p, tail: "" }));
+parts.forEach((p, i) => {
+	const next = parts[i + 1];
+	if (p.kind !== "plain" && next?.kind === "plain") {
+		const m = next.text.match(/^[?!.,:;…]+/);
+		if (m) {
+			p.tail = m[0];
+			next.text = next.text.slice(m[0].length);
+		}
+	}
+});
+---
+
+<Tag class={className} data-reveal="lines">
+	{
+		parts.map((p) =>
+			p.kind === "plain" ? (
+				p.text
+			) : (
+				<span class="circ__word">
+					<span class="circ__circled" data-scribble="circle">
+						<em>{p.text}</em>
+						<span class="scrib__mark" set:html={scribbleSvg(circle)} />
+					</span>
+					{p.tail}
+				</span>
+			),
+		)
+	}
+</Tag>
+
+<style>
+	.circ__word {
+		white-space: nowrap;
+	}
+	.circ__circled {
+		position: relative;
+		display: inline-block;
+		isolation: isolate;
+	}
+	.circ__circled :global(.scrib__mark) {
+		z-index: -1;
+		left: -0.22em;
+		top: -0.04em;
+		width: calc(100% + 0.46em);
+		height: calc(100% + 0.18em);
+	}
+</style>

@@ -1,0 +1,124 @@
+---
+/**
+ * Beeldrij (S20a, case pages): one row of media. Breed = one wide image,
+ * Twee naast elkaar = two, Staand (reels) = three upright 9:16 cells. Each
+ * cell is a photo, or a reel from the Reels collection that plays muted while
+ * in view (scripts/lazy-video.ts), the photo showing until it runs. A small
+ * mono caption under each: its text left, the format right (Max: photos only,
+ * reels only or a mix all work, empty cells are left out).
+ */
+import { getEmDashCollection } from "emdash";
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+
+type Block = Extract<PageContentBlock, { _type: "lm_media" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const layout = value.layout === "Twee naast elkaar" ? "two" : value.layout === "Staand (reels)" ? "tall" : "wide";
+const max = layout === "wide" ? 1 : layout === "two" ? 2 : 3;
+type Cell = { image?: unknown; caption?: string | null; reel?: string | null };
+const v = value as unknown as Record<string, unknown>;
+const cells = [1, 2, 3]
+	.slice(0, max)
+	.map((i) => ({ image: v[`image_${i}`], caption: v[`caption_${i}`] as string | null, reel: v[`reel_${i}`] as string | null }) as Cell)
+	.filter((c) => c.image || c.reel);
+
+const slugs = cells.map((c) => c.reel?.trim()).filter(Boolean);
+const reels = slugs.length ? ((await getEmDashCollection("reels", { limit: 48 })).entries ?? []) : [];
+const reelOf = (slug?: string | null) => (slug ? reels.find((r) => r.id === slug.trim() || r.slug === slug.trim()) : undefined);
+const urlOf = (file: { provider?: string; src?: string; url?: string; meta?: Record<string, unknown> } | undefined) => {
+	const key = typeof file?.meta?.storageKey === "string" ? file.meta.storageKey : undefined;
+	return key ? Astro.locals.emdash?.getPublicMediaUrl?.(key) : file?.provider === "external" ? file.src : file?.url;
+};
+const sizes = layout === "wide" ? "(min-width: 900px) 90vw, 100vw" : layout === "two" ? "(min-width: 900px) 45vw, 100vw" : "(min-width: 900px) 30vw, 50vw";
+---
+
+{
+	cells.length > 0 && (
+		<section class:list={["mr", `mr--${layout}`]} id={value.anchor_id || undefined}>
+			<div class="container">
+				<ul class="mr__row" data-reveal>
+					{cells.map((c) => {
+						const reel = reelOf(c.reel);
+						const src = urlOf(reel?.data.video as never);
+						const image = (c.image ?? reel?.data.poster) as never;
+						const format = layout === "tall" ? (src ? "Reel · 9:16" : "9:16") : src ? "Video" : "Foto";
+						return (
+							<li class="mr__cell">
+								<div class="mr__media">
+									{image && <Image image={image} sizes={sizes} />}
+									{src && <video class="mr__video" data-src={src} muted loop playsinline preload="none" aria-hidden="true" data-card-video />}
+								</div>
+								<p class="mono mr__cap">
+									<span>{c.caption}</span>
+									<span>{format}</span>
+								</p>
+							</li>
+						);
+					})}
+				</ul>
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.mr {
+		padding-top: clamp(56px, 6.6vw, 96px);
+	}
+	.mr__row {
+		display: grid;
+		gap: 24px;
+	}
+	.mr--two .mr__row {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	/* upright reels: three, a little narrower than the page so they don't get huge */
+	.mr--tall .mr__row {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		max-width: 1040px;
+		margin-inline: auto;
+	}
+	.mr__media {
+		position: relative;
+		overflow: hidden;
+		border-radius: var(--radius-media);
+		background: var(--color-graphite);
+	}
+	.mr--wide .mr__media {
+		aspect-ratio: 16 / 9;
+	}
+	.mr--two .mr__media {
+		aspect-ratio: 4 / 3;
+	}
+	.mr--tall .mr__media {
+		aspect-ratio: 9 / 16;
+	}
+	.mr__media :global(img),
+	.mr__video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+	}
+	.mr__cap {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		margin-top: 12px;
+		color: var(--color-mute);
+	}
+	@media (max-width: 699px) {
+		.mr--two .mr__row {
+			grid-template-columns: 1fr;
+		}
+		/* reels: two per row on phones, the third goes under */
+		.mr--tall .mr__row {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 16px;
+		}
+	}
+</style>

@@ -1,0 +1,97 @@
+---
+/**
+ * Closing block for service pages (DS 03 Patronen, "Van idee naar edit."):
+ * black, a very large heading with the text and button under it on the left
+ * (Max), and the editor timeline full width below; its playhead runs along on scroll.
+ * No label on top (Max: fewer eyebrows). Field accent "Rode cirkel" draws the
+ * red marker circle around the *accent* word, as on the home ("Is het al *shoot day*?").
+ */
+import { sanitizeHref } from "emdash";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Button from "../Button.astro";
+import EditorTimeline from "../EditorTimeline.astro";
+import Headline from "../Headline.astro";
+import CircledHeadline from "../CircledHeadline.astro";
+import TextLink from "../TextLink.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_edit" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const linkUrl = value.link_url ? sanitizeHref(value.link_url) : undefined;
+---
+
+<section class="ed" id={value.anchor_id || undefined}>
+	<img class="ed__tone" src="/assets/scribbles/swirl-ink-tone.png" alt="" aria-hidden="true" />
+	<div class="container">
+		<div class="ed__head">
+			{
+				value.accent === "Rode cirkel" ? (
+					<CircledHeadline text={value.headline} class="h1 ed__title" />
+				) : (
+					<Headline text={value.headline} as="h2" class="h1 ed__title" />
+				)
+			}
+			<div class="ed__side" data-reveal>
+				{value.body && <p class="text-l ed__body">{value.body}</p>}
+				<div class="ed__actions">
+					{value.cta_label && <Button label={value.cta_label} href={value.cta_url} tone="white" />}
+					{
+						value.link_label && linkUrl && (
+							<TextLink label={value.link_label} href={linkUrl} />
+						)
+					}
+				</div>
+			</div>
+		</div>
+		<div class="ed__tl" data-reveal>
+			<EditorTimeline />
+		</div>
+	</div>
+</section>
+
+<style>
+	.ed {
+		position: relative;
+		overflow: hidden;
+		padding-block: var(--section-space);
+		background: var(--color-ink);
+		color: var(--color-white);
+	}
+	/* right after the black reels (home) both sections are black: no double gap */
+	:global(.re) + .ed {
+		padding-top: calc(var(--section-space) * 0.4);
+	}
+	/* fully inside the section at the top, so its edge never cuts the swirl flat
+	   (on the home the black reels sit right above it); it may run off the right side */
+	.ed__tone {
+		position: absolute;
+		right: -180px;
+		top: clamp(16px, 2vw, 32px);
+		width: min(760px, 70vw);
+		opacity: 0.6;
+		pointer-events: none;
+	}
+	.ed__head {
+		position: relative;
+	}
+	.ed__side {
+		max-width: 520px;
+		margin-top: clamp(24px, 2.5vw, 36px);
+	}
+	.ed__body {
+		color: rgba(255, 255, 255, 0.85);
+	}
+	.ed__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 20px 28px;
+		margin-top: 24px;
+	}
+	.ed__tl {
+		position: relative;
+		margin-top: clamp(48px, 5vw, 72px);
+	}
+</style>

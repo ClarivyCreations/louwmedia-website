@@ -1,0 +1,22 @@
+---
+/**
+ * The Button's arrow square, shared (Max: reuse the small recurring parts too).
+ * solid: red gradient (buttons, next case). outline: thin line that turns into
+ * the red gradient on hover (menu rows, keuzehulp). On hover or focus of the
+ * surrounding link or button the arrow slides up and the next one comes from
+ * below. Styles in global.css (.asq), so the parent's hover reaches it.
+ */
+import Arrow from "./Arrow.astro";
+
+interface Props {
+	tone?: "solid" | "outline";
+	size?: "m" | "l";
+	class?: string;
+}
+const { tone = "solid", size = "m", class: className } = Astro.props;
+---
+
+<span class:list={["asq", `asq--${tone}`, `asq--${size}`, className]} aria-hidden="true">
+	<Arrow class="asq__a asq__a--now" />
+	<Arrow class="asq__a asq__a--next" />
+</span>

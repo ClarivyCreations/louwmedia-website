@@ -1,0 +1,115 @@
+---
+/**
+ * S13a · Closing block: "Is het al *shoot day*?" very large with the red circle
+ * around the accent word, text and buttons under it, the column at the bottom;
+ * a cut-out photo (the camera) top right that drifts a little on scroll.
+ */
+import { Image, type BlockComponentProps } from "emdash/ui";
+import { sanitizeHref } from "emdash";
+import type { PageContentBlock } from "../../../emdash-env";
+import Button from "../Button.astro";
+import CircledHeadline from "../CircledHeadline.astro";
+import TextLink from "../TextLink.astro";
+import Tag from "../Tag.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_cta" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const linkUrl = value.link_url ? sanitizeHref(value.link_url) : undefined;
+---
+
+<section class="cta" id={value.anchor_id || undefined}>
+	<div class="container cta__inner">
+		{
+			value.image && (
+				<div class="cta__cam" data-parallax aria-hidden="true">
+					<Image image={value.image} sizes="(min-width: 700px) 30vw, 60vw" alt="" />
+				</div>
+			)
+		}
+		{
+			value.tag && (
+				<Tag text={value.tag} data-reveal />
+			)
+		}
+		<CircledHeadline text={value.headline} class="display cta__title" />
+		<div class="cta__row" data-reveal>
+			{value.body && <p class="text-l cta__body">{value.body}</p>}
+			<div class="cta__actions">
+				{value.primary_cta_label && <Button label={value.primary_cta_label} href={value.primary_cta_url} />}
+				{
+					value.link_label && linkUrl && (
+						<TextLink label={value.link_label} href={linkUrl} />
+					)
+				}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.cta {
+		position: relative;
+		overflow: hidden;
+		padding-block: var(--section-space);
+	}
+	/* the text column sits at the bottom, the camera top right (Max) */
+	.cta__inner {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		min-height: clamp(560px, 46vw, 680px);
+	}
+	.cta__cam {
+		--cam: clamp(240px, 29vw, 420px);
+		position: absolute;
+		top: 0;
+		/* centred in the right half of the container (Max) */
+		right: calc(25% - var(--cam) / 2);
+		width: var(--cam);
+		pointer-events: none;
+	}
+	.cta__cam :global(img) {
+		width: 100%;
+		height: auto;
+		transform: rotate(-8deg);
+		filter: drop-shadow(0 30px 40px rgba(18, 18, 18, 0.18));
+	}
+	.cta__title {
+		position: relative;
+		max-width: 10ch;
+	}
+	:global(.tag) + :global(.cta__title) {
+		margin-top: 28px;
+	}
+	.cta__row {
+		position: relative;
+		margin-top: clamp(40px, 3.9vw, 56px);
+	}
+	.cta__body {
+		max-width: 460px;
+	}
+	.cta__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 20px 28px;
+		margin-top: 32px;
+	}
+	@media (max-width: 699px) {
+		/* on a phone the camera sits above the heading, on the right */
+		.cta__inner {
+			min-height: 0;
+		}
+		.cta__cam {
+			position: relative;
+			right: auto;
+			align-self: flex-end;
+			width: 58%;
+			/* room for the scroll drift, so it never lands on the heading */
+			margin: 0 -2% 88px 0;
+		}
+	}
+</style>

@@ -1,0 +1,189 @@
+---
+/**
+ * Hero with a full-bleed video. Intro (motion.ts, data-hero="video"), after the
+ * Rietdekker Bouman hero: a thin strip in the middle grows into a card, then
+ * into the full screen; the video settles from 1.35x to 1x, then the shade,
+ * the header, the headline lines and the rest come in.
+ */
+import { Image, type BlockComponentProps } from "emdash/ui";
+import { sanitizeHref } from "emdash";
+import type { PageContentBlock } from "../../../emdash-env";
+import Button from "../Button.astro";
+import Headline from "../Headline.astro";
+import TextLink from "../TextLink.astro";
+import Tag from "../Tag.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_hero_video" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const file = value.video;
+const storageKey = typeof file?.meta?.storageKey === "string" ? file.meta.storageKey : undefined;
+const videoUrl = storageKey
+	? Astro.locals.emdash?.getPublicMediaUrl?.(storageKey)
+	: file?.provider === "external"
+		? file.src
+		: file?.url;
+const secondaryUrl = value.secondary_cta_url ? sanitizeHref(value.secondary_cta_url) : undefined;
+---
+
+<section class="hv" id={value.anchor_id || undefined} data-hero="video">
+	<div class="hv__frame">
+		<div class="hv__media" data-intro="media">
+			{value.poster && <Image image={value.poster} class="hv__poster" loading="eager" fetchpriority="high" sizes="100vw" />}
+			{
+				videoUrl && (
+					<video class="hv__video" src={videoUrl} muted autoplay loop playsinline preload="auto" aria-hidden="true" />
+				)
+			}
+			<div class="hv__shade" data-intro="shade"></div>
+			<div class="hv__vf" data-intro="ui">
+				<span class="c tl"></span><span class="c tr"></span><span class="c bl"></span><span class="c br"></span>
+				<span class="mono hv__rec"><span class="rec-dot hv__blink"></span>{value.rec_label || "Rec"}</span>
+				<span class="mono hv__tc" data-timecode>00:00:00:00</span>
+			</div>
+		</div>
+		<div class="hv__content container">
+			{
+				value.tag && (
+					<Tag text={value.tag} data-intro="rest" />
+				)
+			}
+			<Headline text={value.headline} as="h1" class="h1 hv__title" reveal={false} />
+			<div class="hv__row">
+				{value.intro && <p class="text-l hv__intro" data-intro="rest">{value.intro}</p>}
+				{(value.primary_cta_label || (value.secondary_cta_label && secondaryUrl)) && (
+					<div class="hv__actions" data-intro="rest">
+					{value.primary_cta_label && <Button label={value.primary_cta_label} href={value.primary_cta_url} tone="glass" />}
+					{value.secondary_cta_label && secondaryUrl && (
+						<TextLink label={value.secondary_cta_label} href={secondaryUrl} />
+					)}
+				</div>
+				)}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.hv {
+		position: relative;
+		height: 100svh;
+		min-height: 620px;
+	}
+	.hv__frame {
+		position: relative;
+		height: 100%;
+		color: var(--color-white);
+	}
+	.hv__media {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		background: var(--color-ink);
+	}
+	.hv__media :global(.hv__poster),
+	.hv__video {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+	}
+	.hv__shade {
+		position: absolute;
+		inset: 0;
+		background:
+			linear-gradient(to top, rgba(18, 18, 18, 0.72), rgba(18, 18, 18, 0) 58%),
+			linear-gradient(to bottom, rgba(18, 18, 18, 0.45), rgba(18, 18, 18, 0) 26%);
+	}
+	/* Full width like the header (Max 2026-11-22: corners 12px inside the glass bar's
+	   edge at every width), and a little subtler than before (34px, 2px, solid white). */
+	.hv__vf .c {
+		position: absolute;
+		width: 28px;
+		height: 28px;
+		border: 0 solid rgba(255, 255, 255, 0.8);
+	}
+	.hv__vf .tl { left: 24px; top: 92px; border-left-width: 1.5px; border-top-width: 1.5px; }
+	.hv__vf .tr { right: 24px; top: 92px; border-right-width: 1.5px; border-top-width: 1.5px; }
+	.hv__vf .bl { left: 24px; bottom: 24px; border-left-width: 1.5px; border-bottom-width: 1.5px; }
+	.hv__vf .br { right: 24px; bottom: 24px; border-right-width: 1.5px; border-bottom-width: 1.5px; }
+	.hv__rec {
+		position: absolute;
+		left: 48px;
+		top: 110px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.hv__tc {
+		position: absolute;
+		right: 48px;
+		top: 110px;
+		font-variant-numeric: tabular-nums;
+	}
+	.hv__blink {
+		animation: blink 1.6s steps(1) infinite;
+	}
+	@keyframes blink {
+		50% { opacity: 0; }
+	}
+	.hv__content {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: clamp(40px, 6vh, 72px);
+		max-width: none;
+		/* on large screens the text moves in to the content edge of the boxed sections (Max) */
+		padding-inline: max(clamp(28px, 4vw, 64px), var(--edge));
+	}
+	/* The h1 is rendered by Headline.astro, so these rules need :global to reach it. */
+	.hv :global(.hv__title) {
+		max-width: 15ch;
+	}
+	:global(.tag) + :global(.hv__title) {
+		margin-top: 24px;
+	}
+	.hv__row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 28px 48px;
+		margin-top: 32px;
+	}
+	.hv__intro {
+		max-width: 520px;
+		color: rgba(255, 255, 255, 0.86);
+	}
+	.hv__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 20px 28px;
+	}
+	@media (max-width: 699px) {
+		.hv__tc { display: none; }
+		/* smaller viewfinder; the text sits inside its four corners */
+		.hv__vf .c { width: 18px; height: 18px; border-width: 0; }
+		.hv__vf .tl { border-left-width: 1.5px; border-top-width: 1.5px; }
+		.hv__vf .tr { border-right-width: 1.5px; border-top-width: 1.5px; }
+		.hv__vf .bl { border-left-width: 1.5px; border-bottom-width: 1.5px; }
+		.hv__vf .br { border-right-width: 1.5px; border-bottom-width: 1.5px; }
+		/* top corners start just under the glass bar (which ends at 80px) */
+		/* corners line up with the edges of the glass bar (12px) */
+		.hv__vf .tl { left: 12px; top: 96px; }
+		.hv__vf .tr { right: 12px; top: 96px; }
+		.hv__vf .bl { left: 12px; bottom: 12px; }
+		.hv__vf .br { right: 12px; bottom: 12px; }
+		.hv__rec { left: 30px; top: 112px; }
+		.hv__content {
+			bottom: 64px;
+			padding-inline: 34px;
+		}
+		.hv :global(.hv__title) { max-width: none; }
+		.hv__row { margin-top: 20px; }
+	}
+</style>

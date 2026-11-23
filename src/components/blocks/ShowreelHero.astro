@@ -1,0 +1,267 @@
+---
+/**
+ * S19a · Showreel hero (Doop "Secties", /werk): a very large two-line headline
+ * with the showreel as a small tilted card between the words, already playing
+ * a short muted loop. On scroll (desktop) the section pins, the words slide
+ * apart and the card grows to the full content width (scripts/showreel.ts).
+ * A click on the card plays the whole showreel with sound right there, at the
+ * size it has at that moment (Max); another click pauses. Handwritten note under it (Max).
+ */
+import { Image, type BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import { headlineParts } from "../../utils/text";
+import PlayButton from "../PlayButton.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_showreel" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const file = value.video;
+const storageKey = typeof file?.meta?.storageKey === "string" ? file.meta.storageKey : undefined;
+const videoUrl = storageKey
+	? Astro.locals.emdash?.getPublicMediaUrl?.(storageKey)
+	: file?.provider === "external"
+		? file.src
+		: file?.url;
+const line2 = headlineParts(value.line_2);
+const label = value.label || "Showreel";
+---
+
+<section class="sr" id={value.anchor_id || undefined} data-hero="showreel" data-split="off" data-showreel>
+	<div class="container sr__in">
+		<!-- the heading as plain text for search engines and screen readers; the
+		     composition below holds the showreel card between the words (Max) -->
+		<h1 class="sr-only">{`${value.line_1} ${line2.map((p) => p.text).join("")}`.replace(/\s+/g, " ").trim()}</h1>
+		<div class="display sr__title" data-intro="rest">
+			<span class="sr__line sr__line--1" aria-hidden="true">{value.line_1}</span>
+			<span class="sr__line sr__line--2">
+				<span class="sr__slot" data-showreel-slot>
+					<button class="sr__reel" type="button" data-showreel-open aria-label={`${label} afspelen, met geluid`} aria-pressed="false">
+						<span class="sr__frame" data-intro="media">
+							{value.poster && <Image image={value.poster} class="sr__poster" sizes="(min-width: 900px) 90vw, 100vw" loading="eager" />}
+							{videoUrl && <video class="sr__video" src={videoUrl} muted autoplay playsinline preload="metadata" aria-hidden="true" data-loop-end="12" />}
+							<span class="sr__shade" />
+							<span class="mono sr__rec"><span class="rec-dot" /> REC</span>
+							<span class="mono sr__meta" data-small>{label}{value.duration && ` · ${value.duration}`}</span>
+							<PlayButton class="sr__play" />
+							<span class="sr__big" data-big>
+								<span class="sr__big-t">Bekijk de <em>showreel</em></span>
+								{value.duration && <span class="mono">{value.duration} · met geluid</span>}
+							</span>
+						</span>
+					</button>
+					{value.note && (
+						<span class="sr__note" aria-hidden="true">
+							{value.note}
+						</span>
+					)}
+				</span>
+				<span class="sr__l2" aria-hidden="true">{line2.map((p) => (p.kind === "plain" ? p.text : <em>{p.text}</em>))}</span>
+			</span>
+		</div>
+		<div class="sr__foot">
+			{value.intro && <p class="text-l sr__intro" data-intro="rest">{value.intro}</p>}
+			{value.scroll_hint && <p class="mono sr__hint" data-intro="rest">{value.scroll_hint} ↓</p>}
+		</div>
+	</div>
+
+</section>
+
+<style>
+	.sr {
+		position: relative;
+		overflow: hidden;
+		min-height: max(100svh, 720px);
+		display: flex;
+		background: var(--color-paper);
+	}
+	.sr__in {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding-top: clamp(150px, 22vh, 220px);
+		padding-bottom: clamp(40px, 6vh, 64px);
+	}
+	.sr__title {
+		text-align: center;
+	}
+	.sr__line {
+		display: block;
+	}
+	.sr__line--2 {
+		margin-top: 0.08em;
+	}
+	/* the card's place between the words; it scales with the type */
+	.sr__slot {
+		position: relative;
+		display: inline-block;
+		width: 2.2em;
+		height: 1.25em;
+		margin-right: 0.3em;
+		vertical-align: middle;
+		transform: translateY(-0.06em);
+	}
+	.sr__l2 {
+		display: inline-block;
+	}
+	.sr__reel {
+		position: absolute;
+		inset: 0;
+		z-index: 2;
+		display: block;
+		padding: 0;
+		border-radius: var(--radius-media);
+		overflow: hidden;
+		transform: rotate(-3deg);
+		box-shadow: 0 24px 50px rgba(18, 18, 18, 0.18);
+		cursor: pointer;
+		font-size: 1rem;
+		text-align: left;
+		letter-spacing: 0;
+		line-height: 1.4;
+		color: var(--color-white);
+	}
+	/* moved out of its slot by showreel.ts to grow: GSAP sets its box */
+	.sr > .sr__reel {
+		inset: auto;
+	}
+	.sr__frame,
+	.sr__poster,
+	.sr__video,
+	.sr__shade {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+	.sr__frame {
+		display: block;
+		background: var(--color-graphite);
+	}
+	.sr__frame :global(img),
+	.sr__video {
+		object-fit: cover;
+		max-width: none;
+	}
+	.sr__frame :global(img) {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+	.sr__shade {
+		background: linear-gradient(to top, rgba(18, 18, 18, 0.55), rgba(18, 18, 18, 0) 55%);
+	}
+	.sr__rec {
+		position: absolute;
+		left: 14px;
+		top: 12px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.sr__meta {
+		position: absolute;
+		left: 14px;
+		bottom: 12px;
+	}
+	/* the shared round glass play button (PlayButton.astro), centred on the card */
+	.sr__reel :global(.sr__play) {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		margin: -28px 0 0 -28px;
+	}
+	/* while it plays with sound the button and texts step back, the button returns on hover */
+	.sr__reel.is-playing :global(.sr__play) {
+		opacity: 0;
+	}
+	.sr__reel.is-playing:hover :global(.sr__play),
+	.sr__reel.is-playing:focus-visible :global(.sr__play) {
+		opacity: 1;
+	}
+	.sr__reel.is-playing :is(.sr__meta, .sr__big, .sr__rec, .sr__shade) {
+		opacity: 0 !important;
+		transition: opacity 0.4s;
+	}
+	/* shown once the card has grown (showreel.ts) */
+	.sr__big {
+		position: absolute;
+		left: 28px;
+		bottom: 28px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		opacity: 0;
+		visibility: hidden;
+	}
+	.sr__big-t {
+		font-family: var(--font-display);
+		font-weight: 600;
+		font-size: var(--text-h4);
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+	}
+	/* handwritten note under the card, rising to the left (Max) */
+	.sr__note {
+		position: absolute;
+		right: 58%;
+		top: calc(100% + 30px);
+		font-family: var(--font-scribble);
+		font-size: var(--text-h5);
+		font-weight: 400;
+		font-style: normal;
+		letter-spacing: 0;
+		line-height: 1.2;
+		color: var(--color-rec);
+		transform: rotate(5deg);
+		white-space: nowrap;
+		pointer-events: none;
+	}
+	.sr__foot {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: 24px;
+		margin-top: 48px;
+	}
+	.sr__intro {
+		max-width: 440px;
+	}
+	.sr__hint {
+		color: var(--color-mute);
+	}
+
+	@media (max-width: 899px) {
+		.sr {
+			min-height: 0;
+		}
+		.sr__in {
+			padding-top: 132px;
+		}
+		.sr__title {
+			text-align: left;
+		}
+		/* phones and tablets: the card sits as its own block between the lines, no scroll growth */
+		.sr__slot {
+			display: block;
+			width: 100%;
+			height: auto;
+			aspect-ratio: 16 / 9;
+			margin: 0.25em 0 0.2em;
+			transform: none;
+		}
+		.sr__reel {
+			transform: rotate(-2deg);
+		}
+		.sr__note {
+			display: none;
+		}
+		.sr__foot {
+			flex-direction: column;
+			align-items: flex-start;
+			margin-top: 40px;
+		}
+	}
+</style>

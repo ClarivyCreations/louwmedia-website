@@ -1,0 +1,5663 @@
+{
+	"$schema": "https://emdashcms.com/seed.schema.json",
+	"version": "1",
+	"meta": {
+		"name": "Louwmedia",
+		"description": "Louwmedia: maandelijkse content, bedrijfsvideo en fotografie",
+		"author": "Louwmedia"
+	},
+	"settings": {
+		"seo": {
+			"titleSeparator": "—"
+		},
+		"tagline": "Elke maand content met een plan erachter",
+		"title": "Louwmedia"
+	},
+	"blockTypes": [
+		{
+			"slug": "lm_about",
+			"label": "Beeld links · tekst en cijfers",
+			"description": "Foto links, intro en lopende tekst rechts, met twee korte cijfers onderaan.",
+			"icon": "image",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Label boven de tekst",
+							"type": "string"
+						},
+						{
+							"slug": "intro",
+							"label": "Intro (groot)",
+							"type": "text",
+							"required": true
+						},
+						{
+							"slug": "body",
+							"label": "Lopende tekst (lege regel = nieuwe alinea)",
+							"type": "text"
+						},
+						{
+							"slug": "link_label",
+							"label": "Tekstlink",
+							"type": "string"
+						},
+						{
+							"slug": "link_url",
+							"label": "Tekstlink-adres (begint met /, https://, mailto: of #)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "image",
+							"label": "Foto",
+							"type": "image",
+							"required": true
+						},
+						{
+							"slug": "image_caption_left",
+							"label": "Bijschrift op de foto, links",
+							"type": "string"
+						},
+						{
+							"slug": "image_caption_right",
+							"label": "Bijschrift op de foto, rechts",
+							"type": "string"
+						},
+						{
+							"slug": "facts",
+							"label": "Cijfers (max. 3)",
+							"type": "repeater",
+							"validation": {
+								"minItems": 0,
+								"maxItems": 3,
+								"subFields": [
+									{
+										"slug": "value",
+										"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "label",
+										"label": "Uitleg",
+										"type": "string",
+										"required": true
+									}
+								]
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_cases",
+			"label": "Klantcases · lijst of grid",
+			"description": "Kop, een schakelaar Lijst | Grid en de cases uit Cases. Bij wisselen groeien de kleine foto's door naar het raster.",
+			"icon": "squares-four",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "kind",
+							"label": "Alleen cases van deze soort (leeg = alle)",
+							"type": "select",
+							"validation": {
+								"options": [
+									"Maandelijkse content",
+									"Bedrijfsvideo",
+									"Fotografie",
+									"Automotive"
+								]
+							}
+						},
+						{
+							"slug": "view",
+							"label": "Begin als",
+							"type": "select",
+							"validation": {
+								"options": [
+									"Lijst",
+									"Grid"
+								]
+							}
+						},
+						{
+							"slug": "tone",
+							"label": "Achtergrond",
+							"type": "select",
+							"validation": {
+								"options": [
+									"Licht",
+									"Zwart"
+								]
+							}
+						},
+						{
+							"slug": "link_label",
+							"label": "Tekstlink rechtsboven",
+							"type": "string"
+						},
+						{
+							"slug": "link_url",
+							"label": "Tekstlink-adres",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_choice",
+			"label": "Keuzehulp · situaties als rijen",
+			"description": "Kop, tekst en knop links; rechts per situatie een rij die naar de dienst leidt die past. Optionele tekstlink eronder.",
+			"icon": "list",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst onder de kop",
+							"type": "text"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Knoptekst",
+							"type": "string"
+						},
+						{
+							"slug": "cta_url",
+							"label": "Knoplink",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "rows",
+							"label": "Situaties",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 6,
+								"subFields": [
+									{
+										"slug": "situation",
+										"label": "Situatie, bijv. Je wilt elke maand zichtbaar zijn",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "service",
+										"label": "Dienst die past",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "note",
+										"label": "Korte regel onder de dienst",
+										"type": "string"
+									},
+									{
+										"slug": "url",
+										"label": "Link",
+										"type": "string",
+										"validation": {
+											"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+										}
+									}
+								]
+							}
+						},
+						{
+							"slug": "link_label",
+							"label": "Tekstlink onder de rijen",
+							"type": "string"
+						},
+						{
+							"slug": "link_url",
+							"label": "Tekstlink-adres",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_cta",
+			"label": "Afsluiter · grote kop, foto rechtsboven",
+			"description": "Heel grote kop met een rode cirkel om het *accentwoord*, tekst en knoppen eronder; een uitgeknipte foto (bv. de camera) rechtsboven.",
+			"icon": "megaphone",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* krijgt de rode cirkel)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "tag",
+							"label": "Label boven de kop",
+							"type": "string"
+						},
+						{
+							"slug": "body",
+							"label": "Tekst",
+							"type": "text"
+						},
+						{
+							"slug": "link_label",
+							"label": "Tekstlink (bv. e-mailadres)",
+							"type": "string"
+						},
+						{
+							"slug": "link_url",
+							"label": "Tekstlink-adres (begint met /, https://, mailto: of #)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "primary_cta_label",
+							"label": "Knoptekst",
+							"type": "string"
+						},
+						{
+							"slug": "primary_cta_url",
+							"label": "Knoplink (begint met /, https://, mailto: of #)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "image",
+							"label": "Uitgeknipte foto rechtsboven (png of webp met transparantie)",
+							"type": "image"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_deliverables",
+			"label": "Wat je krijgt · gekantelde kaarten",
+			"description": "Kop en tekst, daaronder vier gekantelde kaarten: cijfers en foto's door elkaar.",
+			"icon": "cards",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst rechts van de kop",
+							"type": "text"
+						},
+						{
+							"slug": "cards",
+							"label": "Kaarten (4)",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 4,
+								"subFields": [
+									{
+										"slug": "kind",
+										"label": "Soort kaart",
+										"type": "select",
+										"required": true,
+										"options": [
+											"Cijfer",
+											"Foto"
+										]
+									},
+									{
+										"slug": "number",
+										"label": "Cijfer (bv. 30)",
+										"type": "string"
+									},
+									{
+										"slug": "title",
+										"label": "Titel onder het cijfer",
+										"type": "string"
+									},
+									{
+										"slug": "sub",
+										"label": "Regel onder de titel",
+										"type": "string"
+									},
+									{
+										"slug": "tone",
+										"label": "Kleur cijferkaart",
+										"type": "select",
+										"options": [
+											"Zwart",
+											"Wit",
+											"Grijs"
+										]
+									},
+									{
+										"slug": "image",
+										"label": "Foto (staand)",
+										"type": "image"
+									},
+									{
+										"slug": "reel",
+										"label": "Reel in plaats van foto (slug uit Reels, bv. werken-bij)",
+										"type": "string"
+									},
+									{
+										"slug": "label",
+										"label": "Label op de foto (bv. Plan · week 1)",
+										"type": "string"
+									},
+									{
+										"slug": "caption",
+										"label": "Ondertitel op de foto (*woord* = rood)",
+										"type": "string"
+									}
+								]
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_edit",
+			"label": "Afsluiter · Van idee naar edit (tijdlijn)",
+			"description": "Zwart, grote kop links, tekst en link rechts, daaronder de editor-tijdlijn over de hele breedte. De afspeelkop loopt mee bij scrollen.",
+			"icon": "film-strip",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "accent",
+							"label": "Accentwoord in de kop",
+							"type": "select",
+							"validation": {
+								"options": [
+									"Cursief",
+									"Rode cirkel"
+								]
+							}
+						},
+						{
+							"slug": "body",
+							"label": "Tekst rechts",
+							"type": "text"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Knoptekst (wit)",
+							"type": "string"
+						},
+						{
+							"slug": "cta_url",
+							"label": "Knoplink",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "link_label",
+							"label": "Tekstlink",
+							"type": "string"
+						},
+						{
+							"slug": "link_url",
+							"label": "Tekstlink-adres",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_faq",
+			"label": "Veelgestelde vragen",
+			"description": "Genummerde vragen die openklappen (één tegelijk), Google kan de antwoorden tonen. Met een review of contactregels erbij staat de FAQ links en komt rechts een smalle kolom met de review, contact en een knop; anders staat alles gecentreerd.",
+			"icon": "question",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst onder de kop",
+							"type": "text"
+						},
+						{
+							"slug": "items",
+							"label": "Vragen",
+							"type": "repeater",
+							"validation": {
+								"minItems": 1,
+								"maxItems": 12,
+								"subFields": [
+									{
+										"slug": "question",
+										"label": "Vraag",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "answer",
+										"label": "Antwoord (lege regel = nieuwe alinea)",
+										"type": "text",
+										"required": true
+									}
+								]
+							}
+						},
+						{
+							"slug": "review_quote",
+							"label": "Review naast de vragen (_woord_ = rode marker; leeg = geen review)",
+							"type": "text"
+						},
+						{
+							"slug": "review_name",
+							"label": "Review · naam",
+							"type": "string"
+						},
+						{
+							"slug": "review_role",
+							"label": "Review · functie en bedrijf",
+							"type": "string"
+						},
+						{
+							"slug": "review_image",
+							"label": "Review · kleine foto",
+							"type": "image"
+						},
+						{
+							"slug": "rating",
+							"label": "Score boven de review, bijv. 5,0 (leeg = geen sterren)",
+							"type": "string"
+						},
+						{
+							"slug": "rating_source",
+							"label": "Waar de score vandaan komt, bijv. Google",
+							"type": "string"
+						},
+						{
+							"slug": "contact_heading",
+							"label": "Kop boven de contactregels (ingevuld = mail, telefoon en Instagram uit Bedrijfsgegevens eronder)",
+							"type": "string"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Knoptekst onder de contactregels",
+							"type": "string"
+						},
+						{
+							"slug": "cta_url",
+							"label": "Knoplink",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_hero_compact",
+			"label": "Hero · compact grijs",
+			"description": "Halfhoog grijs blok voor overzichtspagina's: grote kop links, leadzin en een lijstje van de diensten rechts, een grote grijze scribble op de achtergrond. De pagina erna is wit.",
+			"icon": "layout",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Leadzin rechts",
+							"type": "text"
+						},
+						{
+							"slug": "show_services",
+							"label": "Lijstje met de diensten tonen",
+							"type": "boolean"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_hero_contact",
+			"label": "Hero · contact met formulier (shoot day-bon)",
+			"description": "Opent de contactpagina: kop en korte tekst links met mail, telefoon en werkgebied uit Bedrijfsgegevens; rechts het formulier als witte shoot day-bon met een rode notitie.",
+			"icon": "envelope-simple",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst onder de kop",
+							"type": "text"
+						},
+						{
+							"slug": "sheet_title",
+							"label": "Titel van de bon (leeg = Aanvraag)",
+							"type": "string"
+						},
+						{
+							"slug": "sheet_meta",
+							"label": "Klein label rechts op de bon",
+							"type": "string"
+						},
+						{
+							"slug": "note",
+							"label": "Handgeschreven notitie bij de bon (leeg = geen)",
+							"type": "string"
+						},
+						{
+							"slug": "topics",
+							"label": "Keuzes bij 'Waar gaat het over?'",
+							"type": "repeater",
+							"validation": {
+								"minItems": 0,
+								"maxItems": 8,
+								"subFields": [
+									{
+										"slug": "label",
+										"label": "Keuze",
+										"type": "string",
+										"required": true
+									}
+								]
+							}
+						},
+						{
+							"slug": "message_label",
+							"label": "Label boven het bericht (leeg = Het idee)",
+							"type": "string"
+						},
+						{
+							"slug": "message_placeholder",
+							"label": "Voorbeeldtekst in het bericht",
+							"type": "string"
+						},
+						{
+							"slug": "button_label",
+							"label": "Knoptekst (leeg = Versturen)",
+							"type": "string"
+						},
+						{
+							"slug": "success_title",
+							"label": "Na versturen: kop (leeg = Dank je!)",
+							"type": "string"
+						},
+						{
+							"slug": "success_text",
+							"label": "Na versturen: tekst",
+							"type": "text"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_hero_split",
+			"label": "Hero · tekst + schuine foto's",
+			"description": "Opener met kop links en twee schuine foto's rechts. Intro: logo, foto's schuiven van links binnen, dan de tekst.",
+			"icon": "sparkle",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "tag",
+							"label": "Label boven de kop (met rode REC-stip)",
+							"type": "string"
+						},
+						{
+							"slug": "intro",
+							"label": "Introtekst",
+							"type": "text"
+						},
+						{
+							"slug": "primary_cta_label",
+							"label": "Knoptekst",
+							"type": "string"
+						},
+						{
+							"slug": "primary_cta_url",
+							"label": "Knoplink (begint met /, https://, mailto: of #)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "secondary_cta_label",
+							"label": "Tekstlink",
+							"type": "string"
+						},
+						{
+							"slug": "secondary_cta_url",
+							"label": "Tekstlink-adres (begint met /, https://, mailto: of #)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "image_1",
+							"label": "Foto links (schuin)",
+							"type": "image",
+							"required": true
+						},
+						{
+							"slug": "image_2",
+							"label": "Foto rechts (schuin, loopt van de pagina af)",
+							"type": "image"
+						},
+						{
+							"slug": "scribble",
+							"label": "Handgeschreven notitie bij de rechterfoto (bv. dit is ’m)",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_hero_video",
+			"label": "Hero · grote video",
+			"description": "Opener met video over de volle breedte. Intro: kleine strook groeit uit tot het hele scherm, dan de tekst.",
+			"icon": "video-camera",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "tag",
+							"label": "Label boven de kop (met rode REC-stip)",
+							"type": "string"
+						},
+						{
+							"slug": "intro",
+							"label": "Introtekst",
+							"type": "text"
+						},
+						{
+							"slug": "primary_cta_label",
+							"label": "Knoptekst",
+							"type": "string"
+						},
+						{
+							"slug": "primary_cta_url",
+							"label": "Knoplink (begint met /, https://, mailto: of #)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "secondary_cta_label",
+							"label": "Tekstlink",
+							"type": "string"
+						},
+						{
+							"slug": "secondary_cta_url",
+							"label": "Tekstlink-adres (begint met /, https://, mailto: of #)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "video",
+							"label": "Video (liggend mp4 of webm, zonder geluid, 10 tot 30 sec)",
+							"type": "file",
+							"validation": {
+								"allowedMimeTypes": [
+									"video/mp4",
+									"video/webm"
+								]
+							}
+						},
+						{
+							"slug": "poster",
+							"label": "Stilstaand beeld (toont tot de video laadt)",
+							"type": "image",
+							"required": true
+						},
+						{
+							"slug": "rec_label",
+							"label": "Opname-label linksboven (bv. REC · 4K · 25 fps)",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_logos",
+			"label": "Klanten · logo-rij",
+			"description": "Kop links, label rechts en een rij klantlogo's tussen dunne lijnen.",
+			"icon": "image",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string"
+						},
+						{
+							"slug": "tag",
+							"label": "Label rechts",
+							"type": "string"
+						},
+						{
+							"slug": "logos",
+							"label": "Logo's (6 staat het mooist)",
+							"type": "repeater",
+							"validation": {
+								"minItems": 0,
+								"maxItems": 8,
+								"subFields": [
+									{
+										"slug": "image",
+										"label": "Logo",
+										"type": "image",
+										"required": true
+									},
+									{
+										"slug": "name",
+										"label": "Naam van de klant",
+										"type": "string",
+										"required": true
+									}
+								]
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_media",
+			"label": "Beeldrij",
+			"description": "Eén rij beeld op een case-pagina: breed (1), twee naast elkaar (2) of staande reels (3). Per beeld een foto of een reel, met een klein bijschrift.",
+			"icon": "image",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "layout",
+							"label": "Indeling",
+							"type": "select",
+							"required": true,
+							"validation": {
+								"options": [
+									"Breed",
+									"Twee naast elkaar",
+									"Staand (reels)"
+								]
+							}
+						},
+						{
+							"slug": "image_1",
+							"label": "Beeld 1 (bij een reel: stilstaand beeld tot hij speelt)",
+							"type": "image",
+							"required": true
+						},
+						{
+							"slug": "caption_1",
+							"label": "Bijschrift 1",
+							"type": "string"
+						},
+						{
+							"slug": "reel_1",
+							"label": "Reel 1 uit de reels (slug, leeg = foto)",
+							"type": "string"
+						},
+						{
+							"slug": "image_2",
+							"label": "Beeld 2 (bij een reel: stilstaand beeld tot hij speelt)",
+							"type": "image",
+							"required": false
+						},
+						{
+							"slug": "caption_2",
+							"label": "Bijschrift 2",
+							"type": "string"
+						},
+						{
+							"slug": "reel_2",
+							"label": "Reel 2 uit de reels (slug, leeg = foto)",
+							"type": "string"
+						},
+						{
+							"slug": "image_3",
+							"label": "Beeld 3 (bij een reel: stilstaand beeld tot hij speelt)",
+							"type": "image",
+							"required": false
+						},
+						{
+							"slug": "caption_3",
+							"label": "Bijschrift 3",
+							"type": "string"
+						},
+						{
+							"slug": "reel_3",
+							"label": "Reel 3 uit de reels (slug, leeg = foto)",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_photo_arc",
+			"label": "Foto's in een draaiende cirkel",
+			"description": "Vierkante foto's op een grote cirkel boven een gecentreerde kop. De cirkel draait langzaam rond; met minder foto's herhalen ze. Zeven tot negen foto's staat het mooist.",
+			"icon": "circle-half",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst onder de kop",
+							"type": "text"
+						},
+						{
+							"slug": "note",
+							"label": "Handgeschreven notitie linksonder (leeg = geen)",
+							"type": "string"
+						},
+						{
+							"slug": "items",
+							"label": "Foto's in de cirkel",
+							"type": "repeater",
+							"validation": {
+								"minItems": 0,
+								"maxItems": 12,
+								"subFields": [
+									{
+										"slug": "image",
+										"label": "Foto (vierkant uitgesneden)",
+										"type": "image",
+										"required": true
+									},
+									{
+										"slug": "time",
+										"label": "Tijd linksonder (bv. 08:30)",
+										"type": "string"
+									}
+								]
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_process",
+			"label": "Hoe het werkt · montage-tijdlijn",
+			"description": "Kop en tekst, daaronder de stappen als clips op een tijdlijn. Bij scrollen loopt de rode afspeelkop mee. Witte achtergrond; direct na de diensten kleurt de pagina mee naar wit.",
+			"icon": "film-strip",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst naast de kop",
+							"type": "text"
+						},
+						{
+							"slug": "steps",
+							"label": "Stappen (3 tot 5)",
+							"type": "repeater",
+							"validation": {
+								"minItems": 2,
+								"maxItems": 6,
+								"subFields": [
+									{
+										"slug": "title",
+										"label": "Stap",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "body",
+										"label": "Uitleg",
+										"type": "text"
+									}
+								]
+							}
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_quote",
+			"label": "Reviews · gecentreerd",
+			"description": "Grijs vlak met een kleine schuine foto, de quote groot in het midden en naam en functie eronder. De reviews komen uit Reviews, dus overal dezelfde; bij twee of meer verschijnen pijlen eronder.",
+			"icon": "quotes",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_reels",
+			"label": "Reels · gecentreerd, middelste groot",
+			"description": "Kop en tekst gecentreerd, daaronder de reels op een rij: de middelste groot en spelend, de rest kleiner. De reels komen uit Reels.",
+			"icon": "video",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst onder de kop",
+							"type": "text"
+						},
+						{
+							"slug": "note",
+							"label": "Niet in gebruik (was: noot bij de reels)",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_services",
+			"label": "Diensten · volle foto's die wegschuiven",
+			"description": "Per dienst een foto over het hele scherm die wegschuift (Volle foto's), of witte dienstkaarten die over elkaar heen stapelen (Stapelkaarten). De diensten komen uit Diensten.",
+			"icon": "stack",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "layout",
+							"label": "Weergave",
+							"type": "select",
+							"validation": {
+								"options": [
+									"Volle foto's",
+									"Stapelkaarten"
+								]
+							}
+						},
+						{
+							"slug": "button_label",
+							"label": "Knoptekst (leeg = naam van de dienst)",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_shootday_clips",
+			"label": "Shoot day in beeld · clips",
+			"description": "Eén groot beeld waarin de momenten van een shoot day elkaar afwisselen met een schuine wipe. Kop linksonder over het beeld, rechtsonder de momenten (foto, titel, tijd en plek) om naartoe te klikken. Per moment een foto en optioneel een video; de play-knop speelt de video met geluid.",
+			"icon": "video",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "hero",
+							"label": "Bovenaan de pagina (hero, volledig scherm, met h1)",
+							"type": "boolean"
+						},
+						{
+							"slug": "headline",
+							"label": "Kop over het beeld (*woord* = italic accent)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Korte tekst boven de momenten",
+							"type": "text"
+						},
+						{
+							"slug": "tag",
+							"label": "Label linksboven (de tijd van het moment komt erachter)",
+							"type": "string"
+						},
+						{
+							"slug": "note",
+							"label": "Handgeschreven notitie boven het beeld",
+							"type": "string"
+						},
+						{
+							"slug": "image_1",
+							"label": "Moment 1 · foto (16:9, ook stilstaand beeld van de video)",
+							"type": "image",
+							"required": true
+						},
+						{
+							"slug": "video_1",
+							"label": "Moment 1 · video (liggend, optioneel)",
+							"type": "file"
+						},
+						{
+							"slug": "title_1",
+							"label": "Moment 1 · titel",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "time_1",
+							"label": "Moment 1 · tijd, bijv. 08:30",
+							"type": "string"
+						},
+						{
+							"slug": "place_1",
+							"label": "Moment 1 · plek",
+							"type": "string"
+						},
+						{
+							"slug": "image_2",
+							"label": "Moment 2 · foto (16:9, ook stilstaand beeld van de video)",
+							"type": "image",
+							"required": true
+						},
+						{
+							"slug": "video_2",
+							"label": "Moment 2 · video (liggend, optioneel)",
+							"type": "file"
+						},
+						{
+							"slug": "title_2",
+							"label": "Moment 2 · titel",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "time_2",
+							"label": "Moment 2 · tijd, bijv. 08:30",
+							"type": "string"
+						},
+						{
+							"slug": "place_2",
+							"label": "Moment 2 · plek",
+							"type": "string"
+						},
+						{
+							"slug": "image_3",
+							"label": "Moment 3 · foto (16:9, ook stilstaand beeld van de video)",
+							"type": "image",
+							"required": false
+						},
+						{
+							"slug": "video_3",
+							"label": "Moment 3 · video (liggend, optioneel)",
+							"type": "file"
+						},
+						{
+							"slug": "title_3",
+							"label": "Moment 3 · titel",
+							"type": "string",
+							"required": false
+						},
+						{
+							"slug": "time_3",
+							"label": "Moment 3 · tijd, bijv. 08:30",
+							"type": "string"
+						},
+						{
+							"slug": "place_3",
+							"label": "Moment 3 · plek",
+							"type": "string"
+						},
+						{
+							"slug": "image_4",
+							"label": "Moment 4 · foto (16:9, ook stilstaand beeld van de video)",
+							"type": "image",
+							"required": false
+						},
+						{
+							"slug": "video_4",
+							"label": "Moment 4 · video (liggend, optioneel)",
+							"type": "file"
+						},
+						{
+							"slug": "title_4",
+							"label": "Moment 4 · titel",
+							"type": "string",
+							"required": false
+						},
+						{
+							"slug": "time_4",
+							"label": "Moment 4 · tijd, bijv. 08:30",
+							"type": "string"
+						},
+						{
+							"slug": "place_4",
+							"label": "Moment 4 · plek",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_shootday_hero",
+			"label": "Shoot day bon (call sheet + script)",
+			"description": "Op grijs: grote kop, leadzin en stappen links; rechts een schuine bon met gescheurde bovenrand, met de gegevens van de call sheet en een stukje script met rode notities. De bon loopt onderaan weg in de rand.",
+			"icon": "clipboard",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "hero",
+							"label": "Bovenaan de pagina (hero, met h1)",
+							"type": "boolean"
+						},
+						{
+							"slug": "headline",
+							"label": "Kop (*woord* = italic accent)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Leadzin",
+							"type": "text"
+						},
+						{
+							"slug": "steps",
+							"label": "Stappen links",
+							"type": "repeater",
+							"validation": {
+								"maxItems": 4,
+								"subFields": [
+									{
+										"slug": "title",
+										"label": "Stap",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "body",
+										"label": "Uitleg",
+										"type": "string"
+									}
+								]
+							}
+						},
+						{
+							"slug": "sheet_title",
+							"label": "Titel op de bon",
+							"type": "string"
+						},
+						{
+							"slug": "sheet_meta",
+							"label": "Kleine tekst rechts op de bon, bijv. Nr. 04 · Louwmedia",
+							"type": "string"
+						},
+						{
+							"slug": "sheet_rows",
+							"label": "Gegevens op de bon (call sheet)",
+							"type": "repeater",
+							"validation": {
+								"maxItems": 8,
+								"subFields": [
+									{
+										"slug": "label",
+										"label": "Label, bijv. Datum",
+										"type": "string",
+										"required": true
+									},
+									{
+										"slug": "value",
+										"label": "Waarde",
+										"type": "string",
+										"required": true
+									}
+								]
+							}
+						},
+						{
+							"slug": "script_label",
+							"label": "Script · label links, bijv. SCRIPT V2",
+							"type": "string"
+						},
+						{
+							"slug": "script_meta",
+							"label": "Script · label rechts, bijv. 0:45 · ook in 9:16",
+							"type": "string"
+						},
+						{
+							"slug": "script",
+							"label": "Scriptregels (_woord_ = rode marker)",
+							"type": "repeater",
+							"validation": {
+								"maxItems": 20,
+								"subFields": [
+									{
+										"slug": "kind",
+										"label": "Soort regel",
+										"type": "select",
+										"options": [
+											"Scène",
+											"Actie",
+											"Personage",
+											"Tekst"
+										]
+									},
+									{
+										"slug": "text",
+										"label": "Tekst",
+										"type": "string",
+										"required": true
+									}
+								]
+							}
+						},
+						{
+							"slug": "note_top",
+							"label": "Handgeschreven notitie boven de bon",
+							"type": "string"
+						},
+						{
+							"slug": "note_side",
+							"label": "Handgeschreven notitie naast de bon",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_showreel",
+			"label": "Hero · showreel tussen de woorden",
+			"description": "Grote kop in twee regels met de showreel als klein kaartje ertussen (speelt kort af, zonder geluid). Bij scrollen groeit het kaartje tot de volle breedte; een klik speelt de hele showreel met geluid af op het hele scherm.",
+			"icon": "video",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "line_1",
+							"label": "Eerste regel van de kop",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "line_2",
+							"label": "Tweede regel, na het kaartje (*woord* = italic accent)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "intro",
+							"label": "Tekst linksonder",
+							"type": "text"
+						},
+						{
+							"slug": "note",
+							"label": "Handgeschreven notitie onder het kaartje",
+							"type": "string"
+						},
+						{
+							"slug": "label",
+							"label": "Naam van de video, bijv. Showreel 2026",
+							"type": "string"
+						},
+						{
+							"slug": "duration",
+							"label": "Lengte, bijv. 01:48",
+							"type": "string"
+						},
+						{
+							"slug": "video",
+							"label": "Showreel (mp4 of webm, met geluid; het kaartje speelt de eerste 12 seconden zonder geluid)",
+							"type": "file",
+							"validation": {
+								"allowedMimeTypes": [
+									"video/mp4",
+									"video/webm"
+								]
+							}
+						},
+						{
+							"slug": "poster",
+							"label": "Stilstaand beeld (toont tot de video laadt)",
+							"type": "image",
+							"required": true
+						},
+						{
+							"slug": "scroll_hint",
+							"label": "Scroll-hint rechtsonder",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_statement",
+			"label": "Statement · grote zin, foto in zoeker",
+			"description": "Eén grote zin rechts met korte tekst en eventueel een knop; linksonder een foto in een camerazoeker met een handgeschreven noot.",
+			"icon": "quotes",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "headline",
+							"label": "Statement (*woord* = italic accent, _woord_ = rode marker)",
+							"type": "string",
+							"required": true
+						},
+						{
+							"slug": "body",
+							"label": "Tekst",
+							"type": "text"
+						},
+						{
+							"slug": "cta_label",
+							"label": "Knoptekst",
+							"type": "string"
+						},
+						{
+							"slug": "cta_url",
+							"label": "Knoplink",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|(?:https?://|mailto:|tel:|/(?!/)|#).+)$"
+							}
+						},
+						{
+							"slug": "image",
+							"label": "Foto in de zoeker (liggend)",
+							"type": "image"
+						},
+						{
+							"slug": "note",
+							"label": "Handgeschreven noot bij de foto",
+							"type": "string"
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"slug": "lm_text",
+			"label": "Tekst · één leeskolom",
+			"description": "Gewone tekst met tussenkoppen en lijstjes, voor de privacyverklaring en de algemene voorwaarden. Zet er een compacte hero boven voor de titel.",
+			"icon": "text-align-left",
+			"category": "Louwmedia",
+			"currentVersion": 1,
+			"versions": [
+				{
+					"version": 1,
+					"fields": [
+						{
+							"slug": "updated",
+							"label": "Regel bovenaan (bv. Laatst bijgewerkt: 1 januari 2027)",
+							"type": "string"
+						},
+						{
+							"slug": "body",
+							"label": "Tekst",
+							"type": "portableText",
+							"required": true
+						},
+						{
+							"slug": "anchor_id",
+							"label": "Sectie-ID (kleine letters, voor links als /#werkwijze)",
+							"type": "string",
+							"validation": {
+								"pattern": "^(?:$|[a-z][a-z0-9_-]*)$"
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"collections": [
+		{
+			"slug": "cases",
+			"label": "Cases",
+			"labelSingular": "Case",
+			"supports": [
+				"drafts",
+				"revisions",
+				"seo"
+			],
+			"urlPattern": "/werk/{slug}",
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Klantnaam (wordt de url; meerdere cases bij dezelfde klant: Klant – onderwerp)",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "kind",
+					"label": "Soort",
+					"type": "select",
+					"required": true,
+					"validation": {
+						"options": [
+							"Maandelijkse content",
+							"Bedrijfsvideo",
+							"Fotografie",
+							"Automotive"
+						]
+					}
+				},
+				{
+					"slug": "meta",
+					"label": "Meta (bv. Portret · Foto)",
+					"type": "string"
+				},
+				{
+					"slug": "duration",
+					"label": "Duur (bv. 00:42)",
+					"type": "string"
+				},
+				{
+					"slug": "cover",
+					"label": "Hoofdfoto (bovenaan en in de overzichten)",
+					"type": "image",
+					"required": true
+				},
+				{
+					"slug": "position",
+					"label": "Volgorde in het menu (1 = eerst)",
+					"type": "integer"
+				},
+				{
+					"slug": "client",
+					"label": "Niet in gebruik (de klantnaam is de titel)",
+					"type": "string"
+				},
+				{
+					"slug": "year",
+					"label": "Jaar",
+					"type": "integer"
+				},
+				{
+					"slug": "headline",
+					"label": "Kop op de pagina (*woord* = italic accent; leeg = de klantnaam)",
+					"type": "string"
+				},
+				{
+					"slug": "intro",
+					"label": "Korte uitleg: de vraag en wat er gemaakt is",
+					"type": "text"
+				},
+				{
+					"slug": "deliverables",
+					"label": "Gemaakt, bijv. 1 film · 6 reels · 24 foto's",
+					"type": "string"
+				},
+				{
+					"slug": "video",
+					"label": "Video bovenaan (mp4/webm, liggend; komt in plaats van de hoofdfoto)",
+					"type": "file",
+					"validation": {
+						"allowedMimeTypes": [
+							"video/mp4",
+							"video/webm"
+						]
+					}
+				},
+				{
+					"slug": "review_quote",
+					"label": "Review (_woord_ = rode marker; leeg = geen review)",
+					"type": "text"
+				},
+				{
+					"slug": "review_name",
+					"label": "Review · naam",
+					"type": "string"
+				},
+				{
+					"slug": "review_role",
+					"label": "Review · functie en bedrijf",
+					"type": "string"
+				},
+				{
+					"slug": "review_image",
+					"label": "Review · kleine foto",
+					"type": "image"
+				},
+				{
+					"slug": "content",
+					"label": "Beeld (rijen)",
+					"type": "blocks",
+					"validation": {
+						"allowedTypes": [
+							"lm_media"
+						],
+						"retiredTypes": [],
+						"minItems": 0,
+						"maxItems": 30
+					}
+				}
+			]
+		},
+		{
+			"slug": "gegevens",
+			"label": "Bedrijfsgegevens",
+			"labelSingular": "Bedrijfsgegevens",
+			"supports": [
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Bedrijfsnaam",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "email",
+					"label": "E-mailadres",
+					"type": "string"
+				},
+				{
+					"slug": "phone",
+					"label": "Telefoonnummer (zoals het op de site staat, bv. 06 12 34 56 78)",
+					"type": "string"
+				},
+				{
+					"slug": "phone_note",
+					"label": "Kleine tekst bij het nummer (bv. Bel of app)",
+					"type": "string"
+				},
+				{
+					"slug": "street",
+					"label": "Straat en huisnummer",
+					"type": "string"
+				},
+				{
+					"slug": "postal_code",
+					"label": "Postcode",
+					"type": "string"
+				},
+				{
+					"slug": "city",
+					"label": "Plaats",
+					"type": "string"
+				},
+				{
+					"slug": "area",
+					"label": "Werkgebied (bv. Heel Nederland, vanuit Zuid-Holland)",
+					"type": "string"
+				},
+				{
+					"slug": "kvk",
+					"label": "KvK-nummer",
+					"type": "string"
+				},
+				{
+					"slug": "instagram",
+					"label": "Instagram (volledige link)",
+					"type": "string",
+					"validation": {
+						"pattern": "^(?:$|https://.+)$"
+					}
+				},
+				{
+					"slug": "tiktok",
+					"label": "TikTok (volledige link)",
+					"type": "string",
+					"validation": {
+						"pattern": "^(?:$|https://.+)$"
+					}
+				},
+				{
+					"slug": "linkedin",
+					"label": "LinkedIn (volledige link)",
+					"type": "string",
+					"validation": {
+						"pattern": "^(?:$|https://.+)$"
+					}
+				},
+				{
+					"slug": "youtube",
+					"label": "YouTube (volledige link)",
+					"type": "string",
+					"validation": {
+						"pattern": "^(?:$|https://.+)$"
+					}
+				},
+				{
+					"slug": "share_image",
+					"label": "Standaard deelafbeelding (1200×630, voor pagina's zonder eigen beeld)",
+					"type": "image"
+				}
+			]
+		},
+		{
+			"slug": "pages",
+			"label": "Pagina's",
+			"labelSingular": "Pagina",
+			"supports": [
+				"drafts",
+				"revisions",
+				"preview",
+				"seo"
+			],
+			"urlPattern": "/{slug}",
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Titel",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "content",
+					"label": "Secties",
+					"type": "blocks",
+					"validation": {
+						"allowedTypes": [
+							"lm_hero_split",
+							"lm_hero_video",
+							"lm_about",
+							"lm_logos",
+							"lm_services",
+							"lm_quote",
+							"lm_process",
+							"lm_reels",
+							"lm_cases",
+							"lm_faq",
+							"lm_statement",
+							"lm_deliverables",
+							"lm_edit",
+							"lm_cta",
+							"lm_hero_compact",
+							"lm_choice",
+							"lm_showreel",
+							"lm_shootday_hero",
+							"lm_shootday_clips",
+							"lm_photo_arc",
+							"lm_hero_contact",
+							"lm_text"
+						],
+						"retiredTypes": [],
+						"minItems": 0,
+						"maxItems": 24
+					}
+				}
+			]
+		},
+		{
+			"slug": "reels",
+			"label": "Reels",
+			"labelSingular": "Reel",
+			"supports": [
+				"drafts",
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Titel (onder de reel)",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "meta",
+					"label": "Soort of klant (bv. Automotive)",
+					"type": "string"
+				},
+				{
+					"slug": "video",
+					"label": "Video (staand, 9:16)",
+					"type": "file"
+				},
+				{
+					"slug": "poster",
+					"label": "Stilstaand beeld (staand, 9:16)",
+					"type": "image",
+					"required": true
+				},
+				{
+					"slug": "position",
+					"label": "Volgorde (1 = eerst)",
+					"type": "integer",
+					"required": true
+				}
+			]
+		},
+		{
+			"slug": "reviews",
+			"label": "Reviews",
+			"labelSingular": "Review",
+			"supports": [
+				"drafts",
+				"revisions"
+			],
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Naam van de klant",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "quote",
+					"label": "Quote (_woord_ = rode marker die zich tekent)",
+					"type": "text",
+					"required": true
+				},
+				{
+					"slug": "role",
+					"label": "Functie en bedrijf",
+					"type": "string"
+				},
+				{
+					"slug": "image",
+					"label": "Foto (schuin, klein boven de quote)",
+					"type": "image",
+					"required": true
+				},
+				{
+					"slug": "position",
+					"label": "Volgorde (1 = eerst)",
+					"type": "integer",
+					"required": true
+				}
+			]
+		},
+		{
+			"slug": "services",
+			"label": "Diensten",
+			"labelSingular": "Dienst",
+			"supports": [
+				"drafts",
+				"revisions",
+				"seo"
+			],
+			"urlPattern": "/diensten/{slug}",
+			"fields": [
+				{
+					"slug": "title",
+					"label": "Titel",
+					"type": "string",
+					"required": true
+				},
+				{
+					"slug": "summary",
+					"label": "Korte uitleg (één zin, staat in het menu)",
+					"type": "text",
+					"required": true
+				},
+				{
+					"slug": "menu_note",
+					"label": "Label onder de menufoto (bv. Shoot day · 1× per maand)",
+					"type": "string"
+				},
+				{
+					"slug": "image",
+					"label": "Foto",
+					"type": "image"
+				},
+				{
+					"slug": "position",
+					"label": "Volgorde (1 = eerst)",
+					"type": "integer",
+					"required": true
+				},
+				{
+					"slug": "content",
+					"label": "Secties van de dienstpagina",
+					"type": "blocks",
+					"validation": {
+						"allowedTypes": [
+							"lm_hero_split",
+							"lm_hero_video",
+							"lm_about",
+							"lm_logos",
+							"lm_services",
+							"lm_quote",
+							"lm_process",
+							"lm_reels",
+							"lm_cases",
+							"lm_faq",
+							"lm_statement",
+							"lm_deliverables",
+							"lm_edit",
+							"lm_cta",
+							"lm_hero_compact",
+							"lm_choice",
+							"lm_showreel",
+							"lm_shootday_hero",
+							"lm_shootday_clips",
+							"lm_photo_arc",
+							"lm_hero_contact",
+							"lm_text"
+						],
+						"retiredTypes": [],
+						"minItems": 0,
+						"maxItems": 24
+					}
+				},
+				{
+					"slug": "card_title",
+					"label": "Titel op de dienstkaart (*woord* = accent; leeg = titel)",
+					"type": "string"
+				},
+				{
+					"slug": "card_text",
+					"label": "Tekst op de dienstkaart (2 à 3 zinnen; leeg = korte uitleg)",
+					"type": "text"
+				}
+			]
+		}
+	],
+	"defaultLocale": "en",
+	"taxonomies": [
+		{
+			"id": "tax:category",
+			"name": "category",
+			"label": "Categories",
+			"labelSingular": "Category",
+			"hierarchical": true,
+			"collections": [
+				"posts"
+			]
+		},
+		{
+			"id": "tax:tag",
+			"name": "tag",
+			"label": "Tags",
+			"labelSingular": "Tag",
+			"hierarchical": false,
+			"collections": [
+				"posts"
+			]
+		}
+	],
+	"menus": [
+		{
+			"id": "menu:footer",
+			"name": "footer",
+			"label": "Footer",
+			"items": [
+				{
+					"type": "custom",
+					"label": "Werk",
+					"url": "/werk"
+				},
+				{
+					"type": "custom",
+					"label": "Diensten",
+					"url": "/diensten"
+				},
+				{
+					"type": "custom",
+					"label": "Shoot day",
+					"url": "/shoot-day"
+				},
+				{
+					"type": "custom",
+					"label": "Over",
+					"url": "/over"
+				},
+				{
+					"type": "custom",
+					"label": "Contact",
+					"url": "/contact"
+				}
+			]
+		},
+		{
+			"id": "menu:primary",
+			"name": "primary",
+			"label": "Hoofdmenu",
+			"items": [
+				{
+					"type": "custom",
+					"label": "Werk",
+					"url": "/werk",
+					"cssClasses": "mega-werk"
+				},
+				{
+					"type": "custom",
+					"label": "Diensten",
+					"url": "/diensten",
+					"cssClasses": "mega-diensten"
+				},
+				{
+					"type": "custom",
+					"label": "Shoot day",
+					"url": "/shoot-day"
+				},
+				{
+					"type": "custom",
+					"label": "Over",
+					"url": "/over"
+				},
+				{
+					"type": "custom",
+					"label": "Kennismaken",
+					"url": "/contact",
+					"cssClasses": "button"
+				}
+			]
+		},
+		{
+			"id": "menu:social",
+			"name": "social",
+			"label": "Socials",
+			"items": [
+				{
+					"type": "custom",
+					"label": "Instagram",
+					"url": "https://www.instagram.com/",
+					"target": "_blank"
+				},
+				{
+					"type": "custom",
+					"label": "TikTok",
+					"url": "https://www.tiktok.com/",
+					"target": "_blank"
+				},
+				{
+					"type": "custom",
+					"label": "LinkedIn",
+					"url": "https://www.linkedin.com/",
+					"target": "_blank"
+				}
+			]
+		}
+	],
+	"widgetAreas": [],
+	"content": {
+		"cases": [
+			{
+				"id": "cases:dealer-lancering",
+				"slug": "dealer-lancering",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Dealer lancering",
+					"kind": "Automotive",
+					"meta": "Dealer · Drone",
+					"duration": "",
+					"cover": {
+						"$media": {
+							"file": "media/martini.jpg",
+							"alt": "Raceauto in Martini-kleuren van bovenaf",
+							"filename": "martini.jpg"
+						}
+					},
+					"position": 17,
+					"year": 2025,
+					"headline": "Een nieuw model, van *boven* gezien.",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:trackday",
+				"slug": "trackday",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Trackday",
+					"kind": "Automotive",
+					"meta": "Circuit · Reels",
+					"duration": "",
+					"cover": {
+						"$media": {
+							"file": "media/productlancering.jpg",
+							"alt": "Raceauto's in de pitstraat",
+							"filename": "productlancering.jpg"
+						}
+					},
+					"position": 16,
+					"year": 2026,
+					"headline": "Een dag op het *circuit*.",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:teamfotos",
+				"slug": "teamfotos",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Teamfoto's",
+					"kind": "Fotografie",
+					"meta": "Team · Foto",
+					"duration": "",
+					"cover": {
+						"$media": {
+							"file": "media/reel-hr-poster.jpg",
+							"alt": "Twee collega's op kantoor",
+							"filename": "reel-hr-poster.jpg"
+						}
+					},
+					"position": 15,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Teamfoto's",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:productfotos",
+				"slug": "productfotos",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Productfoto's",
+					"kind": "Fotografie",
+					"meta": "Product · Foto",
+					"duration": "",
+					"cover": {
+						"$media": {
+							"file": "media/quote-porsche.webp",
+							"alt": "Witte Porsche in een showroom",
+							"filename": "quote-porsche.webp"
+						}
+					},
+					"position": 14,
+					"client": "Klantnaam",
+					"year": 2026,
+					"headline": "Productfoto's",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:aftermovie",
+				"slug": "aftermovie",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Aftermovie",
+					"kind": "Bedrijfsvideo",
+					"meta": "Event · Video",
+					"duration": "",
+					"cover": {
+						"$media": {
+							"file": "media/bv-werkvloer.jpg",
+							"alt": "Collega's dansen op kantoor",
+							"filename": "bv-werkvloer.jpg"
+						}
+					},
+					"position": 13,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Aftermovie",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:recruitmentfilm",
+				"slug": "recruitmentfilm",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Recruitmentfilm",
+					"kind": "Bedrijfsvideo",
+					"meta": "Werving · Video",
+					"duration": "",
+					"cover": {
+						"$media": {
+							"file": "media/showreel-poster.jpg",
+							"alt": "Collega's op kantoor",
+							"filename": "showreel-poster.jpg"
+						}
+					},
+					"position": 12,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Recruitmentfilm",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:bedrijfsfilm",
+				"slug": "bedrijfsfilm",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Bedrijfsfilm",
+					"kind": "Bedrijfsvideo",
+					"meta": "Bedrijfsfilm · Video",
+					"duration": "",
+					"cover": {
+						"$media": {
+							"file": "media/bv-gimbal.jpg",
+							"alt": "Gimbal met camera in de rook",
+							"filename": "bv-gimbal.jpg"
+						}
+					},
+					"position": 11,
+					"client": "Klantnaam",
+					"year": 2026,
+					"headline": "Bedrijfsfilm",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:roadtrip",
+				"slug": "roadtrip",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Roadtrip",
+					"kind": "Maandelijkse content",
+					"meta": "Reis · Reel",
+					"duration": "00:45",
+					"cover": {
+						"$media": {
+							"file": "media/reel-corsica-poster.jpg",
+							"alt": "Blauwe Mustang op een parkeerplaats",
+							"filename": "reel-corsica-poster.jpg"
+						}
+					},
+					"position": 10,
+					"client": "Klantnaam",
+					"year": 2024,
+					"headline": "Roadtrip",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:teamportretten",
+				"slug": "teamportretten",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Teamportretten",
+					"kind": "Maandelijkse content",
+					"meta": "Portret · Foto",
+					"duration": "00:18",
+					"cover": {
+						"$media": {
+							"file": "media/fotografie.webp",
+							"alt": "Camera op een groene doek",
+							"filename": "fotografie.webp"
+						}
+					},
+					"position": 9,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Teamportretten",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:open-dag",
+				"slug": "open-dag",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Open dag",
+					"kind": "Maandelijkse content",
+					"meta": "Event · Aftermovie",
+					"duration": "01:05",
+					"cover": {
+						"$media": {
+							"file": "media/reel-placeholder-garage.jpg",
+							"alt": "Cameraman filmt in een parkeergarage",
+							"filename": "reel-placeholder-garage.jpg"
+						}
+					},
+					"position": 8,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Open dag",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:productlancering",
+				"slug": "productlancering",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Productlancering",
+					"kind": "Maandelijkse content",
+					"meta": "Launch · Reels",
+					"duration": "00:32",
+					"cover": {
+						"$media": {
+							"file": "media/productlancering.jpg",
+							"alt": "Raceauto's in de pitstraat",
+							"filename": "productlancering.jpg"
+						}
+					},
+					"position": 7,
+					"client": "Klantnaam",
+					"year": 2026,
+					"headline": "Productlancering",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:werken-bij",
+				"slug": "werken-bij",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Werken bij",
+					"kind": "Maandelijkse content",
+					"meta": "HR · Reel",
+					"duration": "00:41",
+					"cover": {
+						"$media": {
+							"file": "media/reel-hr-poster.jpg",
+							"alt": "Twee collega's dansen op kantoor",
+							"filename": "reel-hr-poster.jpg"
+						}
+					},
+					"position": 5,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Werken bij",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:showroom",
+				"slug": "showroom",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Showroom",
+					"kind": "Automotive",
+					"meta": "Automotive · Foto",
+					"duration": "00:36",
+					"cover": {
+						"$media": {
+							"file": "media/quote-porsche.webp",
+							"alt": "Witte Porsche in een showroom",
+							"filename": "quote-porsche.webp"
+						}
+					},
+					"position": 4,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Showroom",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:pitstraat",
+				"slug": "pitstraat",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Pitstraat",
+					"kind": "Bedrijfsvideo",
+					"meta": "Automotive · Video",
+					"duration": "01:12",
+					"cover": {
+						"$media": {
+							"file": "media/bedrijfsvideo.webp",
+							"alt": "Pitstraat met raceauto's",
+							"filename": "bedrijfsvideo.webp"
+						}
+					},
+					"position": 1,
+					"client": "Klantnaam",
+					"year": 2026,
+					"headline": "Een bedrijfsfilm die *klinkt* als het team.",
+					"intro": "Ze wilden laten zien hoe het er achter de schermen aan toe gaat, zonder gepolijste reclamefilm. We filmden een dag mee en maakten er een film en een reeks korte versies van.",
+					"deliverables": "1 film · 3 reels · 18 foto's",
+					"video": {
+						"$media": {
+							"file": "media/hero-corsica.mp4",
+							"alt": "",
+							"filename": "hero-corsica.mp4"
+						}
+					},
+					"review_quote": "Het voelde niet als een opname. Het voelde als een _gewone werkdag_, en zo ziet de film er ook uit.",
+					"review_name": "Naam van de klant",
+					"review_role": "Communicatie, naam van het bedrijf (voorbeeld)",
+					"review_image": {
+						"$media": {
+							"file": "media/fotografie.webp",
+							"alt": "Camera op een groene doek",
+							"filename": "fotografie.webp"
+						}
+					},
+					"content": [
+						{
+							"_type": "lm_media",
+							"_version": 1,
+							"_key": "px-1",
+							"layout": "Breed",
+							"image_1": {
+								"$media": {
+									"file": "media/productlancering.jpg",
+									"alt": "Raceauto's in de pitstraat",
+									"filename": "productlancering.jpg"
+								}
+							},
+							"caption_1": "Tussen twee opnames door"
+						},
+						{
+							"_type": "lm_media",
+							"_version": 1,
+							"_key": "px-2",
+							"layout": "Twee naast elkaar",
+							"image_1": {
+								"$media": {
+									"file": "media/kruispunt.webp",
+									"alt": "Kruispunt van bovenaf",
+									"filename": "kruispunt.webp"
+								}
+							},
+							"caption_1": "Op weg naar de locatie",
+							"image_2": {
+								"$media": {
+									"file": "media/fotografie.webp",
+									"alt": "Camera op een groene doek",
+									"filename": "fotografie.webp"
+								}
+							},
+							"caption_2": "Shoot day"
+						},
+						{
+							"_type": "lm_media",
+							"_version": 1,
+							"_key": "px-3",
+							"layout": "Staand (reels)",
+							"image_1": {
+								"$media": {
+									"file": "media/reel-promo-poster.jpg",
+									"alt": "Lachende man tijdens een interview",
+									"filename": "reel-promo-poster.jpg"
+								}
+							},
+							"caption_1": "Reel · de aankondiging",
+							"reel_1": "productpromo",
+							"image_2": {
+								"$media": {
+									"file": "media/bv-gimbal.jpg",
+									"alt": "Gimbal met camera in de rook",
+									"filename": "bv-gimbal.jpg"
+								}
+							},
+							"caption_2": "Achter de schermen",
+							"image_3": {
+								"$media": {
+									"file": "media/reel-corsica-poster.jpg",
+									"alt": "Blauwe Mustang op een parkeerplaats",
+									"filename": "reel-corsica-poster.jpg"
+								}
+							},
+							"caption_3": "Reel · onderweg",
+							"reel_3": "corsica"
+						}
+					]
+				}
+			},
+			{
+				"id": "cases:op-locatie",
+				"slug": "op-locatie",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Op locatie",
+					"kind": "Fotografie",
+					"meta": "Reis · Foto",
+					"duration": "00:28",
+					"cover": {
+						"$media": {
+							"file": "media/op-locatie.webp",
+							"alt": "Forum Romanum",
+							"filename": "op-locatie.webp"
+						}
+					},
+					"position": 3,
+					"client": "Klantnaam",
+					"year": 2025,
+					"headline": "Op locatie",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:van-boven-gezien",
+				"slug": "van-boven-gezien",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Van boven gezien",
+					"kind": "Maandelijkse content",
+					"meta": "Drone · Reel",
+					"duration": "00:15",
+					"cover": {
+						"$media": {
+							"file": "media/kruispunt.webp",
+							"alt": "Kruispunt van bovenaf",
+							"filename": "kruispunt.webp"
+						}
+					},
+					"position": 2,
+					"client": "Klantnaam",
+					"year": 2026,
+					"headline": "Van boven gezien",
+					"content": []
+				}
+			},
+			{
+				"id": "cases:achter-de-camera",
+				"slug": "achter-de-camera",
+				"status": "published",
+				"data": {
+					"title": "Klantnaam · Achter de camera",
+					"kind": "Fotografie",
+					"meta": "Portret · Foto",
+					"duration": "00:42",
+					"cover": {
+						"$media": {
+							"file": "media/maker-over.jpg",
+							"alt": "Louwmedia met camera",
+							"filename": "maker-over.jpg"
+						}
+					},
+					"position": 6,
+					"client": "Klantnaam",
+					"year": 2024,
+					"headline": "Achter de camera",
+					"content": []
+				}
+			}
+		],
+		"gegevens": [
+			{
+				"id": "gegevens:louwmedia",
+				"slug": "louwmedia",
+				"status": "published",
+				"data": {
+					"title": "Louwmedia",
+					"email": "info@louwmedia.nl",
+					"phone": "[telefoon]",
+					"phone_note": "Bel of app",
+					"street": "Kompasstraat 2L",
+					"postal_code": "",
+					"city": "Capelle aan den IJssel",
+					"area": "Heel Nederland, vanuit Zuid-Holland",
+					"kvk": "",
+					"instagram": "",
+					"tiktok": "",
+					"linkedin": "",
+					"youtube": "",
+					"share_image": {
+						"$media": {
+							"file": "media/maker-over.jpg",
+							"alt": "Lucas met een camera in de kofferbak van een auto",
+							"filename": "maker-over.jpg"
+						}
+					}
+				}
+			}
+		],
+		"pages": [
+			{
+				"id": "pages:algemene-voorwaarden",
+				"slug": "algemene-voorwaarden",
+				"status": "published",
+				"data": {
+					"title": "Algemene voorwaarden",
+					"content": [
+						{
+							"_type": "lm_hero_compact",
+							"_version": 1,
+							"_key": "algemene-voorwaarden-hero",
+							"headline": "Algemene *voorwaarden*",
+							"intro": "De afspraken die gelden voor elke opdracht.",
+							"show_services": false
+						},
+						{
+							"_type": "lm_text",
+							"_version": 1,
+							"_key": "algemene-voorwaarden-text",
+							"updated": "Laatst bijgewerkt: [datum]",
+							"body": [
+								{
+									"_type": "block",
+									"_key": "t22",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s22",
+											"text": "[Placeholder. De definitieve algemene voorwaarden komen van Louwmedia; hieronder staat alleen de opbouw.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t23",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s23",
+											"text": "1. Toepasselijkheid",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t24",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s24",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t25",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s25",
+											"text": "2. Offertes en opdrachten",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t26",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s26",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t27",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s27",
+											"text": "3. Uitvoering",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t28",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s28",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t29",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s29",
+											"text": "4. Prijzen en betaling",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t30",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s30",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t31",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s31",
+											"text": "5. Verplaatsen en annuleren",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t32",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s32",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t33",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s33",
+											"text": "6. Beeld en gebruiksrechten",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t34",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s34",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t35",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s35",
+											"text": "7. Aansprakelijkheid",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t36",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s36",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t37",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s37",
+											"text": "8. Toepasselijk recht",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t38",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s38",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:privacyverklaring",
+				"slug": "privacyverklaring",
+				"status": "published",
+				"data": {
+					"title": "Privacyverklaring",
+					"content": [
+						{
+							"_type": "lm_hero_compact",
+							"_version": 1,
+							"_key": "privacyverklaring-hero",
+							"headline": "Privacy*verklaring*",
+							"intro": "Hoe Louwmedia omgaat met je gegevens.",
+							"show_services": false
+						},
+						{
+							"_type": "lm_text",
+							"_version": 1,
+							"_key": "privacyverklaring-text",
+							"updated": "Laatst bijgewerkt: [datum]",
+							"body": [
+								{
+									"_type": "block",
+									"_key": "t1",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s1",
+											"text": "[Placeholder. De definitieve privacyverklaring komt van Louwmedia; hieronder staat alleen de opbouw.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t2",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s2",
+											"text": "Wie is verantwoordelijk",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t3",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s3",
+											"text": "[Bedrijfsnaam, adres, KvK-nummer en contactgegevens.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t4",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s4",
+											"text": "Welke gegevens we verwerken",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t5",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s5",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t6",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s6",
+											"text": "[Bijvoorbeeld: gegevens uit het contactformulier]",
+											"marks": []
+										}
+									],
+									"listItem": "bullet",
+									"level": 1
+								},
+								{
+									"_type": "block",
+									"_key": "t7",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s7",
+											"text": "[Bijvoorbeeld: gegevens van opdrachtgevers]",
+											"marks": []
+										}
+									],
+									"listItem": "bullet",
+									"level": 1
+								},
+								{
+									"_type": "block",
+									"_key": "t8",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s8",
+											"text": "Waarvoor we ze gebruiken",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t9",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s9",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t10",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s10",
+											"text": "Hoe lang we ze bewaren",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t11",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s11",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t12",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s12",
+											"text": "Delen met anderen",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t13",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s13",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t14",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s14",
+											"text": "Cookies en statistieken",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t15",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s15",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t16",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s16",
+											"text": "Beeldmateriaal",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t17",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s17",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t18",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s18",
+											"text": "Jouw rechten",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t19",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s19",
+											"text": "[Tekst volgt. Deze tekst komt van Louwmedia en wordt hier geplaatst zodra hij klaar is.]",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t20",
+									"style": "h2",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s20",
+											"text": "Contact",
+											"marks": []
+										}
+									]
+								},
+								{
+									"_type": "block",
+									"_key": "t21",
+									"style": "normal",
+									"markDefs": [],
+									"children": [
+										{
+											"_type": "span",
+											"_key": "s21",
+											"text": "[Hoe iemand contact opneemt over privacy: e-mailadres.]",
+											"marks": []
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:contact",
+				"slug": "contact",
+				"status": "published",
+				"data": {
+					"title": "Contact",
+					"content": [
+						{
+							"_type": "lm_hero_contact",
+							"_version": 1,
+							"_key": "ct-hero",
+							"headline": "Vertel wat je wilt *maken*.",
+							"intro": "Mail, bel of vul de bon in. Dan kijk ik wat er past en laat ik zien hoe ik het zou aanpakken.",
+							"sheet_title": "Aanvraag",
+							"sheet_meta": "Vrijblijvend",
+							"note": "kort is prima!",
+							"topics": [
+								{
+									"label": "Maandelijkse content"
+								},
+								{
+									"label": "Bedrijfsvideo"
+								},
+								{
+									"label": "Fotografie"
+								},
+								{
+									"label": "Automotive"
+								},
+								{
+									"label": "Iets anders"
+								}
+							],
+							"message_label": "Het idee",
+							"message_placeholder": "Bijvoorbeeld: een video voor de werving van nieuwe collega's, in het voorjaar.",
+							"button_label": "Versturen",
+							"success_title": "Dank je, de bon is binnen.",
+							"success_text": "Ik kijk ernaar en neem contact met je op."
+						},
+						{
+							"_type": "lm_photo_arc",
+							"_version": 1,
+							"_key": "ct-arc",
+							"headline": "Eén dag, *heel veel* beeld.",
+							"intro": "Foto's en video's van echte shoot days. Van calltime tot de laatste shot, en alles daartussen.",
+							"note": "calltime!",
+							"items": [
+								{
+									"image": {
+										"$media": {
+											"file": "media/bv-werkvloer.jpg",
+											"alt": "Opname op de werkvloer",
+											"filename": "bv-werkvloer.jpg"
+										}
+									},
+									"time": "07:45"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/arc-9889178.jpg",
+											"alt": "Camera op een gimbal bij een interview",
+											"filename": "arc-9889178.jpg"
+										}
+									},
+									"time": "08:30"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/arc-9866569.jpg",
+											"alt": "Twee camera's tijdens een opname",
+											"filename": "arc-9866569.jpg"
+										}
+									},
+									"time": "10:00"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/arc-28728922.jpg",
+											"alt": "Opname van een medewerker op kantoor",
+											"filename": "arc-28728922.jpg"
+										}
+									},
+									"time": "11:30"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/arc-8355407.jpg",
+											"alt": "Team wordt gefilmd tijdens een overleg",
+											"filename": "arc-8355407.jpg"
+										}
+									},
+									"time": "12:45"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/arc-16175210.jpg",
+											"alt": "Set met lampen in een loods",
+											"filename": "arc-16175210.jpg"
+										}
+									},
+									"time": "13:30"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/arc-31453970.jpg",
+											"alt": "Filmen met een gimbal buiten",
+											"filename": "arc-31453970.jpg"
+										}
+									},
+									"time": "14:45"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/arc-11855189.jpg",
+											"alt": "Camera met monitor op statief",
+											"filename": "arc-11855189.jpg"
+										}
+									},
+									"time": "16:30"
+								},
+								{
+									"image": {
+										"$media": {
+											"file": "media/fotografie.webp",
+											"alt": "Camera op een groene doek",
+											"filename": "fotografie.webp"
+										}
+									},
+									"time": "17:15"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:over",
+				"slug": "over",
+				"status": "published",
+				"data": {
+					"title": "Over",
+					"content": [
+						{
+							"_type": "lm_hero_split",
+							"_version": 1,
+							"_key": "ov-hero",
+							"tag": "Video · foto · content · heel Nederland",
+							"headline": "Content die *klopt*, van idee tot _edit._",
+							"intro": "Louwmedia maakt video, foto en content voor organisaties en merken. Concept, script, shoot en montage blijven in één hand, dus je weet altijd bij wie je moet zijn.",
+							"primary_cta_label": "Plan een kennismaking",
+							"primary_cta_url": "/contact",
+							"secondary_cta_label": "Bekijk het werk",
+							"secondary_cta_url": "/werk",
+							"image_1": {
+								"$media": {
+									"file": "media/maker-over.jpg",
+									"alt": "Lucas met camera in de kofferbak van een auto",
+									"filename": "maker-over.jpg"
+								}
+							},
+							"image_2": {
+								"$media": {
+									"file": "media/bedrijfsvideo.webp",
+									"alt": "Pitstraat met raceauto's",
+									"filename": "bedrijfsvideo.webp"
+								}
+							},
+							"scribble": "",
+							"anchor_id": ""
+						},
+						{
+							"_type": "lm_logos",
+							"_version": 1,
+							"_key": "ov-logos",
+							"headline": "Organisaties die mij laten *draaien*",
+							"tag": "Een greep uit het werk",
+							"logos": [
+								{
+									"name": "De Maatschappij",
+									"image": {
+										"$media": {
+											"file": "media/logo-demaatschappij.png",
+											"alt": "De Maatschappij",
+											"filename": "logo-demaatschappij.png"
+										}
+									}
+								},
+								{
+									"name": "Matchis",
+									"image": {
+										"$media": {
+											"file": "media/logo-matchis.png",
+											"alt": "Matchis",
+											"filename": "logo-matchis.png"
+										}
+									}
+								},
+								{
+									"name": "Lunch Bunch",
+									"image": {
+										"$media": {
+											"file": "media/logo-lunchbunch.png",
+											"alt": "Lunch Bunch",
+											"filename": "logo-lunchbunch.png"
+										}
+									}
+								},
+								{
+									"name": "Poki",
+									"image": {
+										"$media": {
+											"file": "media/logo-poki.png",
+											"alt": "Poki",
+											"filename": "logo-poki.png"
+										}
+									}
+								},
+								{
+									"name": "Sint voor ieder1",
+									"image": {
+										"$media": {
+											"file": "media/logo-sint.png",
+											"alt": "Sint voor ieder1",
+											"filename": "logo-sint.png"
+										}
+									}
+								},
+								{
+									"name": "Stone",
+									"image": {
+										"$media": {
+											"file": "media/logo-stone.png",
+											"alt": "Stone",
+											"filename": "logo-stone.png"
+										}
+									}
+								}
+							]
+						},
+						{
+							"_type": "lm_about",
+							"_version": 1,
+							"_key": "ov-about",
+							"anchor_id": "",
+							"headline": "",
+							"intro": "Ik ben Lucas Louwersen, de maker achter Louwmedia. Ik bedenk wat er gemaakt wordt, sta zelf achter de camera en zit zelf aan de montage.",
+							"body": "Geen bureau met lagen ertussen, wel alles wat je nodig hebt: van drone-opnames tot een podcast met meerdere camera's en goed geluid. Voor bedrijven en voor merken die consumenten willen raken, in elke branche. Op aanvraag film ik ook bruiloften.",
+							"link_label": "",
+							"link_url": "",
+							"image": {
+								"$media": {
+									"file": "media/over-achter-de-camera.jpg",
+									"alt": "Camera op een gimbal tijdens een interview",
+									"filename": "over-achter-de-camera.jpg"
+								}
+							},
+							"image_caption_left": "Achter de camera",
+							"image_caption_right": "Louwmedia",
+							"facts": [
+								{
+									"value": "Van idee tot *montage*",
+									"label": "alles in één hand"
+								},
+								{
+									"value": "Heel Nederland",
+									"label": "vanuit Zuid-Holland"
+								}
+							]
+						},
+						{
+							"_type": "lm_quote",
+							"_version": 1,
+							"_key": "ov-quote"
+						},
+						{
+							"_type": "lm_cases",
+							"_version": 1,
+							"_key": "ov-cases",
+							"headline": "Werk waar ik *trots* op ben",
+							"view": "Lijst",
+							"link_label": "Bekijk al het werk",
+							"link_url": "/werk",
+							"tone": "Zwart",
+							"anchor_id": "projecten"
+						},
+						{
+							"_type": "lm_statement",
+							"_version": 1,
+							"_key": "ov-auto",
+							"headline": "Ik ben gek op *auto's*. Daarom film ik ze zoals ze het verdienen.",
+							"body": "Van een nieuwe binnenkomer in de showroom tot een dag op het circuit: ik weet waar ik moet staan, wanneer een auto op z'n mooist is en hoe je dat in een paar seconden laat zien.",
+							"image": {
+								"$media": {
+									"file": "media/quote-porsche.webp",
+									"alt": "Witte Porsche in een showroom",
+									"filename": "quote-porsche.webp"
+								}
+							},
+							"note": "volgas",
+							"cta_label": "Bekijk automotive",
+							"cta_url": "/automotive",
+							"anchor_id": ""
+						},
+						{
+							"_type": "lm_faq",
+							"_version": 1,
+							"_key": "ov-faq",
+							"anchor_id": "vragen",
+							"headline": "Vragen over *Louwmedia*",
+							"intro": "Staat jouw vraag er niet tussen? Mail of bel, dan hoor je het meteen.",
+							"items": [
+								{
+									"question": "Met wie heb ik te maken?",
+									"answer": "Met mij, Lucas, van de eerste kennismaking tot de laatste versie. Ik bedenk, film en monteer zelf, dus er gaat niets verloren tussen schijven."
+								},
+								{
+									"question": "Voor wie maak je video's?",
+									"answer": "Voor bedrijven en voor merken die consumenten willen bereiken, dus B2B en B2C. Dat kan in eigenlijk elke branche."
+								},
+								{
+									"question": "Werk je ook buiten Zuid-Holland?",
+									"answer": "Ja. Ik zit in Zuid-Holland en werk door heel Nederland."
+								},
+								{
+									"question": "Doe je ook drone en podcasts?",
+									"answer": "Ja. Drone-opnames waar het mag en veilig kan, en podcasts met meerdere camera's en goed geluid. Vertel wat je nodig hebt, dan kijken we samen wat past."
+								},
+								{
+									"question": "Film je ook bruiloften?",
+									"answer": "Op aanvraag wel. Stuur de datum en de locatie, dan hoor je of het past."
+								},
+								{
+									"question": "Wat kost het?",
+									"answer": "Dat hangt af van wat je nodig hebt. Na de kennismaking krijg je een voorstel met een vaste prijs."
+								}
+							],
+							"rating": "5,0",
+							"rating_source": "Google",
+							"review_quote": "Snel geschakeld, _scherp gefilmd_ en precies op tijd.",
+							"review_name": "Naam van de klant",
+							"review_role": "Functie, bedrijf (voorbeeldreview)",
+							"review_image": {
+								"$media": {
+									"file": "media/fotografie.webp",
+									"alt": "Camera op een groene doek",
+									"filename": "fotografie.webp"
+								}
+							},
+							"contact_heading": "Liever even *bellen*?",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact"
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "ov-edit",
+							"headline": "Van idee naar *edit*.",
+							"body": "Eerst het verhaal, dan de opnames, dan de montage. Je ziet precies waar je film staat, net als in mijn tijdlijn.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "",
+							"link_url": ""
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:shoot-day",
+				"slug": "shoot-day",
+				"status": "published",
+				"data": {
+					"title": "Shoot day",
+					"content": [
+						{
+							"_type": "lm_shootday_clips",
+							"_version": 1,
+							"_key": "sd-clips",
+							"headline": "Zo ziet een *shoot day* eruit.",
+							"intro": "Beelden van echte shoot days, van calltime tot de laatste shot. Klik op een moment om erheen te gaan.",
+							"tag": "Shoot day",
+							"note": "",
+							"image_1": {
+								"$media": {
+									"file": "media/9889178.jpg",
+									"alt": "Camera op een gimbal bij een interview",
+									"filename": "9889178.jpg"
+								}
+							},
+							"title_1": "Calltime",
+							"time_1": "08:30",
+							"place_1": "Kantoor",
+							"image_2": {
+								"$media": {
+									"file": "media/bv-werkvloer.jpg",
+									"alt": "Opname op de werkvloer",
+									"filename": "bv-werkvloer.jpg"
+								}
+							},
+							"video_2": {
+								"$media": {
+									"file": "media/showreel-voorbeeld.mp4",
+									"alt": "",
+									"filename": "showreel-voorbeeld.mp4"
+								}
+							},
+							"title_2": "Interview Sanne",
+							"time_2": "10:00",
+							"place_2": "Werkplaats",
+							"image_3": {
+								"$media": {
+									"file": "media/8355407.jpg",
+									"alt": "Team wordt gefilmd tijdens een overleg",
+									"filename": "8355407.jpg"
+								}
+							},
+							"title_3": "Het team",
+							"time_3": "12:45",
+							"place_3": "Kantine",
+							"image_4": {
+								"$media": {
+									"file": "media/bv-gimbal.jpg",
+									"alt": "Filmen met een gimbal",
+									"filename": "bv-gimbal.jpg"
+								}
+							},
+							"title_4": "Buiten, einde dag",
+							"time_4": "16:00",
+							"place_4": "Terrein",
+							"anchor_id": "",
+							"hero": true
+						},
+						{
+							"_type": "lm_shootday_hero",
+							"_version": 1,
+							"_key": "sd-hero",
+							"headline": "Eerst het *idee*, dan de camera.",
+							"intro": "Ik zoek uit wat je doelgroep aanspreekt en maak er een concept en script van. Op de shoot day weet iedereen wat er gebeurt.",
+							"steps": [
+								{
+									"title": "Doelgroep",
+									"body": "Wie wil je bereiken, en waar haken ze af?"
+								},
+								{
+									"title": "Concept",
+									"body": "Eén idee in één zin, dat je in drie seconden snapt."
+								},
+								{
+									"title": "Script en draaiboek",
+									"body": "Scènes, shotlist en planning. Jij leest mee en kiest."
+								}
+							],
+							"sheet_title": "Shoot day",
+							"sheet_meta": "Nr. 04 · Louwmedia",
+							"sheet_rows": [
+								{
+									"label": "Datum",
+									"value": "Dinsdag 9 december"
+								},
+								{
+									"label": "Calltime",
+									"value": "08:30 tot 16:30"
+								},
+								{
+									"label": "Locatie",
+									"value": "Kantoor en werkplaats"
+								},
+								{
+									"label": "In beeld",
+									"value": "Sanne (HR) en het team"
+								},
+								{
+									"label": "Concept",
+									"value": "\"Een dag bij ons, zonder vacaturetaal\""
+								}
+							],
+							"script_label": "SCRIPT V2",
+							"script_meta": "0:45 · OOK IN 9:16",
+							"script": [
+								{
+									"kind": "Scène",
+									"text": "Scène 1. Werkplaats, ochtend"
+								},
+								{
+									"kind": "Actie",
+									"text": "Close-up. Handen starten een machine."
+								},
+								{
+									"kind": "Personage",
+									"text": "Sanne (vo)"
+								},
+								{
+									"kind": "Tekst",
+									"text": "Ik dacht dat ik hier een jaar zou blijven."
+								},
+								{
+									"kind": "Personage",
+									"text": "Tekst in beeld"
+								},
+								{
+									"kind": "Tekst",
+									"text": "_Dat was acht jaar geleden._"
+								},
+								{
+									"kind": "Scène",
+									"text": "Scène 2. Kantine"
+								},
+								{
+									"kind": "Actie",
+									"text": "Collega's lachen om iets buiten beeld."
+								}
+							],
+							"note_top": "",
+							"note_side": "de hook!",
+							"anchor_id": "",
+							"hero": false
+						},
+						{
+							"_type": "lm_process",
+							"_version": 1,
+							"_key": "sd-proces",
+							"anchor_id": "proces",
+							"headline": "Zo loopt het, van *vraag* tot post",
+							"intro": "Je weet bij elke stap wat er gebeurt en wanneer. Het meeste werk zit voor en na de shoot day, zodat die dag zelf soepel loopt.",
+							"steps": [
+								{
+									"title": "Briefing",
+									"body": "Wat moet het opleveren, voor wie en waar komt het te staan?"
+								},
+								{
+									"title": "Idee en script",
+									"body": "Ik zoek uit wat je doelgroep aanspreekt en maak er een concept, script en draaiboek van. Jij leest mee en kiest."
+								},
+								{
+									"title": "Shoot day",
+									"body": "Eén dag op locatie, met een plan dat iedereen kent."
+								},
+								{
+									"title": "Montage",
+									"body": "Gemonteerd en ondertiteld, in de formaten die je nodig hebt."
+								},
+								{
+									"title": "Online",
+									"body": "Alles staat klaar om te posten, met een planning erbij."
+								}
+							]
+						},
+						{
+							"_type": "lm_deliverables",
+							"_version": 1,
+							"_key": "sd-krijgt",
+							"headline": "Wat één dag *oplevert*",
+							"intro": "Eén dag draaien, en daarna content voor weken: films, reels en foto's uit dezelfde opnames.",
+							"cards": [
+								{
+									"kind": "Cijfer",
+									"number": "1",
+									"title": "Shoot day",
+									"sub": "Eén dag op locatie, met een draaiboek",
+									"tone": "Zwart"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/fotografie.webp",
+											"alt": "Camera op een groene doek",
+											"filename": "fotografie.webp"
+										}
+									},
+									"label": "Script · v2",
+									"caption": "Alles staat op *papier*.",
+									"reel": ""
+								},
+								{
+									"kind": "Cijfer",
+									"number": "3",
+									"title": "Formaten",
+									"sub": "16:9, 4:5 en 9:16 uit één opname",
+									"tone": "Wit"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/martini.jpg",
+											"alt": "Raceauto in Martini-kleuren",
+											"filename": "martini.jpg"
+										}
+									},
+									"label": "Reel · 9:16",
+									"caption": "Eén dag draaien, *weken* content.",
+									"reel": "corsica"
+								}
+							]
+						},
+						{
+							"_type": "lm_reels",
+							"_version": 1,
+							"_key": "sd-reels",
+							"anchor_id": "",
+							"headline": "Gemaakt op een *shoot day*",
+							"intro": "Kort, snel gemonteerd en met ondertitels die je ook zonder geluid snapt. Gemaakt voor waar het komt te staan."
+						},
+						{
+							"_type": "lm_faq",
+							"_version": 1,
+							"_key": "sd-faq",
+							"anchor_id": "vragen",
+							"headline": "Vragen die ik *vaak* krijg",
+							"intro": "Staat jouw vraag er niet tussen? Mail of bel, dan hoor je het meteen.",
+							"items": [
+								{
+									"question": "Moeten we zelf een idee hebben?",
+									"answer": "Nee. Vertel wat je wilt bereiken en voor wie. Het concept en het script maak ik, jij kiest mee."
+								},
+								{
+									"question": "Hoe lang van tevoren plannen we een shoot day?",
+									"answer": "Dat spreken we samen af. Er moet tijd zijn voor het idee en het script, zodat de dag zelf goed voorbereid is."
+								},
+								{
+									"question": "Wie moet er die dag vrij zijn?",
+									"answer": "Alleen de mensen die in beeld komen, en voor even. Het draaiboek laat zien wie wanneer nodig is."
+								},
+								{
+									"question": "Wat als het regent?",
+									"answer": "Dan schuiven we de binnenopnames naar voren of plannen we samen een nieuwe dag."
+								},
+								{
+									"question": "Kunnen we tijdens de dag nog iets veranderen?",
+									"answer": "Ja. Het draaiboek is een plan, geen keurslijf. Ziet iets er op de dag beter uit, dan pakken we dat mee."
+								},
+								{
+									"question": "Wat kost een shoot day?",
+									"answer": "Dat hangt af van wat je nodig hebt. Na de kennismaking krijg je een voorstel met een vaste prijs."
+								}
+							],
+							"rating": "5,0",
+							"rating_source": "Google",
+							"review_quote": "Louw denkt mee voordat de camera aan gaat. Daarna hoefden we _nergens meer_ aan te denken.",
+							"review_name": "Naam van de klant",
+							"review_role": "Functie, bedrijf (voorbeeldquote)",
+							"review_image": {
+								"$media": {
+									"file": "media/quote-porsche.webp",
+									"alt": "Witte Porsche in een showroom",
+									"filename": "quote-porsche.webp"
+								}
+							},
+							"contact_heading": "Liever even *bellen*?",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact"
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "sd-edit",
+							"headline": "Is het al *shoot day*?",
+							"accent": "Rode cirkel",
+							"body": "Vertel wat je wilt laten zien. Ik kom met een voorstel en een datum.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "info@louwmedia.nl",
+							"link_url": "mailto:info@louwmedia.nl",
+							"anchor_id": ""
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:automotive",
+				"slug": "automotive",
+				"status": "published",
+				"data": {
+					"title": "Content voor automotive",
+					"content": [
+						{
+							"_type": "lm_hero_video",
+							"_version": 1,
+							"_key": "au-hero",
+							"tag": "",
+							"headline": "Auto's filmen zoals ze *rijden*.",
+							"intro": "Voor dealers, merken en events. Reels, films en foto's die de auto laten zien zoals hij is: snel, scherp en met karakter.",
+							"primary_cta_label": "",
+							"primary_cta_url": "",
+							"secondary_cta_label": "",
+							"secondary_cta_url": "",
+							"video": {
+								"$media": {
+									"file": "media/hero-corsica.mp4",
+									"alt": "",
+									"filename": "hero-corsica.mp4"
+								}
+							},
+							"poster": {
+								"$media": {
+									"file": "media/hero-corsica-poster.jpg",
+									"alt": "Blauwe sportwagen tussen palmbomen in de schemering",
+									"filename": "hero-corsica-poster.jpg"
+								}
+							},
+							"rec_label": "Rec · 4K · automotive"
+						},
+						{
+							"_type": "lm_statement",
+							"_version": 1,
+							"_key": "au-statement",
+							"headline": "Ik ben gek op *auto's*. Daarom film ik ze zoals ze het verdienen.",
+							"body": "Van een nieuwe binnenkomer in de showroom tot een dag op het circuit: ik weet waar ik moet staan, wanneer een auto op z'n mooist is en hoe je dat in een paar seconden laat zien.",
+							"image": {
+								"$media": {
+									"file": "media/quote-porsche.webp",
+									"alt": "Witte Porsche in een showroom",
+									"filename": "quote-porsche.webp"
+								}
+							},
+							"note": "volgas"
+						},
+						{
+							"_type": "lm_deliverables",
+							"_version": 1,
+							"_key": "au-krijgt",
+							"headline": "Wat je *krijgt*",
+							"intro": "Voor een lancering, een event of elke maand: beeld dat net zo snel is als de auto.",
+							"cards": [
+								{
+									"kind": "Cijfer",
+									"number": "1",
+									"title": "Shoot op locatie",
+									"sub": "Showroom, circuit of de weg op",
+									"tone": "Zwart"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/martini.jpg",
+											"alt": "Raceauto in Martini-kleuren van bovenaf",
+											"filename": "martini.jpg"
+										}
+									},
+									"label": "Drone · 4:5",
+									"caption": "Van *boven* gezien.",
+									"reel": ""
+								},
+								{
+									"kind": "Cijfer",
+									"number": "3",
+									"title": "Formaten",
+									"sub": "16:9, 4:5 en 9:16 uit één opname",
+									"tone": "Wit"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/reel-corsica-poster.jpg",
+											"alt": "Blauwe Mustang op een parkeerplaats",
+											"filename": "reel-corsica-poster.jpg"
+										}
+									},
+									"label": "Reel · 9:16",
+									"caption": "Een dag op *Corsica.*",
+									"reel": "corsica"
+								}
+							]
+						},
+						{
+							"_type": "lm_cases",
+							"_version": 1,
+							"_key": "au-cases",
+							"headline": "Automotive *werk*",
+							"kind": "Automotive",
+							"view": "Lijst",
+							"link_label": "Alle cases",
+							"link_url": "/werk",
+							"tone": "Zwart",
+							"anchor_id": "werk"
+						},
+						{
+							"_type": "lm_reels",
+							"_version": 1,
+							"_key": "au-reels",
+							"anchor_id": "",
+							"headline": "Reels met *toeren*",
+							"intro": "Kort, snel gemonteerd en gemaakt voor waar het komt te staan: Instagram, TikTok of het scherm in de showroom."
+						},
+						{
+							"_type": "lm_faq",
+							"_version": 1,
+							"_key": "au-faq",
+							"anchor_id": "vragen",
+							"headline": "Vragen die ik *vaak* krijg",
+							"intro": "Staat jouw vraag er niet tussen? Mail of bel, dan hoor je het meteen.",
+							"items": [
+								{
+									"question": "Filmen jullie ook op het circuit?",
+									"answer": "Ja. Trackdays, races en presentaties op het circuit: ik regel vooraf met de organisatie waar ik mag staan."
+								},
+								{
+									"question": "Wat hebben we nodig voor een shoot in de showroom?",
+									"answer": "Een schone auto en een moment waarop het rustig is in de showroom. De rest regel ik."
+								},
+								{
+									"question": "Kunnen jullie drone-opnames maken?",
+									"answer": "Waar het mag en veilig kan wel. Dat checken we samen voor de shootdag."
+								},
+								{
+									"question": "Hoe snel staat de content online?",
+									"answer": "Dat spreken we af in het voorstel, zodat je weet wanneer wat klaarstaat. Ook bij een event."
+								},
+								{
+									"question": "Wat kost een automotive shoot?",
+									"answer": "Dat hangt af van de locatie, de dag en wat je nodig hebt. Na de kennismaking krijg je een voorstel met een vaste prijs."
+								}
+							],
+							"rating": "5,0",
+							"rating_source": "Google",
+							"review_quote": "Onze nieuwe modellen staan nu online zoals ze in het echt zijn: _snel en scherp_.",
+							"review_name": "Naam van de klant",
+							"review_role": "Marketing, naam van het bedrijf (voorbeeldquote)",
+							"review_image": {
+								"$media": {
+									"file": "media/fo-product.jpg",
+									"alt": "Raceauto in Martini-kleuren van bovenaf",
+									"filename": "fo-product.jpg"
+								}
+							},
+							"contact_heading": "Liever even *bellen*?",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact"
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "au-edit",
+							"headline": "Is het al *shoot day*?",
+							"accent": "Rode cirkel",
+							"body": "Vertel wat je wilt laten zien. Ik kom met een voorstel en een datum.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "info@louwmedia.nl",
+							"link_url": "mailto:info@louwmedia.nl",
+							"anchor_id": ""
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:werk",
+				"slug": "werk",
+				"status": "published",
+				"data": {
+					"title": "Werk",
+					"content": [
+						{
+							"_type": "lm_showreel",
+							"_version": 1,
+							"_key": "wk-hero",
+							"line_1": "Content die je",
+							"line_2": "*afkijkt*.",
+							"intro": "Een greep uit wat ik maak voor bedrijven, fondsen en stichtingen. Van reels tot de bedrijfsfilm.",
+							"note": "druk op play, met geluid!",
+							"label": "Showreel 2026",
+							"duration": "01:48",
+							"video": {
+								"$media": {
+									"file": "media/hero-corsica.mp4",
+									"alt": "",
+									"filename": "hero-corsica.mp4"
+								}
+							},
+							"poster": {
+								"$media": {
+									"file": "media/hero-corsica-poster.jpg",
+									"alt": "Blauwe sportwagen tussen palmbomen in de schemering",
+									"filename": "hero-corsica-poster.jpg"
+								}
+							},
+							"scroll_hint": "Scroll voor het werk",
+							"anchor_id": ""
+						},
+						{
+							"_type": "lm_cases",
+							"_version": 1,
+							"_key": "wk-cases",
+							"headline": "Alle *projecten*",
+							"view": "Grid",
+							"tone": "Licht",
+							"link_label": "",
+							"link_url": "",
+							"anchor_id": "projecten"
+						},
+						{
+							"_type": "lm_reels",
+							"_version": 1,
+							"_key": "wk-reels",
+							"anchor_id": "reels",
+							"headline": "Reels waar je *blijft* _hangen_",
+							"intro": "Kort, snel gemonteerd en met ondertitels die je ook zonder geluid snapt. Gemaakt voor waar het komt te staan."
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "wk-edit",
+							"headline": "Is het al *shoot day*?",
+							"accent": "Rode cirkel",
+							"body": "Vertel wat je wilt laten zien. Ik kom met een voorstel en een datum.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "info@louwmedia.nl",
+							"link_url": "mailto:info@louwmedia.nl",
+							"anchor_id": ""
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:diensten",
+				"slug": "diensten",
+				"status": "published",
+				"data": {
+					"title": "Diensten",
+					"content": [
+						{
+							"_type": "lm_hero_compact",
+							"_version": 1,
+							"_key": "dn-hero",
+							"headline": "Wat ik *maak*.",
+							"intro": "Video, foto en social voor organisaties die zichtbaar willen blijven. Elke maand, of voor één project.",
+							"show_services": true,
+							"anchor_id": ""
+						},
+						{
+							"_type": "lm_services",
+							"_version": 1,
+							"_key": "dn-diensten",
+							"anchor_id": "diensten",
+							"layout": "Stapelkaarten"
+						},
+						{
+							"_type": "lm_choice",
+							"_version": 1,
+							"_key": "dn-keuze",
+							"headline": "Twijfel je wat *past*?",
+							"intro": "Begin bij wat je wilt bereiken. In een kennismaking kijken we samen wat het best werkt, ook als het een mix wordt.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"rows": [
+								{
+									"situation": "Je wilt elke maand zichtbaar zijn, zonder dat je team ermee bezig is.",
+									"service": "Maandelijkse content",
+									"note": "Shoot day, plan en content",
+									"url": "/diensten/maandelijkse-content"
+								},
+								{
+									"situation": "Je hebt één goede film nodig, voor je site, werving of een event.",
+									"service": "Bedrijfsvideo",
+									"note": "Van script tot montage",
+									"url": "/diensten/bedrijfsvideo"
+								},
+								{
+									"situation": "Je zoekt echte beelden van je team, je locatie of je product.",
+									"service": "Fotografie",
+									"note": "Teams, locaties, producten",
+									"url": "/diensten/fotografie"
+								}
+							],
+							"link_label": "Content voor automotive",
+							"link_url": "/automotive",
+							"anchor_id": ""
+						},
+						{
+							"_type": "lm_logos",
+							"_version": 1,
+							"_key": "dn-klanten",
+							"headline": "Organisaties die mij laten *draaien*",
+							"tag": "Een greep uit het werk",
+							"logos": [
+								{
+									"name": "De Maatschappij",
+									"image": {
+										"$media": {
+											"file": "media/logo-demaatschappij.png",
+											"alt": "De Maatschappij",
+											"filename": "logo-demaatschappij.png"
+										}
+									}
+								},
+								{
+									"name": "Matchis",
+									"image": {
+										"$media": {
+											"file": "media/logo-matchis.png",
+											"alt": "Matchis",
+											"filename": "logo-matchis.png"
+										}
+									}
+								},
+								{
+									"name": "Lunch Bunch",
+									"image": {
+										"$media": {
+											"file": "media/logo-lunchbunch.png",
+											"alt": "Lunch Bunch",
+											"filename": "logo-lunchbunch.png"
+										}
+									}
+								},
+								{
+									"name": "Poki",
+									"image": {
+										"$media": {
+											"file": "media/logo-poki.png",
+											"alt": "Poki",
+											"filename": "logo-poki.png"
+										}
+									}
+								},
+								{
+									"name": "Sint voor ieder1",
+									"image": {
+										"$media": {
+											"file": "media/logo-sint.png",
+											"alt": "Sint voor ieder1",
+											"filename": "logo-sint.png"
+										}
+									}
+								},
+								{
+									"name": "Stone",
+									"image": {
+										"$media": {
+											"file": "media/logo-stone.png",
+											"alt": "Stone",
+											"filename": "logo-stone.png"
+										}
+									}
+								}
+							]
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "dn-edit",
+							"headline": "Is het al *shoot day*?",
+							"accent": "Rode cirkel",
+							"body": "Vertel wat je wilt laten zien. Ik kom met een voorstel en een datum.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "info@louwmedia.nl",
+							"link_url": "mailto:info@louwmedia.nl",
+							"anchor_id": ""
+						}
+					]
+				}
+			},
+			{
+				"id": "pages:home",
+				"slug": "home",
+				"status": "published",
+				"data": {
+					"title": "Home",
+					"content": [
+						{
+							"_type": "lm_hero_video",
+							"_version": 1,
+							"_key": "hero-video",
+							"tag": "",
+							"headline": "Elke maand *content* met een _plan_ erachter.",
+							"intro": "Bedrijfsvideo’s, social content en fotografie voor organisaties die zichtbaar willen zijn.",
+							"primary_cta_label": "",
+							"primary_cta_url": "",
+							"secondary_cta_label": "",
+							"secondary_cta_url": "",
+							"video": {
+								"$media": {
+									"file": "media/hero-corsica.mp4",
+									"alt": "",
+									"filename": "hero-corsica.mp4"
+								}
+							},
+							"poster": {
+								"$media": {
+									"file": "media/hero-corsica-poster.jpg",
+									"alt": "Blauwe sportwagen tussen palmbomen in de schemering",
+									"filename": "hero-corsica-poster.jpg"
+								}
+							},
+							"rec_label": "Rec · 4K · 25 fps"
+						},
+						{
+							"_type": "lm_logos",
+							"_version": 1,
+							"_key": "klanten",
+							"headline": "Organisaties die mij laten *draaien*",
+							"tag": "Een greep uit het werk",
+							"logos": [
+								{
+									"name": "De Maatschappij",
+									"image": {
+										"$media": {
+											"file": "media/logo-demaatschappij.png",
+											"alt": "De Maatschappij",
+											"filename": "logo-demaatschappij.png"
+										}
+									}
+								},
+								{
+									"name": "Matchis",
+									"image": {
+										"$media": {
+											"file": "media/logo-matchis.png",
+											"alt": "Matchis",
+											"filename": "logo-matchis.png"
+										}
+									}
+								},
+								{
+									"name": "Lunch Bunch",
+									"image": {
+										"$media": {
+											"file": "media/logo-lunchbunch.png",
+											"alt": "Lunch Bunch",
+											"filename": "logo-lunchbunch.png"
+										}
+									}
+								},
+								{
+									"name": "Poki",
+									"image": {
+										"$media": {
+											"file": "media/logo-poki.png",
+											"alt": "Poki",
+											"filename": "logo-poki.png"
+										}
+									}
+								},
+								{
+									"name": "Sint voor ieder1",
+									"image": {
+										"$media": {
+											"file": "media/logo-sint.png",
+											"alt": "Sint voor ieder1",
+											"filename": "logo-sint.png"
+										}
+									}
+								},
+								{
+									"name": "Stone",
+									"image": {
+										"$media": {
+											"file": "media/logo-stone.png",
+											"alt": "Stone",
+											"filename": "logo-stone.png"
+										}
+									}
+								}
+							]
+						},
+						{
+							"_type": "lm_about",
+							"_version": 1,
+							"_key": "over",
+							"anchor_id": "over",
+							"headline": "",
+							"intro": "Louwmedia maakt video, foto en content voor organisaties die zichtbaar willen blijven. Van het idee en het script tot de shoot en de montage, met één vast aanspreekpunt.",
+							"body": "Wat ik maak moet niet alleen mooi zijn. Het moet voelen, bewegen en iets doen voor je merk. Daarom begint elke shoot met dezelfde vragen: wat wil je vertellen, aan wie, en waar komt het te staan.",
+							"link_label": "Meer over Louwmedia",
+							"link_url": "/over",
+							"image": {
+								"$media": {
+									"file": "media/maker-over.jpg",
+									"alt": "Louwmedia met camera in de kofferbak van een auto",
+									"filename": "maker-over.jpg"
+								}
+							},
+							"image_caption_left": "Achter de camera",
+							"image_caption_right": "Louwmedia",
+							"facts": [
+								{
+									"value": "Van idee tot *montage*",
+									"label": "alles in één hand"
+								},
+								{
+									"value": "Video, foto en social",
+									"label": "één aanspreekpunt"
+								}
+							]
+						},
+						{
+							"_type": "lm_quote",
+							"_version": 1,
+							"_key": "quote"
+						},
+						{
+							"_type": "lm_services",
+							"_version": 1,
+							"_key": "diensten",
+							"anchor_id": "diensten",
+							"layout": "Stapelkaarten"
+						},
+						{
+							"_type": "lm_process",
+							"_version": 1,
+							"_key": "werkwijze",
+							"anchor_id": "werkwijze",
+							"headline": "Van eerste gesprek tot *montage*",
+							"intro": "Eén bedrijfsvideo of elke maand content: het verloop is hetzelfde. Je weet steeds wat de volgende stap is.",
+							"steps": [
+								{
+									"title": "Kennismaken",
+									"body": "We bellen of drinken koffie. Wat wil je laten zien, aan wie, en waar komt het te staan?"
+								},
+								{
+									"title": "Plan",
+									"body": "Een voorstel en draaiboek: shots, locaties, planning en wat je krijgt."
+								},
+								{
+									"title": "Opnemen",
+									"body": "Op locatie, bij jou. Video, foto en de korte dingen voor social."
+								},
+								{
+									"title": "Montage en oplevering",
+									"body": "Gemonteerd, ondertiteld en in de formaten die je nodig hebt."
+								}
+							]
+						},
+						{
+							"_type": "lm_reels",
+							"_version": 1,
+							"_key": "reels",
+							"anchor_id": "reels",
+							"headline": "Reels waar je *blijft* _hangen_",
+							"intro": "Kort, snel gemonteerd en met ondertitels die je ook zonder geluid snapt. Gemaakt voor waar het komt te staan."
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "home-edit",
+							"headline": "Is het al *shoot day*?",
+							"accent": "Rode cirkel",
+							"body": "Vertel wat je wilt laten zien. Ik kom met een voorstel en een datum.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "info@louwmedia.nl",
+							"link_url": "mailto:info@louwmedia.nl",
+							"anchor_id": ""
+						}
+					]
+				}
+			}
+		],
+		"reels": [
+			{
+				"id": "reels:placeholder-kantoor",
+				"slug": "placeholder-kantoor",
+				"status": "published",
+				"data": {
+					"title": "Op kantoor",
+					"meta": "Placeholder",
+					"poster": {
+						"$media": {
+							"file": "media/showreel-poster.jpg",
+							"alt": "Collega's juichen op kantoor",
+							"filename": "showreel-poster.jpg"
+						}
+					},
+					"position": 5
+				}
+			},
+			{
+				"id": "reels:placeholder-garage",
+				"slug": "placeholder-garage",
+				"status": "published",
+				"data": {
+					"title": "Achter de schermen",
+					"meta": "Placeholder",
+					"poster": {
+						"$media": {
+							"file": "media/reel-placeholder-garage.jpg",
+							"alt": "Cameraman filmt in een parkeergarage",
+							"filename": "reel-placeholder-garage.jpg"
+						}
+					},
+					"position": 1
+				}
+			},
+			{
+				"id": "reels:corsica",
+				"slug": "corsica",
+				"status": "published",
+				"data": {
+					"title": "Corsica",
+					"meta": "Eigen werk, automotive",
+					"video": {
+						"$media": {
+							"file": "media/hero-corsica.mp4",
+							"alt": "",
+							"filename": "hero-corsica.mp4"
+						}
+					},
+					"poster": {
+						"$media": {
+							"file": "media/reel-corsica-poster.jpg",
+							"alt": "Blauwe Mustang op een parkeerplaats",
+							"filename": "reel-corsica-poster.jpg"
+						}
+					},
+					"position": 4
+				}
+			},
+			{
+				"id": "reels:productpromo",
+				"slug": "productpromo",
+				"status": "published",
+				"data": {
+					"title": "Productpromo",
+					"meta": "Automotive",
+					"video": {
+						"$media": {
+							"file": "media/reel-promo.mp4",
+							"alt": "",
+							"filename": "reel-promo.mp4"
+						}
+					},
+					"poster": {
+						"$media": {
+							"file": "media/reel-promo-poster.jpg",
+							"alt": "Lachende man spuit een auto schoon",
+							"filename": "reel-promo-poster.jpg"
+						}
+					},
+					"position": 3
+				}
+			},
+			{
+				"id": "reels:werken-bij",
+				"slug": "werken-bij",
+				"status": "published",
+				"data": {
+					"title": "Werken bij",
+					"meta": "HR, werving",
+					"video": {
+						"$media": {
+							"file": "media/showreel-voorbeeld.mp4",
+							"alt": "",
+							"filename": "showreel-voorbeeld.mp4"
+						}
+					},
+					"poster": {
+						"$media": {
+							"file": "media/reel-hr-poster.jpg",
+							"alt": "Twee collega's dansen op kantoor",
+							"filename": "reel-hr-poster.jpg"
+						}
+					},
+					"position": 2
+				}
+			}
+		],
+		"reviews": [
+			{
+				"id": "reviews:review-3",
+				"slug": "review-3",
+				"status": "published",
+				"data": {
+					"title": "Naam van de klant",
+					"quote": "Snel geschakeld, scherp gefilmd en precies op tijd. Precies wat we _nodig_ hadden.",
+					"role": "Functie, bedrijf (voorbeeldquote)",
+					"image": {
+						"$media": {
+							"file": "media/bv-gimbal.jpg",
+							"alt": "Filmen met een gimbal",
+							"filename": "bv-gimbal.jpg"
+						}
+					},
+					"position": 3
+				}
+			},
+			{
+				"id": "reviews:review-2",
+				"slug": "review-2",
+				"status": "published",
+				"data": {
+					"title": "Naam van de klant",
+					"quote": "Eén shoot day en we hadden content voor _weken_. Alles was vooraf al bedacht.",
+					"role": "Functie, bedrijf (voorbeeldquote)",
+					"image": {
+						"$media": {
+							"file": "media/bv-kantoor.jpg",
+							"alt": "Twee collega's proosten op kantoor",
+							"filename": "bv-kantoor.jpg"
+						}
+					},
+					"position": 2
+				}
+			},
+			{
+				"id": "reviews:review-1",
+				"slug": "review-1",
+				"status": "published",
+				"data": {
+					"title": "Naam van de klant",
+					"quote": "Louw denkt mee voordat de camera aan gaat. Daarna hoefden we _nergens meer_ aan te denken.",
+					"role": "Functie, bedrijf (voorbeeldquote)",
+					"image": {
+						"$media": {
+							"file": "media/quote-porsche.webp",
+							"alt": "Witte Porsche in een showroom",
+							"filename": "quote-porsche.webp"
+						}
+					},
+					"position": 1
+				}
+			}
+		],
+		"services": [
+			{
+				"id": "services:fotografie",
+				"slug": "fotografie",
+				"status": "published",
+				"data": {
+					"title": "Fotografie",
+					"summary": "Teams, locaties en producten, voor je site en je socials.",
+					"menu_note": "Teams, locaties, producten",
+					"image": {
+						"$media": {
+							"file": "media/fotografie.webp",
+							"alt": "Analoge camera op een deken",
+							"filename": "fotografie.webp"
+						}
+					},
+					"position": 3,
+					"content": [
+						{
+							"_type": "lm_hero_split",
+							"_version": 1,
+							"_key": "fo-hero",
+							"tag": "",
+							"headline": "Foto's van hoe het er bij jullie *echt* aan toe gaat.",
+							"intro": "Teams, locaties en producten voor je website, vacatures en socials. Zonder geposeerde stockfoto-sfeer.",
+							"primary_cta_label": "Plan een kennismaking",
+							"primary_cta_url": "/contact",
+							"secondary_cta_label": "Zo werkt het",
+							"secondary_cta_url": "#werkwijze",
+							"image_1": {
+								"$media": {
+									"file": "media/showreel-poster.jpg",
+									"alt": "Collega's op kantoor",
+									"filename": "showreel-poster.jpg"
+								}
+							},
+							"image_2": {
+								"$media": {
+									"file": "media/quote-porsche.webp",
+									"alt": "Witte Porsche in een showroom",
+									"filename": "quote-porsche.webp"
+								}
+							},
+							"scribble": ""
+						},
+						{
+							"_type": "lm_logos",
+							"_version": 1,
+							"_key": "fo-klanten",
+							"headline": "Organisaties die mij laten *draaien*",
+							"tag": "Een greep uit het werk",
+							"logos": [
+								{
+									"name": "De Maatschappij",
+									"image": {
+										"$media": {
+											"file": "media/logo-demaatschappij.png",
+											"alt": "De Maatschappij",
+											"filename": "logo-demaatschappij.png"
+										}
+									}
+								},
+								{
+									"name": "Matchis",
+									"image": {
+										"$media": {
+											"file": "media/logo-matchis.png",
+											"alt": "Matchis",
+											"filename": "logo-matchis.png"
+										}
+									}
+								},
+								{
+									"name": "Lunch Bunch",
+									"image": {
+										"$media": {
+											"file": "media/logo-lunchbunch.png",
+											"alt": "Lunch Bunch",
+											"filename": "logo-lunchbunch.png"
+										}
+									}
+								},
+								{
+									"name": "Poki",
+									"image": {
+										"$media": {
+											"file": "media/logo-poki.png",
+											"alt": "Poki",
+											"filename": "logo-poki.png"
+										}
+									}
+								},
+								{
+									"name": "Sint voor ieder1",
+									"image": {
+										"$media": {
+											"file": "media/logo-sint.png",
+											"alt": "Sint voor ieder1",
+											"filename": "logo-sint.png"
+										}
+									}
+								},
+								{
+									"name": "Stone",
+									"image": {
+										"$media": {
+											"file": "media/logo-stone.png",
+											"alt": "Stone",
+											"filename": "logo-stone.png"
+										}
+									}
+								}
+							]
+						},
+						{
+							"_type": "lm_statement",
+							"_version": 1,
+							"_key": "fo-statement",
+							"headline": "Een goede foto voelt niet als een *fotoshoot*.",
+							"body": "Ik loop mee tijdens een gewone werkdag en fotografeer wat er gebeurt. Mensen ontspannen, en dat zie je terug in de beelden.",
+							"image": {
+								"$media": {
+									"file": "media/op-locatie.webp",
+									"alt": "Forum Romanum in de zon",
+									"filename": "op-locatie.webp"
+								}
+							},
+							"note": "niet poseren"
+						},
+						{
+							"_type": "lm_deliverables",
+							"_version": 1,
+							"_key": "fo-krijgt",
+							"headline": "Wat een shoot *oplevert*",
+							"intro": "Een set beelden die je maanden vooruit helpt: voor je site, je vacatures en je socials.",
+							"cards": [
+								{
+									"kind": "Cijfer",
+									"number": "3",
+									"title": "Soorten beeld",
+									"sub": "Teams, locaties en producten in één shoot",
+									"tone": "Zwart"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/fotografie.webp",
+											"alt": "Camera op een groene doek",
+											"filename": "fotografie.webp"
+										}
+									},
+									"label": "Team · portret",
+									"caption": "Mensen, *geen* poses.",
+									"reel": ""
+								},
+								{
+									"kind": "Cijfer",
+									"number": "1",
+									"title": "Vaste stijl",
+									"sub": "Zelfde kleur en sfeer, zodat alles bij elkaar past",
+									"tone": "Wit"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/fo-product.jpg",
+											"alt": "Raceauto in Martini-kleuren van bovenaf",
+											"filename": "fo-product.jpg"
+										}
+									},
+									"label": "Product · 4:5",
+									"caption": "Je product, *op z'n best.*",
+									"reel": ""
+								}
+							]
+						},
+						{
+							"_type": "lm_cases",
+							"_version": 1,
+							"_key": "fo-cases",
+							"headline": "Eerder *gefotografeerd*",
+							"kind": "Fotografie",
+							"view": "Lijst",
+							"link_label": "Alle cases",
+							"link_url": "/werk",
+							"tone": "Zwart"
+						},
+						{
+							"_type": "lm_process",
+							"_version": 1,
+							"_key": "fo-werkwijze",
+							"anchor_id": "werkwijze",
+							"headline": "Zo loopt een *shoot*",
+							"intro": "Vooraf weet je wat ik fotografeer, waar en wanneer je de beelden hebt.",
+							"steps": [
+								{
+									"title": "Kennismaken",
+									"body": "We bespreken waar de foto's voor zijn en welke sfeer bij jullie past."
+								},
+								{
+									"title": "Shotlist",
+									"body": "Een lijst met mensen, plekken en momenten, zodat we op de dag niets missen."
+								},
+								{
+									"title": "Shoot",
+									"body": "Op locatie, tijdens een gewone werkdag. Een studio is niet nodig."
+								},
+								{
+									"title": "Selectie",
+									"body": "Je krijgt een selectie bewerkte foto's, in de formaten die je nodig hebt."
+								}
+							]
+						},
+						{
+							"_type": "lm_faq",
+							"_version": 1,
+							"_key": "fo-faq",
+							"anchor_id": "vragen",
+							"headline": "Vragen die ik *vaak* krijg",
+							"intro": "Staat jouw vraag er niet tussen? Mail of bel, dan hoor je het meteen.",
+							"items": [
+								{
+									"question": "Wat kost een fotoshoot?",
+									"answer": "Dat hangt af van hoeveel tijd we nodig hebben en hoeveel foto's je wilt. Na de kennismaking krijg je een voorstel met een vaste prijs."
+								},
+								{
+									"question": "Hoeveel foto's krijg ik?",
+									"answer": "Dat spreken we vooraf af. Je krijgt een selectie van de beste beelden, bewerkt en klaar voor gebruik."
+								},
+								{
+									"question": "Moeten we een locatie regelen?",
+									"answer": "Meestal niet. Ik fotografeer het liefst waar jullie werken, dan klopt de sfeer meteen."
+								},
+								{
+									"question": "Wat als iemand niet op de foto wil?",
+									"answer": "Dan komt die persoon niet in beeld. We bespreken vooraf wie er wel en niet op wil."
+								},
+								{
+									"question": "Hoe snel heb ik de foto's?",
+									"answer": "Dat staat in de planning die we samen maken, zodat je weet wanneer de selectie klaarstaat."
+								},
+								{
+									"question": "Mogen we de foto's overal gebruiken?",
+									"answer": "Daar maken we in het voorstel duidelijke afspraken over, zodat je precies weet waar je ze voor mag gebruiken."
+								}
+							],
+							"rating": "5,0",
+							"rating_source": "Google",
+							"review_quote": "Voor het eerst foto's waarop ons team er _gewoon zichzelf_ uitziet.",
+							"review_name": "Naam van de klant",
+							"review_role": "Functie, bedrijf (voorbeeldquote)",
+							"review_image": {
+								"$media": {
+									"file": "media/kruispunt.webp",
+									"alt": "Kruispunt van bovenaf",
+									"filename": "kruispunt.webp"
+								}
+							},
+							"contact_heading": "Liever even *bellen*?",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact"
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "fo-edit",
+							"headline": "Van shoot naar *selectie*.",
+							"body": "Eerst een shotlist, dan de shoot, dan de selectie en de bewerking. Je weet steeds waar je foto's staan.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "",
+							"link_url": ""
+						}
+					],
+					"card_title": "Foto*grafie*",
+					"card_text": "Teams, locaties en producten, voor je website en je socials. Beelden die laten zien hoe het er bij jullie echt aan toe gaat, zonder geposeerde stockfoto-sfeer."
+				}
+			},
+			{
+				"id": "services:bedrijfsvideo",
+				"slug": "bedrijfsvideo",
+				"status": "published",
+				"data": {
+					"title": "Bedrijfsvideo",
+					"summary": "Bedrijfsfilm, recruitment of een event. Van script tot montage.",
+					"menu_note": "Van script tot montage",
+					"image": {
+						"$media": {
+							"file": "media/bedrijfsvideo.webp",
+							"alt": "Pitstraat met raceauto's",
+							"filename": "bedrijfsvideo.webp"
+						}
+					},
+					"position": 2,
+					"content": [
+						{
+							"_type": "lm_hero_split",
+							"_version": 1,
+							"_key": "bv-hero",
+							"tag": "",
+							"headline": "Een bedrijfs*film* die mensen wél uitkijken.",
+							"intro": "Voor je website, recruitment of een event. Ik denk mee over het verhaal, film op locatie en monteer er één film van, met korte versies voor social.",
+							"primary_cta_label": "Plan een kennismaking",
+							"primary_cta_url": "/contact",
+							"secondary_cta_label": "Zo werkt het",
+							"secondary_cta_url": "#werkwijze",
+							"image_1": {
+								"$media": {
+									"file": "media/bv-gimbal.jpg",
+									"alt": "Gimbal met camera in de rook",
+									"filename": "bv-gimbal.jpg"
+								}
+							},
+							"image_2": {
+								"$media": {
+									"file": "media/bv-kantoor.jpg",
+									"alt": "Twee collega's proosten op kantoor",
+									"filename": "bv-kantoor.jpg"
+								}
+							},
+							"scribble": ""
+						},
+						{
+							"_type": "lm_logos",
+							"_version": 1,
+							"_key": "bv-klanten",
+							"headline": "Organisaties die mij laten *draaien*",
+							"tag": "Een greep uit het werk",
+							"logos": [
+								{
+									"name": "De Maatschappij",
+									"image": {
+										"$media": {
+											"file": "media/logo-demaatschappij.png",
+											"alt": "De Maatschappij",
+											"filename": "logo-demaatschappij.png"
+										}
+									}
+								},
+								{
+									"name": "Matchis",
+									"image": {
+										"$media": {
+											"file": "media/logo-matchis.png",
+											"alt": "Matchis",
+											"filename": "logo-matchis.png"
+										}
+									}
+								},
+								{
+									"name": "Lunch Bunch",
+									"image": {
+										"$media": {
+											"file": "media/logo-lunchbunch.png",
+											"alt": "Lunch Bunch",
+											"filename": "logo-lunchbunch.png"
+										}
+									}
+								},
+								{
+									"name": "Poki",
+									"image": {
+										"$media": {
+											"file": "media/logo-poki.png",
+											"alt": "Poki",
+											"filename": "logo-poki.png"
+										}
+									}
+								},
+								{
+									"name": "Sint voor ieder1",
+									"image": {
+										"$media": {
+											"file": "media/logo-sint.png",
+											"alt": "Sint voor ieder1",
+											"filename": "logo-sint.png"
+										}
+									}
+								},
+								{
+									"name": "Stone",
+									"image": {
+										"$media": {
+											"file": "media/logo-stone.png",
+											"alt": "Stone",
+											"filename": "logo-stone.png"
+										}
+									}
+								}
+							]
+						},
+						{
+							"_type": "lm_statement",
+							"_version": 1,
+							"_key": "bv-statement",
+							"headline": "Geen logo in beeld, maar de *mensen* achter jullie werk.",
+							"body": "Een goede bedrijfsfilm gaat over wie het werk doet en waarom. Daar begin ik mee, de rest van het verhaal volgt vanzelf.",
+							"image": {
+								"$media": {
+									"file": "media/kruispunt.webp",
+									"alt": "Kruispunt van bovenaf",
+									"filename": "kruispunt.webp"
+								}
+							},
+							"note": "take één"
+						},
+						{
+							"_type": "lm_deliverables",
+							"_version": 1,
+							"_key": "bv-krijgt",
+							"headline": "Wat je *krijgt*",
+							"intro": "Eén film die je lang kunt gebruiken: op je site, in vacatures, in presentaties en op social.",
+							"cards": [
+								{
+									"kind": "Cijfer",
+									"number": "1",
+									"title": "Hoofdfilm",
+									"sub": "Het hele verhaal, voor je site en presentaties",
+									"tone": "Zwart"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/bv-werkvloer.jpg",
+											"alt": "Collega's dansen op kantoor",
+											"filename": "bv-werkvloer.jpg"
+										}
+									},
+									"label": "Op de werkvloer · 16:9",
+									"caption": "Echte *mensen,* geen acteurs.",
+									"reel": ""
+								},
+								{
+									"kind": "Cijfer",
+									"number": "3",
+									"title": "Korte versies",
+									"sub": "In 9:16 en 1:1, voor social en vacatures",
+									"tone": "Wit"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/reel-hr-poster.jpg",
+											"alt": "Twee collega's dansen op kantoor",
+											"filename": "reel-hr-poster.jpg"
+										}
+									},
+									"label": "Reel · 9:16",
+									"caption": "Dezelfde film, *korter* voor social.",
+									"reel": "werken-bij"
+								}
+							]
+						},
+						{
+							"_type": "lm_cases",
+							"_version": 1,
+							"_key": "bv-cases",
+							"headline": "Films die al *draaien*",
+							"kind": "Bedrijfsvideo",
+							"view": "Lijst",
+							"link_label": "Alle cases",
+							"link_url": "/werk",
+							"tone": "Zwart"
+						},
+						{
+							"_type": "lm_process",
+							"_version": 1,
+							"_key": "bv-werkwijze",
+							"anchor_id": "werkwijze",
+							"headline": "Zo komt een film *tot stand*",
+							"intro": "Van het eerste gesprek tot de laatste export. Je weet bij elke stap waar je film staat.",
+							"steps": [
+								{
+									"title": "Idee",
+									"body": "We bespreken wat de film moet doen en voor wie. Daar maak ik een verhaal en een draaiboek van."
+								},
+								{
+									"title": "Opnames",
+									"body": "Op locatie, met interviews en beelden van het werk zelf. Eén dag of meer, wat het verhaal nodig heeft."
+								},
+								{
+									"title": "Montage",
+									"body": "Eerst een versie om op te reageren, daarna de definitieve film met muziek en ondertitels."
+								},
+								{
+									"title": "Oplevering",
+									"body": "De hoofdfilm plus korte versies, in de formaten die je nodig hebt."
+								}
+							]
+						},
+						{
+							"_type": "lm_faq",
+							"_version": 1,
+							"_key": "bv-faq",
+							"anchor_id": "vragen",
+							"headline": "Vragen die ik *vaak* krijg",
+							"intro": "Staat jouw vraag er niet tussen? Mail of bel, dan hoor je het meteen.",
+							"items": [
+								{
+									"question": "Wat kost een bedrijfsfilm?",
+									"answer": "Dat hangt af van de lengte, het aantal draaidagen en hoeveel korte versies je wilt. Na de kennismaking krijg je een voorstel met een vaste prijs."
+								},
+								{
+									"question": "Hoe lang duurt het van idee tot film?",
+									"answer": "Dat plannen we samen. In het voorstel staat wanneer we draaien en wanneer je de eerste versie ziet."
+								},
+								{
+									"question": "Moeten we zelf een script aanleveren?",
+									"answer": "Nee. Ik schrijf het verhaal en het draaiboek, op basis van wat jullie willen vertellen. Jij kijkt mee en geeft feedback."
+								},
+								{
+									"question": "Wie staan er in beeld?",
+									"answer": "Bij voorkeur jullie eigen mensen. Ik zorg dat ze zich op hun gemak voelen, ook als ze nog nooit voor een camera stonden."
+								},
+								{
+									"question": "Kunnen we de film later inkorten of aanpassen?",
+									"answer": "Ja. Korte versies voor social horen er standaard bij, en een aanpassing later kan ook."
+								},
+								{
+									"question": "Krijgen we ook de ruwe beelden?",
+									"answer": "Daar maken we in het voorstel afspraken over, net als over waar je de film voor mag gebruiken."
+								}
+							],
+							"rating": "5,0",
+							"rating_source": "Google",
+							"review_quote": "We verwachtten een bedrijfsfilm. We kregen een verhaal dat onze _mensen zelf_ delen.",
+							"review_name": "Naam van de klant",
+							"review_role": "Functie, bedrijf (voorbeeldquote)",
+							"review_image": {
+								"$media": {
+									"file": "media/fotografie.webp",
+									"alt": "Camera op een groene doek",
+									"filename": "fotografie.webp"
+								}
+							},
+							"contact_heading": "Liever even *bellen*?",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact"
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "bv-edit",
+							"headline": "Van idee naar *edit*.",
+							"body": "Eerst het verhaal, dan de opnames, dan de montage. Je ziet precies waar je film staat, net als in mijn tijdlijn.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "",
+							"link_url": ""
+						}
+					],
+					"card_title": "Bedrijfs*video*",
+					"card_text": "Een film over wat jullie doen, zonder dat het een saaie bedrijfsfilm wordt. Voor recruitment, een event of je website. Van idee en draaiboek tot de opnames en de montage, alles in één hand."
+				}
+			},
+			{
+				"id": "services:maandelijkse-content",
+				"slug": "maandelijkse-content",
+				"status": "published",
+				"data": {
+					"title": "Maandelijkse content",
+					"summary": "Elke maand een shoot day, een plan en content voor de weken erna.",
+					"menu_note": "Shoot day · 1× per maand",
+					"image": {
+						"$media": {
+							"file": "media/maker-over.jpg",
+							"alt": "Louwmedia met camera",
+							"filename": "maker-over.jpg"
+						}
+					},
+					"position": 1,
+					"content": [
+						{
+							"_type": "lm_hero_split",
+							"_version": 1,
+							"_key": "mc-hero",
+							"tag": "",
+							"headline": "Elke maand *content*, zonder dat je er zelf mee bezig bent.",
+							"intro": "Eén vaste dag in de agenda, een plan vooraf en content voor de weken erna: reels, foto's en korte video's in de formaten die je nodig hebt.",
+							"primary_cta_label": "Plan een kennismaking",
+							"primary_cta_url": "/contact",
+							"secondary_cta_label": "Zo werkt het",
+							"secondary_cta_url": "#werkwijze",
+							"image_1": {
+								"$media": {
+									"file": "media/reel-hr-poster.jpg",
+									"alt": "Twee collega's dansen op kantoor",
+									"filename": "reel-hr-poster.jpg"
+								}
+							},
+							"image_2": {
+								"$media": {
+									"file": "media/martini.jpg",
+									"alt": "Raceauto in Martini-kleuren van bovenaf",
+									"filename": "martini.jpg"
+								}
+							},
+							"scribble": ""
+						},
+						{
+							"_type": "lm_logos",
+							"_version": 1,
+							"_key": "mc-klanten",
+							"headline": "Organisaties die mij laten *draaien*",
+							"tag": "Een greep uit het werk",
+							"logos": [
+								{
+									"name": "De Maatschappij",
+									"image": {
+										"$media": {
+											"file": "media/logo-demaatschappij.png",
+											"alt": "De Maatschappij",
+											"filename": "logo-demaatschappij.png"
+										}
+									}
+								},
+								{
+									"name": "Matchis",
+									"image": {
+										"$media": {
+											"file": "media/logo-matchis.png",
+											"alt": "Matchis",
+											"filename": "logo-matchis.png"
+										}
+									}
+								},
+								{
+									"name": "Lunch Bunch",
+									"image": {
+										"$media": {
+											"file": "media/logo-lunchbunch.png",
+											"alt": "Lunch Bunch",
+											"filename": "logo-lunchbunch.png"
+										}
+									}
+								},
+								{
+									"name": "Poki",
+									"image": {
+										"$media": {
+											"file": "media/logo-poki.png",
+											"alt": "Poki",
+											"filename": "logo-poki.png"
+										}
+									}
+								},
+								{
+									"name": "Sint voor ieder1",
+									"image": {
+										"$media": {
+											"file": "media/logo-sint.png",
+											"alt": "Sint voor ieder1",
+											"filename": "logo-sint.png"
+										}
+									}
+								},
+								{
+									"name": "Stone",
+									"image": {
+										"$media": {
+											"file": "media/logo-stone.png",
+											"alt": "Stone",
+											"filename": "logo-stone.png"
+										}
+									}
+								}
+							]
+						},
+						{
+							"_type": "lm_statement",
+							"_version": 1,
+							"_key": "mc-statement",
+							"headline": "Zichtbaar blijven, zonder dat je team er elke *week* mee bezig is.",
+							"body": "Ik plan, film en monteer. Jij krijgt content die klaarstaat om te posten, en houdt je handen vrij voor je eigen werk.",
+							"image": {
+								"$media": {
+									"file": "media/maker-over.jpg",
+									"alt": "Louwmedia met camera in de kofferbak van een auto",
+									"filename": "maker-over.jpg"
+								}
+							},
+							"note": "even kennismaken"
+						},
+						{
+							"_type": "lm_deliverables",
+							"_version": 1,
+							"_key": "mc-krijgt",
+							"headline": "Wat één *maand* oplevert",
+							"intro": "Een vaste dag in de agenda, een plan vooraf en een map vol content voor de weken erna.",
+							"cards": [
+								{
+									"kind": "Cijfer",
+									"number": "1",
+									"title": "Shoot day per maand",
+									"sub": "Eén dag draaien, vast in de agenda",
+									"tone": "Zwart"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/fotografie.webp",
+											"alt": "Camera op een groene doek",
+											"filename": "fotografie.webp"
+										}
+									},
+									"label": "Plan · week 1",
+									"caption": "Eerst een *plan,* dan de camera.",
+									"reel": ""
+								},
+								{
+									"kind": "Cijfer",
+									"number": "30",
+									"title": "Dagen content",
+									"sub": "Posts en reels voor de hele maand",
+									"tone": "Wit"
+								},
+								{
+									"kind": "Foto",
+									"image": {
+										"$media": {
+											"file": "media/martini.jpg",
+											"alt": "Raceauto in Martini-kleuren",
+											"filename": "martini.jpg"
+										}
+									},
+									"label": "Reel · 9:16",
+									"caption": "Eén dag draaien, *een maand* content.",
+									"reel": "corsica"
+								}
+							]
+						},
+						{
+							"_type": "lm_cases",
+							"_version": 1,
+							"_key": "mc-cases",
+							"headline": "Werk dat al *draait*",
+							"kind": "Maandelijkse content",
+							"view": "Lijst",
+							"link_label": "Alle cases",
+							"link_url": "/werk",
+							"tone": "Zwart"
+						},
+						{
+							"_type": "lm_process",
+							"_version": 1,
+							"_key": "mc-werkwijze",
+							"anchor_id": "werkwijze",
+							"headline": "Zo loopt een *maand*",
+							"intro": "Elke maand hetzelfde ritme. Je weet wanneer ik kom, wat ik draai en wanneer het online staat.",
+							"steps": [
+								{
+									"title": "Plan",
+									"body": "We kijken wat er die maand speelt: campagnes, events, vacatures. Daar maak ik een draaiboek van."
+								},
+								{
+									"title": "Shoot day",
+									"body": "Eén dag op locatie. Video, foto en de korte dingen voor social."
+								},
+								{
+									"title": "Montage",
+									"body": "Gemonteerd, ondertiteld en in de formaten die je nodig hebt. Jij kijkt mee."
+								},
+								{
+									"title": "Online",
+									"body": "Alles staat klaar om te posten, met een planning erbij."
+								}
+							]
+						},
+						{
+							"_type": "lm_faq",
+							"_version": 1,
+							"_key": "mc-faq",
+							"anchor_id": "vragen",
+							"headline": "Vragen die ik *vaak* krijg",
+							"intro": "Staat jouw vraag er niet tussen? Mail of bel, dan hoor je het meteen.",
+							"items": [
+								{
+									"question": "Wat kost een maand content?",
+									"answer": "Dat hangt af van hoeveel je nodig hebt. Na de kennismaking krijg je een voorstel met een vaste prijs per maand."
+								},
+								{
+									"question": "Hoe snel heb ik de eerste content?",
+									"answer": "Dat spreken we af in het voorstel. De planning maken we samen, zodat je weet wanneer wat klaarstaat."
+								},
+								{
+									"question": "Waar wordt er gefilmd?",
+									"answer": "Bij jou op locatie: op kantoor, in de werkplaats of op een plek die bij je verhaal past."
+								},
+								{
+									"question": "Wie heeft de rechten op de beelden?",
+									"answer": "Daar maken we in het voorstel duidelijke afspraken over, zodat je precies weet waar je de beelden voor mag gebruiken."
+								},
+								{
+									"question": "Kan ik meekijken met de montage?",
+									"answer": "Ja. Je krijgt eerst een versie om te bekijken, en jouw feedback gaat mee in de montage."
+								},
+								{
+									"question": "Wat als het die dag regent?",
+									"answer": "Dan schuiven we de binnenopnames naar voren of plannen we samen een nieuwe dag."
+								}
+							],
+							"rating": "5,0",
+							"rating_source": "Google",
+							"review_quote": "Louw denkt mee voordat de camera aan gaat. Daarna hoefden we _nergens meer_ aan te denken.",
+							"review_name": "Naam van de klant",
+							"review_role": "Functie, bedrijf (voorbeeldquote)",
+							"review_image": {
+								"$media": {
+									"file": "media/quote-porsche.webp",
+									"alt": "Witte Porsche in een showroom",
+									"filename": "quote-porsche.webp"
+								}
+							},
+							"contact_heading": "Liever even *bellen*?",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact"
+						},
+						{
+							"_type": "lm_edit",
+							"_version": 1,
+							"_key": "mc-edit",
+							"headline": "Van idee naar *edit*.",
+							"body": "Eerst een plan, dan een shoot day, dan de montage. Je ziet precies waar je content staat, net als in mijn tijdlijn.",
+							"cta_label": "Plan een kennismaking",
+							"cta_url": "/contact",
+							"link_label": "",
+							"link_url": ""
+						}
+					],
+					"card_title": "Maandelijkse *content*",
+					"card_text": "Elke maand een vaste dag in de agenda. Vooraf maken we samen een plan, op de dag draai ik alles wat je nodig hebt, en daarna staat er content klaar voor de weken erna: reels, foto's en korte video's in de formaten die je gebruikt."
+				}
+			}
+		]
+	}
+}

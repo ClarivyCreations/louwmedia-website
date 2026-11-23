@@ -1,0 +1,123 @@
+---
+/**
+ * S18a · Choice help ("Twijfel je wat past?", Doop "Secties"): heading, a line
+ * of text and a button left; right one row per situation, each leading to the
+ * service that fits, with the Button's arrow square that turns red with the
+ * arrow swap on hover (the same as the Diensten mega menu rows). Optional text
+ * link under the rows (Content voor automotive).
+ */
+import { sanitizeHref } from "emdash";
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Button from "../Button.astro";
+import Headline from "../Headline.astro";
+import Arrow from "../Arrow.astro";
+import ArrowSquare from "../ArrowSquare.astro";
+import TextLink from "../TextLink.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_choice" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const rows = (value.rows ?? []).filter((r) => r.situation && r.service);
+const linkUrl = value.link_url ? sanitizeHref(value.link_url) : undefined;
+---
+
+<section class="ch" id={value.anchor_id || undefined}>
+	<div class="container ch__grid">
+		<div class="ch__head">
+			<Headline text={value.headline} as="h2" class="h2" />
+			{value.intro && <p class="muted ch__intro" data-reveal>{value.intro}</p>}
+			{value.cta_label && <div class="ch__cta" data-reveal><Button label={value.cta_label} href={value.cta_url} /></div>}
+		</div>
+		<div class="ch__main">
+			<ul class="ch__rows" data-reveal>
+				{
+					rows.map((r) => {
+						const href = r.url ? sanitizeHref(r.url) : undefined;
+						return (
+							<li>
+								<a class="ch__row" href={href}>
+									<span class="h4 ch__sit">{r.situation}</span>
+									<span class="ch__svc">
+										{r.service}
+										{r.note && <span class="text-s muted">{r.note}</span>}
+									</span>
+									<ArrowSquare tone="outline" />
+								</a>
+							</li>
+						);
+					})
+				}
+			</ul>
+			{
+				value.link_label && linkUrl && (
+					<TextLink label={value.link_label} href={linkUrl} class="text-s ch__link" data-reveal />
+				)
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.ch {
+		padding-block: var(--section-space);
+	}
+	.ch__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+		gap: 56px clamp(64px, 8.3vw, 120px);
+		align-items: start;
+	}
+	.ch__intro {
+		max-width: 380px;
+		margin-top: 24px;
+	}
+	.ch__cta {
+		margin-top: 36px;
+	}
+	.ch__rows {
+		border-bottom: 1px solid var(--color-line);
+	}
+	.ch__row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(160px, 240px) 40px;
+		align-items: center;
+		gap: 32px;
+		padding: 30px 0;
+		border-top: 1px solid var(--color-line);
+	}
+	.ch__sit {
+		font-family: var(--font-display);
+		font-weight: 600;
+		line-height: 1.15;
+		text-wrap: balance;
+	}
+	.ch__svc {
+		font-weight: 600;
+	}
+	.ch__svc .text-s {
+		display: block;
+		margin-top: 2px;
+		font-weight: 500;
+	}
+	:global(.ch__link) {
+		margin-top: 28px;
+	}
+	@media (max-width: 899px) {
+		.ch__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+	@media (max-width: 599px) {
+		/* situation on top, the service and the arrow under it */
+		.ch__row {
+			grid-template-columns: minmax(0, 1fr) 40px;
+			gap: 16px 20px;
+			padding: 24px 0;
+		}
+		.ch__sit {
+			grid-column: 1 / -1;
+		}
+	}
+</style>

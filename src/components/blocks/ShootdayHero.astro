@@ -1,0 +1,288 @@
+---
+/**
+ * S22c · Shoot day opener (Doop "Secties", Max): on grey, the headline, a lead
+ * line and three steps on the left; on the right a slanted "Shoot day" sheet
+ * with a torn top edge, holding the call sheet facts and a piece of script with
+ * a red marker phrase and handwritten notes. The sheet runs off the bottom of
+ * the section into the white section after it. Short hero entrance via
+ * motion.ts (data-hero; the sheet drifts in like the other hero photos).
+ */
+import type { BlockComponentProps } from "emdash/ui";
+import type { PageContentBlock } from "../../../emdash-env";
+import Headline from "../Headline.astro";
+
+type Block = Extract<PageContentBlock, { _type: "lm_shootday_hero" }>;
+type Props = BlockComponentProps<Block>;
+
+const { value } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+const steps = (value.steps ?? []).filter((s) => s.title);
+const rows = (value.sheet_rows ?? []).filter((r) => r.label && r.value);
+const script = (value.script ?? []).filter((l) => l.text);
+// field "hero": opens the page (h1, hero entrance); off: a compact section further down (Max 2026-11-21)
+const hero = Boolean((value as { hero?: boolean | null }).hero);
+const kindClass = (k?: string | null) => (k === "Scène" ? "sd__sc" : k === "Personage" ? "sd__ch" : k === "Tekst" ? "sd__dl" : "sd__ac");
+---
+
+<section class:list={["sd", !hero && "sd--section"]} id={value.anchor_id || undefined} data-hero={hero ? "shootday" : undefined}>
+	<div class="container sd__in">
+		<div class="sd__main">
+			<Headline text={value.headline} as={hero ? "h1" : "h2"} class={hero ? "h1 sd__title" : "h2 sd__title"} reveal={!hero} />
+			{value.intro && <p class:list={[hero ? "text-l" : "text-m", "sd__intro"]} data-intro={hero ? "rest" : undefined} data-reveal={hero ? undefined : ""}>{value.intro}</p>}
+			{
+				steps.length > 0 && (
+					<ol class="sd__steps" data-intro={hero ? "rest" : undefined} data-reveal={hero ? undefined : ""}>
+						{steps.map((s, i) => (
+							<li>
+								<span class="mono sd__no">{pad(i + 1)}</span>
+								<span>
+									<span class="h5 sd__st">{s.title}</span>
+									{s.body && <span class="text-s muted sd__sb">{s.body}</span>}
+								</span>
+							</li>
+						))}
+					</ol>
+				)
+			}
+		</div>
+
+		<div class="sd__sheet-wrap" data-intro={hero ? "photo" : undefined} data-reveal={hero ? undefined : ""} aria-label="Voorbeeld van een shoot day: call sheet en script">
+			{value.note_top && <p class="sd__note sd__note--top" aria-hidden="true">{value.note_top}</p>}
+			<div class="sd__sheet torn-top">
+				<p class="sd__head">
+					<span class="h4 sd__name">{value.sheet_title || "Shoot day"}</span>
+					{value.sheet_meta && <span class="mono muted">{value.sheet_meta}</span>}
+				</p>
+				{
+					rows.length > 0 && (
+						<dl class="sd__rows">
+							{rows.map((r) => (
+								<div>
+									<dt class="mono muted">{r.label}</dt>
+									<dd class="text-s">{r.value}</dd>
+								</div>
+							))}
+						</dl>
+					)
+				}
+				{
+					script.length > 0 && (
+						<div class="sd__script">
+							{(value.script_label || value.script_meta) && (
+								<p class="mono muted sd__smeta">
+									<span>{value.script_label}</span>
+									<span>{value.script_meta}</span>
+								</p>
+							)}
+							{script.map((l) => (
+								<Headline text={l.text} as="p" class={kindClass(l.kind)} reveal={false} />
+							))}
+						</div>
+					)
+				}
+			</div>
+			{value.note_side && <p class="sd__note sd__note--side" aria-hidden="true">{value.note_side}</p>}
+		</div>
+	</div>
+</section>
+
+<style>
+	.sd {
+		position: relative;
+		overflow: hidden;
+		background: var(--color-paper);
+	}
+	.sd__in {
+		position: relative;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 540px);
+		gap: 64px;
+		padding-top: clamp(132px, 15vh, 160px);
+	}
+	.sd__main {
+		/* tight bottom (Max): the sheet is cut off just under its last script line */
+		padding-bottom: clamp(48px, 4.5vw, 64px);
+	}
+	.sd :global(.sd__title) {
+		max-width: 11em;
+	}
+	.sd__intro {
+		max-width: 520px;
+		margin-top: 24px;
+	}
+	.sd__steps {
+		max-width: 640px;
+		margin-top: 36px;
+		border-bottom: 1px solid var(--color-line);
+	}
+	.sd__steps li {
+		display: grid;
+		grid-template-columns: 48px 1fr;
+		padding: 14px 0;
+		border-top: 1px solid var(--color-line);
+	}
+	.sd__no {
+		padding-top: 4px;
+		color: var(--color-rec);
+	}
+	.sd__st,
+	.sd__sb {
+		display: block;
+	}
+	.sd__sb {
+		margin-top: 2px;
+	}
+
+	/* the sheet: slanted, torn top edge, runs off the bottom of the section (Max) */
+	.sd__sheet-wrap {
+		position: relative;
+		/* the text decides the section's height; the sheet is taller and gets cut off */
+		contain: size;
+		align-self: stretch;
+		margin-top: -20px;
+		transform: rotate(2.5deg);
+		filter: drop-shadow(0 30px 40px rgba(18, 18, 18, 0.14));
+	}
+	.sd__sheet {
+		min-height: calc(100% + 240px);
+		padding: 44px 50px 60px;
+		background: var(--color-white);
+	}
+	.sd__head {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 16px;
+	}
+	.sd__name {
+		font-family: var(--font-display);
+		font-weight: 600;
+	}
+	.sd__rows {
+		margin-top: 16px;
+		border-bottom: 1px solid var(--color-line);
+	}
+	.sd__rows > div {
+		display: grid;
+		grid-template-columns: 100px 1fr;
+		align-items: baseline;
+		padding: 7px 0;
+		border-top: 1px solid var(--color-line);
+	}
+	/* the script: screenplay layout in mono */
+	.sd__script {
+		margin-top: 24px;
+		font-family: var(--font-mono);
+		font-size: var(--text-s);
+		line-height: 1.75;
+	}
+	.sd__smeta {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.sd__script :global(.sd__sc) {
+		margin-top: 16px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.sd__script :global(.sd__ch) {
+		margin: 10px 0 0 110px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.sd__script :global(.sd__dl) {
+		margin: 0 40px 0 56px;
+	}
+	.sd__script :global(.marker) {
+		position: relative;
+	}
+	.sd__note {
+		position: absolute;
+		z-index: 2;
+		font-family: var(--font-scribble);
+		font-size: var(--text-h5);
+		line-height: 1.1;
+		color: var(--color-rec);
+		white-space: nowrap;
+		pointer-events: none;
+	}
+	.sd__note--top {
+		left: -150px;
+		top: -14px;
+		transform: rotate(-8deg);
+	}
+	.sd__note--side {
+		right: -24px;
+		top: 455px;
+		transform: rotate(8deg);
+	}
+
+	/* as a section further down: compacter all round (Max) */
+	.sd--section .sd__in {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 500px);
+		gap: 56px;
+		padding-top: clamp(72px, 7vw, 104px);
+	}
+	.sd--section .sd__intro {
+		max-width: 480px;
+		margin-top: 20px;
+	}
+	.sd--section .sd__steps {
+		max-width: 560px;
+		margin-top: 28px;
+	}
+	.sd--section .sd__steps li {
+		padding: 12px 0;
+	}
+	.sd--section .sd__sheet-wrap {
+		margin-top: 0;
+	}
+	.sd--section .sd__sheet {
+		padding: 36px 42px 48px;
+	}
+
+	@media (max-width: 999px) {
+		.sd--section .sd__in {
+			grid-template-columns: 1fr;
+			gap: 0;
+			padding-top: 72px;
+		}
+		.sd--section .sd__sheet {
+			padding: 28px 24px 240px;
+		}
+		.sd__in {
+			grid-template-columns: 1fr;
+			gap: 0;
+			min-height: 0;
+			padding-top: 132px;
+		}
+		.sd__main {
+			padding-bottom: 72px;
+		}
+		/* the sheet under the text, cut off by the section's bottom */
+		.sd__sheet-wrap {
+			contain: none;
+			margin: 0 8px -220px;
+			transform: rotate(1.5deg);
+		}
+		.sd__sheet {
+			min-height: 0;
+			padding: 32px 26px 260px;
+		}
+		.sd__script :global(.sd__ch) {
+			margin-left: 64px;
+		}
+		.sd__script :global(.sd__dl) {
+			margin: 0 8px 0 28px;
+		}
+		.sd__note--top {
+			left: auto;
+			right: 16px;
+			top: -40px;
+		}
+		.sd__note--side {
+			display: none;
+		}
+	}
+</style>
